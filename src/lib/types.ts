@@ -1,0 +1,53 @@
+import { z } from "zod";
+
+export const AllowedMimeTypesEnum = z.enum([
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "image/jpeg",
+  "image/png",
+]);
+
+export type AllowedMimeType = z.infer<typeof AllowedMimeTypesEnum>;
+
+export const PrintPreferencesSchema = z.object({
+  copies: z.number().int().min(1).max(99).default(1),
+  colorMode: z.enum(["BW", "COLOR"]).default("BW"),
+  sides: z.enum(["SINGLE", "DOUBLE"]).default("DOUBLE"),
+  pageRange: z.string().max(50).default("ALL"),
+  customerNotes: z.string().max(120).optional(),
+});
+
+export type PrintPreferences = z.infer<typeof PrintPreferencesSchema>;
+
+export const FileMetadataSchema = z.object({
+  fileId: z.string(),
+  name: z.string().min(1).max(120),
+  size: z.number().int().max(25 * 1024 * 1024), // 25 MB max
+  type: z.string(),
+  pageCount: z.number().int().optional(),
+  previewUrl: z.string().optional(),
+});
+
+export type FileMetadata = z.infer<typeof FileMetadataSchema>;
+
+export type SessionStatus =
+  | "PENDING_UPLOAD"
+  | "ACTIVE"
+  | "ACCESSED"
+  | "PRINTED"
+  | "DELETED"
+  | "EXPIRED";
+
+export interface SessionData {
+  id: string;
+  accessCode: string;
+  status: SessionStatus;
+  createdAt: number;
+  expiresAt: number;
+  accessedAt?: number;
+  deletedAt?: number;
+  deletionSource?: "OPERATOR_PRINT" | "STUDENT_REVOKE" | "TTL_PURGE";
+  preferences: PrintPreferences;
+  files: FileMetadata[];
+  totalSizeBytes: number;
+}

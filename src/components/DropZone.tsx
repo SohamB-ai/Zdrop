@@ -1,0 +1,197 @@
+"use client";
+
+import { useState, useRef, ChangeEvent, DragEvent } from "react";
+import { UploadCloud, AlertCircle } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { FileMetadata } from "@/lib/types";
+import { FileCard } from "./FileCard";
+
+interface DropZoneProps {
+  files: FileMetadata[];
+  onFilesChange: (files: FileMetadata[]) => void;
+  maxFiles?: number;
+  maxSizeMb?: number;
+  disabled?: boolean;
+}
+
+export function DropZone({
+  files,
+  onFilesChange,
+  maxFiles = 3,
+  maxSizeMb = 25,
+  disabled = false,
+}: DropZoneProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const maxSizeBytes = maxSizeMb * 1024 * 1024;
+
+  const validateAndAddFiles = (incomingFiles: FileList | File[]) => {
+    setErrorMessage(null);
+    const newFiles: FileMetadata[] = [...files];
+
+    for (let i = 0; i < incomingFiles.length; i++) {
+      const file = incomingFiles[i];
+
+      if (newFiles.length >= maxFiles) {
+        setErrorMessage(`Maximum ${maxFiles} documents allowed per session.`);
+        break;
+      }
+
+      if (file.size > maxSizeBytes) {
+        setErrorMessage(`"${file.name}" exceeds the ${maxSizeMb}MB file limit.`);
+        continue;
+      }
+
+      const allowedTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/jpeg",
+        "image/png",
+      ];
+
+      const isAllowed =
+        allowedTypes.includes(file.type) ||
+        file.name.endsWith(".pdf") ||
+        file.name.endsWith(".docx") ||
+        file.name.endsWith(".jpg") ||
+        file.name.endsWith(".jpeg") ||
+        file.name.endsWith(".png");
+
+      if (!isAllowed) {
+        setErrorMessage(`"${file.name}" is not a supported format. Please use PDF, DOCX, JPG, or PNG.`);
+        continue;
+      }
+
+      // Check duplicate by name and size
+      const isDuplicate = newFiles.some(
+        (f) => f.name === file.name && f.size === file.size
+      );
+      if (isDuplicate) continue;
+
+      const previewUrl = file.type.startsWith("image/") || file.type.includes("pdf")
+        ? URL.createObjectURL(file)
+        : undefined;
+
+      newFiles.push({
+        fileId: "file_" + Math.random().toString(36).substring(2, 9),
+        name: file.name,
+        size: file.size,
+        type: file.type || "application/octet-stream",
+        pageCount: file.name.endsWith(".pdf") ? Math.floor(file.size / 200000) + 1 : undefined,
+        previewUrl,
+      });
+    }
+
+    onFilesChange(newFiles);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!disabled && files.length < maxFiles) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (disabled || files.length >= maxFiles) return;
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      validateAndAddFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      validateAndAddFiles(e.target.files);
+      // Reset input value so same file can be re-uploaded if removed
+      e.target.value = "";
+    }
+  };
+
+  const handleRemove = (fileId: string) => {
+    const updated = files.filter((f) => f.fileId !== fileId);
+    onFilesChange(updated);
+    setErrorMessage(null);
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Upload Zone */}
+      {files.length < maxFiles && (
+        <motion.div
+          animate={
+            isDragging && !shouldReduceMotion
+              ? { scale: 1.02 }
+              : { scale: 1 }
+          }
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => !disabled && inputRef.current?.click()}
+          className={`relative border-2 border-dashed rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-colors ${
+            isDragging
+              ? "border-blue-500 bg-blue-50/50"
+              : "border-slate-300 hover:border-blue-500 bg-white"
+          } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            accept=".pdf,.docx,.jpg,.jpeg,.png"
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={disabled}
+          />
+
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+            <UploadCloud className="w-6 h-6" />
+          </div>
+
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
+            Tap to select or drop documents
+          </h3>
+          <p className="text-xs text-slate-500 max-w-xs mx-auto mb-2">
+            PDF, DOCX, JPG, or PNG (up to {maxSizeMb}MB each)
+          </p>
+
+          <span className="inline-block text-[11px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+            {files.length}/{maxFiles} files added
+          </span>
+        </motion.div>
+      )}
+
+      {/* Inline Error Message */}
+      {errorMessage && (
+        <div className="flex items-center gap-2 p-3 text-xs text-red-800 bg-red-50 border border-red-200 rounded-lg">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* File List */}
+      {files.length > 0 && (
+        <div className="space-y-2">
+          {files.map((file) => (
+            <FileCard
+              key={file.fileId}
+              file={file}
+              onRemove={handleRemove}
+              disabled={disabled}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --canvas: #f8fafc;
+    --surface: #ffffff;
+    --surface-muted: #f1f5f9;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+
+    --success: #10b981;
+    --success-bg: #ecfdf5;
+    --success-text: #065f46;
+    --success-border: #a7f3d0;
+
+    --error: #ef4444;
+    --error-bg: #fef2f2;
+    --error-text: #991b1b;
+    --error-border: #fecaca;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--text-primary);
+    min-height: 100dvh;
+  }
+}
+
+/* Tabular figures for monospace numbers */
+.font-tabular {
+  font-feature-settings: "tnum" 1;
+}
+
+/* Subtle focus ring style */
+.ring-focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #2563eb;
+}
+
+/* Tactile button press */
+.active-press:active {
+  transform: scale(0.98);
+}
