@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 
-const sourcePath = 'C:/Users/soham/.gemini/antigravity-ide/brain/f614c783-7e1c-4c8e-90e6-228f89a4a506/.user_uploaded/media_1791536882184.png';
+const sourcePath = 'C:/Users/soham/.gemini/antigravity/brain/ae031a70-d8c2-4341-938b-48ecde1f95a5/.user_uploaded/media_1791560331802_1e8c995b.png';
 const publicDir = 'd:/Projects/ZDrop/public';
 const appDir = 'd:/Projects/ZDrop/src/app';
 
@@ -51,11 +51,11 @@ async function run() {
 
   // We will produce two buffers:
   // 1. lightBuffer: original colors unmixed from white background
-  // 2. darkBuffer: same, but the "Drop" text (which is dark navy in original) is recolored to white (#ffffff)
+  // 2. darkBuffer: same, but the "Drop" text (which is dark navy in original) is recolored to white (#fafafa)
   const lightBuffer = Buffer.alloc(width * height * 4);
   const darkBuffer = Buffer.alloc(width * height * 4);
 
-  // Background is near-white (253, 255, 255)
+  // Background is near-white (255, 255, 255)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * channels;
@@ -65,26 +65,25 @@ async function run() {
       const g = data[idx + 1];
       const b = data[idx + 2];
 
-      // Is it background?
       // Distance from white
       const distFromWhite = Math.sqrt(
         Math.pow(255 - r, 2) + Math.pow(255 - g, 2) + Math.pow(255 - b, 2)
       );
 
-      if (distFromWhite < 10) {
+      if (distFromWhite < 8) {
         // Pure transparent background
         lightBuffer[outIdx + 3] = 0;
         darkBuffer[outIdx + 3] = 0;
         continue;
       }
 
-      // Check if this is the Blue section (mark x < 390 OR 'Z' 415 <= x <= 496)
-      const isBlue = (x <= 498);
+      // Check if this is the Green section (mark x < 380 OR 'Z' 415 <= x <= 500)
+      const isGreen = (x <= 500);
 
-      if (isBlue) {
-        // Foreground is royal blue (~10, 101, 253)
-        // Red channel goes from 10 to 255
-        let alpha = (255 - r) / (255 - 10);
+      if (isGreen) {
+        // Foreground is emerald green (~1, 186, 86)
+        // Red channel goes from ~0..2 up to 255 for white
+        let alpha = (255 - r) / 254;
         alpha = Math.max(0, Math.min(1, alpha));
 
         if (alpha <= 0.04) {
@@ -93,12 +92,12 @@ async function run() {
           continue;
         }
 
-        // Unmix blue
-        let fgR = 10;
+        // Unmix green
+        let fgR = 1;
         let fgG = Math.max(0, Math.min(255, Math.round((g - (1 - alpha) * 255) / alpha)));
         let fgB = Math.max(0, Math.min(255, Math.round((b - (1 - alpha) * 255) / alpha)));
 
-        if (alpha >= 0.96) {
+        if (alpha >= 0.95) {
           fgR = r;
           fgG = g;
           fgB = b;
@@ -117,9 +116,9 @@ async function run() {
         darkBuffer[outIdx + 2] = fgB;
         darkBuffer[outIdx + 3] = aByte;
       } else {
-        // This is the "Drop" text (dark navy: ~7, 17, 37)
-        // Blue channel goes from 37 to 255
-        let alpha = (255 - b) / (255 - 37);
+        // This is the "Drop" text (dark navy: ~7, 16, 35)
+        const maxDiff = Math.max(255 - r, 255 - g, 255 - b);
+        let alpha = maxDiff / 248;
         alpha = Math.max(0, Math.min(1, alpha));
 
         if (alpha <= 0.04) {
@@ -129,10 +128,10 @@ async function run() {
         }
 
         let fgR = 7;
-        let fgG = 17;
-        let fgB = 37;
+        let fgG = 16;
+        let fgB = 35;
 
-        if (alpha >= 0.96) {
+        if (alpha >= 0.95) {
           fgR = r;
           fgG = g;
           fgB = b;
@@ -151,10 +150,10 @@ async function run() {
         lightBuffer[outIdx + 2] = fgB;
         lightBuffer[outIdx + 3] = aByte;
 
-        // Dark mode has crisp white (#f8fafc)
-        darkBuffer[outIdx] = 248;
+        // Dark mode has crisp white (#fafafa)
+        darkBuffer[outIdx] = 250;
         darkBuffer[outIdx + 1] = 250;
-        darkBuffer[outIdx + 2] = 252;
+        darkBuffer[outIdx + 2] = 250;
         darkBuffer[outIdx + 3] = aByte;
       }
     }
@@ -260,9 +259,11 @@ async function run() {
   // 6. Next.js App Router Favicon and Apple Icon
   const icon32 = await sharp(squareIconBuffer).resize(32, 32).png().toBuffer();
   fs.writeFileSync(path.join(appDir, 'icon.png'), icon32);
+  fs.writeFileSync(path.join(publicDir, 'icon.png'), icon32);
 
   const icon180 = await sharp(squareIconBuffer).resize(180, 180).png().toBuffer();
   fs.writeFileSync(path.join(appDir, 'apple-icon.png'), icon180);
+  fs.writeFileSync(path.join(publicDir, 'apple-icon.png'), icon180);
 
   // 7. Base64 SVG Favicon
   const tightBase64 = tightMarkBuffer.toString('base64');
