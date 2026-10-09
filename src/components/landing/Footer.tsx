@@ -6,7 +6,7 @@ import { ShieldCheck, Github, ExternalLink } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-white/10 bg-[#09090b] text-zinc-400 text-xs font-sans">
+    <footer className="relative border-t border-white/10 bg-[#09090b]/80 backdrop-blur-md text-zinc-400 text-xs font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
           {/* Brand Column */}

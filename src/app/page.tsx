@@ -122,10 +122,10 @@ export default function StudentPage() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-clip">
+    <div className="relative min-h-[100dvh] flex flex-col bg-transparent text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-clip">
       {/* Full-Page Reactive GridPulse Background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
-        <GridPulse className="size-full" />
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <GridPulse className="size-full [mask-image:none]" />
       </div>
 
       {/* Global Error Banner */}
@@ -140,7 +140,9 @@ export default function StudentPage() {
         </div>
       )}
 
-      <AnimatePresence mode="wait">
+      {/* Foreground Interactive Page Content */}
+      <div className="relative z-10 flex-1 flex flex-col">
+        <AnimatePresence mode="wait">
         {step === "UPLOAD" && (
           <motion.div
             key="upload"
@@ -300,6 +302,7 @@ export default function StudentPage() {
 
       {/* Footer Component */}
       <Footer />
+      </div>
     </div>
   );
 }
