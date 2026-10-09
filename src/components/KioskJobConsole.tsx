@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Printer,
   Trash2,
@@ -14,6 +14,7 @@ import {
   FileSpreadsheet,
   AlertCircle,
 } from "lucide-react";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { SessionData, FileMetadata } from "@/lib/types";
 import { formatBytes } from "@/lib/utils";
 
@@ -33,16 +34,24 @@ export function KioskJobConsole({
   isPurging = false,
 }: KioskJobConsoleProps) {
   const [selectedFile, setSelectedFile] = useState<FileMetadata>(
-    session.files[0] || null
+    session.files[0]
   );
 
+  const previewRef = useRef<HTMLIFrameElement>(null);
+  const [confirmPurge, setConfirmPurge] = useState(false);
   const { preferences } = session;
 
   const handlePrintClick = () => {
-    // Trigger window.print or direct print callback
     onPrint();
-    window.print();
+    if (!selectedFile?.previewUrl) return;
+    if (selectedFile.type.includes('wordprocessing')) { window.open(selectedFile.previewUrl, '_blank', 'noopener,noreferrer'); return; }
+    try { previewRef.current?.contentWindow?.focus(); previewRef.current?.contentWindow?.print(); }
+    catch { window.open(selectedFile.previewUrl, '_blank', 'noopener,noreferrer'); }
   };
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); handlePrintClick(); } };
+    window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
+  });
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -166,7 +175,7 @@ export function KioskJobConsole({
                   <FileText className="w-3.5 h-3.5 text-blue-600" />
                   <span className="truncate max-w-[180px]">{file.name}</span>
                   <span className="text-[10px] text-slate-400 font-normal">
-                    ({formatBytes(file.size)})
+                    ({file.pageCount ? `${file.pageCount} ${file.pageCount === 1 ? "page" : "pages"} · ` : ""}{formatBytes(file.size)})
                   </span>
                 </button>
               );
@@ -186,9 +195,10 @@ export function KioskJobConsole({
               ) : selectedFile.previewUrl && selectedFile.type.includes("pdf") ? (
                 <div className="w-full text-center space-y-2">
                   <iframe
+                    ref={previewRef}
                     src={selectedFile.previewUrl}
                     title="PDF Preview"
-                    className="w-full h-80 rounded-lg border border-slate-200 bg-white"
+                    className="w-full h-64 rounded-lg border border-slate-200 bg-white"
                   />
                 </div>
               ) : (
@@ -198,7 +208,7 @@ export function KioskJobConsole({
                   </div>
                   <p className="text-sm font-bold text-slate-900">{selectedFile.name}</p>
                   <p className="text-xs text-slate-500 mt-1">
-                    Pre-flight ready for dispatch.
+                    Download DOCX to print with Word or LibreOffice.
                   </p>
                 </div>
               )}
@@ -206,6 +216,10 @@ export function KioskJobConsole({
           )}
         </div>
 
+        {selectedFile?.previewUrl && <a className="text-sm text-blue-700 underline" href={selectedFile.previewUrl} target="_blank" rel="noopener noreferrer">Open or download selected document</a>}
+        <p className="text-xs text-slate-500">Apply the customer’s copies, color, sides, and page range in the printer dialog. Print every attached document before completing the job.</p>
+        {selectedFile?.type.startsWith('image/') && <iframe ref={previewRef} title="Image print frame" src={selectedFile.previewUrl} className="sr-only" />}
+        <ConfirmDialog isOpen={confirmPurge} title="Finished printing all documents?" message="Wait until every document has printed successfully. Deleting the files cannot be undone." confirmLabel="Yes, delete files" onConfirm={() => { setConfirmPurge(false); onCompleteAndPurge(); }} onCancel={() => setConfirmPurge(false)} isConfirming={isPurging} />
         {/* Action Hub */}
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
           <button
@@ -230,7 +244,7 @@ export function KioskJobConsole({
 
             <button
               type="button"
-              onClick={onCompleteAndPurge}
+              onClick={() => setConfirmPurge(true)}
               disabled={isPurging}
               className="w-full sm:w-auto px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer shadow-sm disabled:opacity-50"
             >

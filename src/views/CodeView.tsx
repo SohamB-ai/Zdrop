@@ -29,11 +29,11 @@ export function CodeView({
       <div className="flex items-center justify-between">
         <button
           type="button"
-          onClick={onBackToUpload}
+          onClick={() => setIsConfirmOpen(true)}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition active:scale-[0.98] cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Upload Another</span>
+          <span>Cancel this session</span>
         </button>
 
         <span className="text-xs text-slate-500 font-medium">

@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { ArrowRight, ShieldCheck, Zap } from "lucide-react";
-import { FileMetadata, PrintPreferences } from "@/lib/types";
+import { FileMetadata, PrintPreferences, PrintPreferencesSchema } from "@/lib/types";
 import { DropZone } from "@/components/DropZone";
 import { PrintPreferencesCard } from "@/components/PrintPreferencesCard";
 
 interface UploadViewProps {
   onGenerateCode: (files: FileMetadata[], preferences: PrintPreferences) => void;
   isGenerating?: boolean;
+  uploadProgress?: number;
 }
 
-export function UploadView({ onGenerateCode, isGenerating = false }: UploadViewProps) {
+export function UploadView({ onGenerateCode, isGenerating = false, uploadProgress = 0 }: UploadViewProps) {
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [preferences, setPreferences] = useState<PrintPreferences>({
     copies: 1,
@@ -20,7 +21,8 @@ export function UploadView({ onGenerateCode, isGenerating = false }: UploadViewP
     pageRange: "ALL",
   });
 
-  const canSubmit = files.length > 0;
+  const validation = PrintPreferencesSchema.safeParse(preferences);
+  const canSubmit = files.length > 0 && validation.success;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +69,7 @@ export function UploadView({ onGenerateCode, isGenerating = false }: UploadViewP
           </div>
         )}
 
+        {!validation.success && <p role="alert" className="text-sm text-red-700">{validation.error.issues[0].message}</p>}
         {/* Submit Bar */}
         <div className="space-y-2 pt-2">
           <button
@@ -74,7 +77,7 @@ export function UploadView({ onGenerateCode, isGenerating = false }: UploadViewP
             disabled={!canSubmit || isGenerating}
             className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-sm text-sm"
           >
-            <span>{isGenerating ? "Encrypting and Uploading..." : "Generate Access Code"}</span>
+            <span>{isGenerating ? `Uploading Documents… ${uploadProgress}%` : "Generate Access Code"}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { QrScanner } from "@/components/QrScanner";
 import { Printer, Shield, Clock } from "lucide-react";
 import { KioskOtpInput } from "@/components/KioskOtpInput";
 
@@ -35,7 +36,7 @@ export function KioskEntryView({
       </div>
 
       {/* Code Input Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
         <KioskOtpInput
           onSubmit={onSubmitCode}
           isLoading={isLoading}
@@ -44,14 +45,15 @@ export function KioskEntryView({
         />
       </div>
 
+      <QrScanner onCode={onSubmitCode} disabled={isLoading} />
       {/* Operator Guidelines Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
         <div className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs flex items-start gap-3">
           <Shield className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <div className="text-xs">
-            <span className="font-bold text-slate-900 block">Zero Disk Clutter</span>
+            <span className="font-bold text-slate-900 block">Temporary File Access</span>
             <span className="text-slate-500 text-[11px]">
-              Files never save to your local Downloads or Desktop folders.
+              ZDrop deletes uploaded files. Remove any DOCX downloads after printing.
             </span>
           </div>
         </div>

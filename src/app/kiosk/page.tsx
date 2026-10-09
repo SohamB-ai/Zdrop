@@ -6,9 +6,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { SessionData } from "@/lib/types";
 import {
   resolveByAccessCode,
-  deleteMockSession,
+  deleteSession,
   subscribeToSession,
-} from "@/lib/mock-session-store";
+} from "@/lib/session-client";
 import { Navbar } from "@/components/Navbar";
 import { KioskEntryView } from "@/views/KioskEntryView";
 import { KioskJobConsole } from "@/components/KioskJobConsole";
@@ -33,7 +33,7 @@ function KioskContent() {
   useEffect(() => {
     if (!session?.id) return;
     const unsubscribe = subscribeToSession(session.id, (updated) => {
-      if (!updated || updated.status === "DELETED") {
+      if (!updated || updated.status === "DELETED" || updated.status === "EXPIRED") {
         setSession(null);
       } else {
         setSession(updated);
@@ -42,36 +42,18 @@ function KioskContent() {
     return () => unsubscribe();
   }, [session?.id]);
 
-  const handleCodeSubmit = (code: string) => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    setTimeout(() => {
-      const found = resolveByAccessCode(code);
-      setIsLoading(false);
-
-      if (!found) {
-        setErrorMessage(
-          "Code not found, expired, or already completed. Please check with customer."
-        );
-      } else {
-        setSession(found);
-      }
-    }, 400);
+  const handleCodeSubmit = async (code: string) => {
+    setIsLoading(true); setErrorMessage(null);
+    try { setSession(await resolveByAccessCode(code)); }
+    catch (e) { setErrorMessage((e as Error).message); }
+    finally { setIsLoading(false); }
   };
-
-  const handleCompleteAndPurge = () => {
-    if (!session?.id) return;
-    setIsPurging(true);
-
-    setTimeout(() => {
-      deleteMockSession(session.id, "OPERATOR_PRINT");
-      setIsPurging(false);
-      setSession(null);
-      setSuccessToast("Job completed successfully. Storage purged.");
-
-      setTimeout(() => setSuccessToast(null), 3500);
-    }, 500);
+  const handleCompleteAndPurge = async () => {
+    if (!session) return;
+    setIsPurging(true); setErrorMessage(null);
+    try { await deleteSession(session.id); setSession(null); setSuccessToast('Job completed. Uploaded files deleted.'); setTimeout(() => setSuccessToast(null), 3500); }
+    catch (e) { setErrorMessage((e as Error).message); }
+    finally { setIsPurging(false); }
   };
 
   const handleCancel = () => {
@@ -84,6 +66,7 @@ function KioskContent() {
       <Navbar currentRole="kiosk" />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6">
+        {errorMessage && session && <p role="alert" className="p-3 text-red-700">{errorMessage}</p>}
         {/* Success Toast */}
         {successToast && (
           <div className="mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold text-center max-w-md mx-auto shadow-xs">

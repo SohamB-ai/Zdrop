@@ -13,7 +13,7 @@ export const PrintPreferencesSchema = z.object({
   copies: z.number().int().min(1).max(99).default(1),
   colorMode: z.enum(["BW", "COLOR"]).default("BW"),
   sides: z.enum(["SINGLE", "DOUBLE"]).default("DOUBLE"),
-  pageRange: z.string().max(50).default("ALL"),
+  pageRange: z.string().max(50).refine(v => v === "ALL" || (/^\s*\d+(?:\s*-\s*\d+)?(?:\s*,\s*\d+(?:\s*-\s*\d+)?)*\s*$/.test(v) && v.split(",").every(part => { const [a, b] = part.trim().split(/\s*-\s*/).map(Number); return a > 0 && (b === undefined || b >= a); })), "Enter valid pages, such as 1-5, 8.").default("ALL"),
   customerNotes: z.string().max(120).optional(),
 });
 
@@ -28,7 +28,7 @@ export const FileMetadataSchema = z.object({
   previewUrl: z.string().optional(),
 });
 
-export type FileMetadata = z.infer<typeof FileMetadataSchema>;
+export type FileMetadata = z.infer<typeof FileMetadataSchema> & { file?: File };
 
 export type SessionStatus =
   | "PENDING_UPLOAD"

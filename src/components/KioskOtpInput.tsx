@@ -114,7 +114,7 @@ export function KioskOtpInput({
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       {/* 6 Digit Input Boxes */}
-      <div className="flex items-center justify-center gap-2 sm:gap-3" onPaste={handlePaste}>
+      <div className="flex items-center justify-center gap-1.5 sm:gap-3" onPaste={handlePaste}>
         {digits.map((digit, idx) => (
           <div key={idx} className="flex items-center">
             <input
@@ -123,19 +123,20 @@ export function KioskOtpInput({
               }}
               type="text"
               inputMode="numeric"
+              aria-label={`Access code digit ${idx + 1}`}
               maxLength={1}
               value={digit}
               onChange={(e) => handleDigitChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
               disabled={isLoading}
-              className={`w-12 h-16 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
+              className={`w-8 min-[375px]:w-9 h-14 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
                 digit
                   ? "border-blue-600 bg-white text-slate-900 shadow-xs"
                   : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
               }`}
             />
             {idx === 2 && (
-              <span className="mx-1 text-slate-300 font-bold text-xl select-none">
+              <span className="hidden min-[375px]:inline mx-1 text-slate-300 font-bold text-xl select-none">
                 •
               </span>
             )}
