@@ -254,15 +254,12 @@ async function run() {
   // 5. Generate favicon.ico
   const icoData = createIcoBuffer(icoBuffers);
   fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoData);
-  fs.writeFileSync(path.join(appDir, 'favicon.ico'), icoData);
 
-  // 6. Next.js App Router Favicon and Apple Icon
+  // 6. Favicon and Apple Icon for public directory
   const icon32 = await sharp(squareIconBuffer).resize(32, 32).png().toBuffer();
-  fs.writeFileSync(path.join(appDir, 'icon.png'), icon32);
   fs.writeFileSync(path.join(publicDir, 'icon.png'), icon32);
 
   const icon180 = await sharp(squareIconBuffer).resize(180, 180).png().toBuffer();
-  fs.writeFileSync(path.join(appDir, 'apple-icon.png'), icon180);
   fs.writeFileSync(path.join(publicDir, 'apple-icon.png'), icon180);
 
   // 7. Base64 SVG Favicon
@@ -270,7 +267,6 @@ async function run() {
   const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${markWidth} ${markHeight}">
   <image width="${markWidth}" height="${markHeight}" href="data:image/png;base64,${tightBase64}" />
 </svg>`;
-  fs.writeFileSync(path.join(appDir, 'icon.svg'), svgContent);
   fs.writeFileSync(path.join(publicDir, 'icon.svg'), svgContent);
 
   console.log('All branding assets generated successfully!');
