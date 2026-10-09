@@ -20,6 +20,7 @@ import { Footer } from "@/components/landing/Footer";
 import { CodeView } from "@/views/CodeView";
 import { SuccessView } from "@/views/SuccessView";
 import { ZDropLogo } from "@/components/ZDropLogo";
+import { GridPulse } from "@/components/ui/grid-pulse";
 import Link from "next/link";
 
 type StudentStep = "UPLOAD" | "CODE" | "SUCCESS";
@@ -120,12 +121,10 @@ export default function StudentPage() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-hidden">
-      {/* Global Atmospheric Ambient Mesh */}
+    <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-clip">
+      {/* Full-Page Reactive GridPulse Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-[#09090b] to-[#040605]" />
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
-        <div className="pointer-events-none absolute bottom-0 right-0 w-[600px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full" />
+        <GridPulse className="size-full" />
       </div>
 
       {/* Global Error Banner */}

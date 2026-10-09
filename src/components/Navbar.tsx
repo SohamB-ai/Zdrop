@@ -10,6 +10,7 @@ import {
   X,
   ArrowRight,
 } from "lucide-react";
+import { useLenis } from "lenis/react";
 import { ZDropLogo } from "./ZDropLogo";
 
 interface NavbarProps {
@@ -18,6 +19,33 @@ interface NavbarProps {
 
 export function Navbar({ currentRole = "student" }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const lenis = useLenis();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#") && href !== "") return;
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+    if (href === "#" || href === "#top" || href === "") {
+      if (lenis) {
+        lenis.scrollTo(0, { duration: 1.2 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      window.history.pushState(null, "", window.location.pathname);
+      return;
+    }
+
+    const targetEl = document.querySelector(href);
+    if (targetEl) {
+      if (lenis) {
+        lenis.scrollTo(targetEl as HTMLElement, { offset: -80, duration: 1.2 });
+      } else {
+        targetEl.scrollIntoView({ behavior: "smooth" });
+      }
+      window.history.pushState(null, "", href);
+    }
+  };
 
   return (
     <header className="fixed top-3 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
@@ -36,25 +64,29 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
           <nav aria-label="Page Sections" className="hidden md:flex items-center gap-1 rounded-full bg-white/5 px-2 py-1 border border-white/10 backdrop-blur">
             <a
               href="#why-zdrop"
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans"
+              onClick={(e) => handleNavClick(e, "#why-zdrop")}
+              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               Why ZDrop
             </a>
             <a
               href="#how-it-works"
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans"
+              onClick={(e) => handleNavClick(e, "#how-it-works")}
+              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               How It Works
             </a>
             <a
               href="#faq"
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans"
+              onClick={(e) => handleNavClick(e, "#faq")}
+              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               FAQ
             </a>
             <a
               href="#upload"
-              className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 rounded-full hover:bg-emerald-500/10 transition-colors font-sans"
+              onClick={(e) => handleNavClick(e, "#upload")}
+              className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 rounded-full hover:bg-emerald-500/10 transition-colors font-sans cursor-pointer"
             >
               Drop Files
             </a>
@@ -112,29 +144,29 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
         <div className="md:hidden mt-2 max-w-5xl mx-auto p-4 rounded-2xl bg-[#09090b]/95 border border-white/10 backdrop-blur-2xl shadow-xl pointer-events-auto space-y-2 animate-in fade-in slide-in-from-top-2 duration-150">
           <a
             href="#upload"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-semibold text-emerald-400 rounded-lg hover:bg-white/5"
+            onClick={(e) => handleNavClick(e, "#upload")}
+            className="block px-3 py-2 text-sm font-semibold text-emerald-400 rounded-lg hover:bg-white/5 cursor-pointer"
           >
             Drop Files & Print
           </a>
           <a
             href="#why-zdrop"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5"
+            onClick={(e) => handleNavClick(e, "#why-zdrop")}
+            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
           >
             Why ZDrop
           </a>
           <a
             href="#how-it-works"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5"
+            onClick={(e) => handleNavClick(e, "#how-it-works")}
+            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
           >
             How It Works
           </a>
           <a
             href="#faq"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5"
+            onClick={(e) => handleNavClick(e, "#faq")}
+            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
           >
             FAQ
           </a>
