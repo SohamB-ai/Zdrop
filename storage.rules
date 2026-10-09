@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /sessions/{sessionId}/{fileId} {
+      function session() { return firestore.get(/databases/(default)/documents/sessions/$(sessionId)).data; }
+      allow create: if request.auth != null && request.auth.uid == sessionId
+        && request.auth.token.uploader == true
+        && session().uploadSealed == false
+        && session().status == 'PENDING_UPLOAD' && session().purging == false
+        && request.time.toMillis() < session().expiresAt
+        && fileId in session().uploadSlots
+        && request.resource.size == session().uploadSlots[fileId].size
+        && request.resource.size > 0 && request.resource.size <= 25 * 1024 * 1024
+        && request.resource.cacheControl == 'no-store'
+        && request.resource.contentType == session().uploadSlots[fileId].type
+        && request.resource.contentType in ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
+      allow read, update, delete: if false;
+    }
+  }
+}

@@ -52,13 +52,9 @@ export function DropZone({
         "image/png",
       ];
 
-      const isAllowed =
-        allowedTypes.includes(file.type) ||
-        file.name.endsWith(".pdf") ||
-        file.name.endsWith(".docx") ||
-        file.name.endsWith(".jpg") ||
-        file.name.endsWith(".jpeg") ||
-        file.name.endsWith(".png");
+      const extensions: Record<string, string> = { pdf: allowedTypes[0], docx: allowedTypes[1], jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
+      const type = file.type || extensions[file.name.split('.').pop()?.toLowerCase() || ''];
+      const isAllowed = allowedTypes.includes(type) && file.size > 0;
 
       if (!isAllowed) {
         setErrorMessage(`"${file.name}" is not a supported format. Please use PDF, DOCX, JPG, or PNG.`);
@@ -71,16 +67,17 @@ export function DropZone({
       );
       if (isDuplicate) continue;
 
-      const previewUrl = file.type.startsWith("image/") || file.type.includes("pdf")
+      const previewUrl = type.startsWith("image/") || type.includes("pdf")
         ? URL.createObjectURL(file)
         : undefined;
 
       newFiles.push({
-        fileId: "file_" + Math.random().toString(36).substring(2, 9),
+        fileId: "file_" + crypto.randomUUID(),
         name: file.name,
         size: file.size,
-        type: file.type || "application/octet-stream",
-        pageCount: file.name.endsWith(".pdf") ? Math.floor(file.size / 200000) + 1 : undefined,
+        type,
+        file,
+        pageCount: type.startsWith("image/") ? 1 : undefined,
         previewUrl,
       });
     }
@@ -118,6 +115,8 @@ export function DropZone({
   };
 
   const handleRemove = (fileId: string) => {
+    const removed = files.find(f => f.fileId === fileId);
+    if (removed?.previewUrl) URL.revokeObjectURL(removed.previewUrl);
     const updated = files.filter((f) => f.fileId !== fileId);
     onFilesChange(updated);
     setErrorMessage(null);
@@ -137,6 +136,10 @@ export function DropZone({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inputRef.current?.click(); } }}
+          aria-label="Select documents"
           onClick={() => !disabled && inputRef.current?.click()}
           className={`relative border-2 border-dashed rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-colors ${
             isDragging

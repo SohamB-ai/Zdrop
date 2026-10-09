@@ -1,0 +1,1 @@
+{"indexes":[],"fieldOverrides":[{"collectionGroup":"rateLimits","fieldPath":"deleteAfter","ttl":true,"indexes":[]}]}

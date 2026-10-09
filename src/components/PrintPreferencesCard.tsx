@@ -41,7 +41,7 @@ export function PrintPreferencesCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+    <fieldset disabled={disabled} className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
         <SlidersHorizontal className="w-4 h-4 text-blue-600" />
@@ -153,6 +153,6 @@ export function PrintPreferencesCard({
           className="w-full h-10 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
         />
       </div>
-    </div>
+    </fieldset>
   );
 }

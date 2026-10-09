@@ -22,7 +22,7 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
           Files Permanently Destroyed
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 max-w-xs mx-auto">
-          Your documents have been printed and completely purged from storage. Zero files remain on any server or device.
+          {session?.deletionSource === "OPERATOR_PRINT" ? "The operator marked your job printed. Your uploaded files have been deleted from ZDrop storage." : session?.status === "EXPIRED" ? "Your session expired. Your uploaded files have been deleted from ZDrop storage." : "Your session was revoked. Your uploaded files have been deleted from ZDrop storage."}
         </p>
       </div>
 
@@ -51,12 +51,12 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
             </span>
           </div>
           <div>
-            <span className="text-slate-400 block">Cloud Retained:</span>
+            <span className="text-slate-400 block">Files Retained:</span>
             <span className="font-mono font-bold text-slate-800">0 Bytes</span>
           </div>
           <div>
-            <span className="text-slate-400 block">Residual Traces:</span>
-            <span className="font-semibold text-slate-800">None</span>
+            <span className="text-slate-400 block">Session Duration:</span>
+            <span className="font-semibold text-slate-800">{Math.max(0, Math.round(((session?.deletedAt || Date.now()) - (session?.createdAt || Date.now())) / 1000))} seconds</span>
           </div>
         </div>
       </div>

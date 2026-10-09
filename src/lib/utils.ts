@@ -21,12 +21,6 @@ export function formatTimeRemaining(seconds: number): string {
   return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
 
-export function generateOtp(): string {
-  // Generates 6-digit collision-resistant random string
-  const num = Math.floor(100000 + Math.random() * 900000);
-  return num.toString();
-}
-
 export function getFileCategory(mimeType: string): "pdf" | "docx" | "image" | "file" {
   if (mimeType.includes("pdf")) return "pdf";
   if (mimeType.includes("word") || mimeType.includes("officedocument")) return "docx";
