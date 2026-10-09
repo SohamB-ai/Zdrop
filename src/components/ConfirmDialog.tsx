@@ -43,11 +43,10 @@ export function ConfirmDialog({
     const overflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
     return () => { document.removeEventListener('keydown', keydown); document.body.style.overflow = overflow; previous?.focus(); };
   }, [isOpen, isConfirming, onCancel]);
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
         <motion.div
           ref={dialog}
           role="dialog"
@@ -89,6 +88,7 @@ export function ConfirmDialog({
           </div>
         </motion.div>
       </div>
+      )}
     </AnimatePresence>
   );
 }

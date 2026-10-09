@@ -2,9 +2,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Camera, X } from 'lucide-react';
 import type { IScannerControls } from '@zxing/browser';
-export function codeFromQr(value: string, origin: string): string | null {
+export function codeFromQr(value: string, origin?: string): string | null {
   if (/^\d{6}$/.test(value)) return value;
-  try { const url = new URL(value); const code = url.searchParams.get('code'); return url.origin === origin && url.pathname === '/kiosk' && code && /^\d{6}$/.test(code) ? code : null; } catch { return null; }
+  try {
+    const url = new URL(value);
+    const code = url.searchParams.get('code');
+    const isKioskPath = url.pathname === '/kiosk' || url.pathname.endsWith('/kiosk');
+    return isKioskPath && code && /^\d{6}$/.test(code) ? code : null;
+  } catch {
+    return null;
+  }
 }
 export function QrScanner({ onCode, disabled }: { onCode: (code: string) => void; disabled?: boolean }) {
   const [open, setOpen] = useState(false); const [error, setError] = useState('');

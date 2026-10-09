@@ -51,7 +51,7 @@ export function KioskJobConsole({
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); handlePrintClick(); } };
     window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
-  });
+  }, [selectedFile, onPrint]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
