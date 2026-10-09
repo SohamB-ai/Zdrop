@@ -480,21 +480,24 @@ export function WavesShaderBackground({ className }: WavesShaderBackgroundProps)
 
   return (
     <div
-      className={`fixed inset-0 pointer-events-none -z-20 overflow-hidden ${
+      className={`fixed inset-0 pointer-events-none -z-10 overflow-hidden ${
         className || ""
       }`}
       aria-hidden="true"
     >
       <canvas
         ref={canvasRef}
-        className="w-full h-full block opacity-75 dark:opacity-60 transition-opacity duration-700"
+        className="absolute inset-0 w-full h-full block"
         style={{
-          width: "100vw",
-          height: "100vh",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
         }}
       />
-      {/* Soft atmospheric overlay for high-contrast legibility */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/40 dark:from-[#090a0f]/40 dark:via-transparent dark:to-[#090a0f]/60 pointer-events-none" />
+      {/* Subtle technical dot matrix texture to enhance depth and prevent banding */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(15,23,42,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none" />
     </div>
   );
 }
