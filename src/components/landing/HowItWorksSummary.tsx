@@ -1,6 +1,7 @@
 "use client";
 
 import { UploadCloud, KeyRound, Printer, ArrowRight } from "lucide-react";
+import GradientBlobCard from "@/components/ui/gradient-bold-card";
 
 export function HowItWorksSummary() {
   const steps = [
@@ -46,27 +47,31 @@ export function HowItWorksSummary() {
           {steps.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <div
+              <GradientBlobCard
                 key={idx}
-                className="relative rounded-2xl border border-white/10 bg-[#121214]/90 p-6 sm:p-7 space-y-4 hover:border-emerald-500/40 transition-all duration-200"
+                className="h-full hover:border-emerald-500/40 transition-all duration-200"
               >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <Icon className="w-5 h-5" />
+                <div className="p-6 sm:p-7 space-y-4 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="text-xl font-bold font-mono text-zinc-600 dark:text-zinc-500">
+                        {item.step}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white font-sans">
+                      {item.title}
+                    </h3>
+
+                    <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
+                      {item.description}
+                    </p>
                   </div>
-                  <span className="text-xl font-bold font-mono text-zinc-700">
-                    {item.step}
-                  </span>
                 </div>
-
-                <h3 className="text-lg font-bold text-white font-sans">
-                  {item.title}
-                </h3>
-
-                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-                  {item.description}
-                </p>
-              </div>
+              </GradientBlobCard>
             );
           })}
         </div>
@@ -74,7 +79,7 @@ export function HowItWorksSummary() {
         <div className="mt-10 text-center">
           <a
             href="#upload"
-            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition"
+            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
           >
             <span>Ready to try? Drop files above</span>
             <ArrowRight className="w-3.5 h-3.5" />

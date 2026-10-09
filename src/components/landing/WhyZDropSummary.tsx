@@ -1,6 +1,7 @@
 "use client";
 
 import { ShieldAlert, Usb, Flame, CheckCircle2 } from "lucide-react";
+import GradientBlobCard from "@/components/ui/gradient-bold-card";
 
 export function WhyZDropSummary() {
   const pillars = [
@@ -49,32 +50,36 @@ export function WhyZDropSummary() {
           {pillars.map((pillar, idx) => {
             const Icon = pillar.icon;
             return (
-              <div
+              <GradientBlobCard
                 key={idx}
-                className="rounded-2xl border border-white/10 bg-[#121214]/90 p-6 sm:p-7 space-y-4 hover:border-emerald-500/40 transition-all duration-200"
+                className="h-full hover:border-emerald-500/40 transition-all duration-200"
               >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <Icon className="w-5 h-5" />
+                <div className="p-6 sm:p-7 space-y-4 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        {pillar.tag}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white font-sans">
+                      {pillar.title}
+                    </h3>
+
+                    <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
+                      {pillar.description}
+                    </p>
                   </div>
-                  <span className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    {pillar.tag}
-                  </span>
+
+                  <div className="pt-3 border-t border-white/5 flex items-center gap-2 text-xs font-medium text-emerald-300 font-sans">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>{pillar.highlight}</span>
+                  </div>
                 </div>
-
-                <h3 className="text-lg font-bold text-white font-sans">
-                  {pillar.title}
-                </h3>
-
-                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-                  {pillar.description}
-                </p>
-
-                <div className="pt-2 border-t border-white/5 flex items-center gap-2 text-xs font-medium text-emerald-300 font-sans">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>{pillar.highlight}</span>
-                </div>
-              </div>
+              </GradientBlobCard>
             );
           })}
         </div>

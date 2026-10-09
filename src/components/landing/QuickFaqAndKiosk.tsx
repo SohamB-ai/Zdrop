@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { HelpCircle, Monitor, ArrowRight, ShieldCheck } from "lucide-react";
+import GradientBlobCard from "@/components/ui/gradient-bold-card";
 
 export function QuickFaqAndKiosk() {
   const faqs = [
@@ -36,46 +37,50 @@ export function QuickFaqAndKiosk() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {faqs.map((faq, idx) => (
-              <div
+              <GradientBlobCard
                 key={idx}
-                className="rounded-2xl border border-white/10 bg-[#121214]/80 p-5 sm:p-6 space-y-2.5"
+                className="h-full hover:border-emerald-500/40 transition-all duration-200"
               >
-                <h3 className="text-sm font-bold text-white font-sans flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>{faq.q}</span>
-                </h3>
-                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-                  {faq.a}
-                </p>
-              </div>
+                <div className="p-5 sm:p-6 space-y-2.5 h-full">
+                  <h3 className="text-sm font-bold text-white font-sans flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{faq.q}</span>
+                  </h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                    {faq.a}
+                  </p>
+                </div>
+              </GradientBlobCard>
             ))}
           </div>
         </div>
 
-        {/* Operator Kiosk Banner */}
-        <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-[#121214] to-[#121214] p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_32px_rgba(34,197,94,0.15)]">
-          <div className="space-y-2 text-center md:text-left max-w-xl">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
-              <Monitor className="w-3.5 h-3.5" />
-              <span>For Print Shop & Counter Operators</span>
+        {/* Operator Kiosk Banner Card */}
+        <GradientBlobCard className="rounded-3xl border border-emerald-500/30">
+          <div className="p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left max-w-xl">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+                <Monitor className="w-3.5 h-3.5" />
+                <span>For Print Shop & Counter Operators</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl text-white font-normal font-instrument-serif">
+                Running a Xerox Counter or Copy Shop?
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-400 font-sans">
+                Enter customer PINs or scan QR codes to spool print files directly to your connected laser printers with zero manual downloading.
+              </p>
             </div>
-            <h3 className="text-2xl sm:text-3xl text-white font-normal font-instrument-serif">
-              Running a Xerox Counter or Copy Shop?
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-400 font-sans">
-              Enter customer PINs or scan QR codes to spool print files directly to your connected laser printers with zero manual downloading.
-            </p>
-          </div>
 
-          <Link
-            href="/kiosk"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-sm font-bold font-sans transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.4)] shrink-0"
-          >
-            <Monitor className="w-4 h-4" />
-            <span>Launch Operator Kiosk</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+            <Link
+              href="/kiosk"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-sm font-bold font-sans transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.4)] shrink-0 cursor-pointer"
+            >
+              <Monitor className="w-4 h-4" />
+              <span>Launch Operator Kiosk</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </GradientBlobCard>
       </div>
     </section>
   );

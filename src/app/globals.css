@@ -120,6 +120,29 @@
   animation: fadeSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
 }
 
+@keyframes blob {
+  0% {
+    transform: translate(-100%, -100%);
+  }
+  25% {
+    transform: translate(0%, -100%);
+  }
+  50% {
+    transform: translate(0%, 0%);
+  }
+  75% {
+    transform: translate(-100%, 0%);
+  }
+  100% {
+    transform: translate(-100%, -100%);
+  }
+}
+
+.animate-blob {
+  animation: blob 5s linear infinite;
+  will-change: transform;
+}
+
 /* Tabular figures for monospace numbers */
 .font-tabular {
   font-feature-settings: "tnum" 1;

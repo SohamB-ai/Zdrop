@@ -21,6 +21,7 @@ import { CodeView } from "@/views/CodeView";
 import { SuccessView } from "@/views/SuccessView";
 import { ZDropLogo } from "@/components/ZDropLogo";
 import { GridPulse } from "@/components/ui/grid-pulse";
+import GradientBlobCard from "@/components/ui/gradient-bold-card";
 import Link from "next/link";
 
 type StudentStep = "UPLOAD" | "CODE" | "SUCCESS";
@@ -164,74 +165,76 @@ export default function StudentPage() {
               ctaButtonHref="/kiosk"
               partnersTitle="Trusted across university xerox counters & campus copy centers"
             >
-              {/* Interactive Print Terminal Card */}
-              <div className="relative rounded-3xl border border-emerald-500/30 bg-[#121214]/95 p-5 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.85)] backdrop-blur-xl transition-colors">
-                <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider font-sans">
-                      Interactive Print Terminal
+              {/* Interactive Print Terminal Card with Gradient Blob Effect */}
+              <GradientBlobCard className="rounded-3xl border border-emerald-500/30">
+                <div className="p-5 sm:p-7">
+                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-xs font-bold text-white uppercase tracking-wider font-sans">
+                        Interactive Print Terminal
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono font-medium text-zinc-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                      Max 3 Files · 25MB
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono font-medium text-zinc-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
-                    Max 3 Files · 25MB
-                  </span>
+
+                  <form onSubmit={handleGenerateCode} className="space-y-4">
+                    {/* Step 1: Select Files */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
+                          Step 1: Select Files
+                        </label>
+                        <span className="text-[11px] text-emerald-400 font-mono">PDF, DOCX, JPG, PNG</span>
+                      </div>
+                      <DropZone files={files} onFilesChange={setFiles} disabled={isGenerating} />
+                    </div>
+
+                    {/* Step 2: Print Settings */}
+                    {files.length > 0 && (
+                      <div className="space-y-2 pt-1 animate-in fade-in duration-200">
+                        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono block">
+                          Step 2: Print Settings
+                        </label>
+                        <PrintPreferencesCard
+                          preferences={preferences}
+                          onChange={setPreferences}
+                          disabled={isGenerating}
+                        />
+                      </div>
+                    )}
+
+                    {!validation.success && (
+                      <p role="alert" className="text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 p-2.5 rounded-xl">
+                        {validation.error.issues[0].message}
+                      </p>
+                    )}
+
+                    {/* Submit Button */}
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={!canSubmit || isGenerating}
+                        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-30 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
+                      >
+                        <span>
+                          {isGenerating
+                            ? `Encrypting & Uploading… ${uploadProgress}%`
+                            : "Generate 6-Digit Access Code"}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-zinc-950" />
+                      </button>
+
+                      <p className="mt-3 text-[11px] text-zinc-400 text-center flex items-center justify-center gap-1.5 font-sans">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 inline" />
+                        <span>Dual-Purge: Permanently deleted upon print or after 15 mins</span>
+                      </p>
+                    </div>
+                  </form>
                 </div>
-
-                <form onSubmit={handleGenerateCode} className="space-y-4">
-                  {/* Step 1: Select Files */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
-                        Step 1: Select Files
-                      </label>
-                      <span className="text-[11px] text-emerald-400 font-mono">PDF, DOCX, JPG, PNG</span>
-                    </div>
-                    <DropZone files={files} onFilesChange={setFiles} disabled={isGenerating} />
-                  </div>
-
-                  {/* Step 2: Print Settings */}
-                  {files.length > 0 && (
-                    <div className="space-y-2 pt-1 animate-in fade-in duration-200">
-                      <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono block">
-                        Step 2: Print Settings
-                      </label>
-                      <PrintPreferencesCard
-                        preferences={preferences}
-                        onChange={setPreferences}
-                        disabled={isGenerating}
-                      />
-                    </div>
-                  )}
-
-                  {!validation.success && (
-                    <p role="alert" className="text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 p-2.5 rounded-xl">
-                      {validation.error.issues[0].message}
-                    </p>
-                  )}
-
-                  {/* Submit Button */}
-                  <div className="pt-2">
-                    <button
-                      type="submit"
-                      disabled={!canSubmit || isGenerating}
-                      className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-30 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
-                    >
-                      <span>
-                        {isGenerating
-                          ? `Encrypting & Uploading… ${uploadProgress}%`
-                          : "Generate 6-Digit Access Code"}
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-zinc-950" />
-                    </button>
-
-                    <p className="mt-3 text-[11px] text-zinc-400 text-center flex items-center justify-center gap-1.5 font-sans">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 inline" />
-                      <span>Dual-Purge: Permanently deleted upon print or after 15 mins</span>
-                    </p>
-                  </div>
-                </form>
-              </div>
+              </GradientBlobCard>
             </ResponsiveHeroBanner>
 
             {/* 2. Structured Summary: Why ZDrop (3 Core Pillars) */}
