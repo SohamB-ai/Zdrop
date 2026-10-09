@@ -83,7 +83,6 @@ export function KioskOtpInput({
   const handleKeypadPress = (val: string) => {
     if (onClearError) onClearError();
     if (val === "BACKSPACE") {
-      // Find last filled
       for (let i = 5; i >= 0; i--) {
         if (digits[i]) {
           const updated = [...digits];
@@ -102,7 +101,6 @@ export function KioskOtpInput({
       return;
     }
 
-    // Append to first empty slot
     const firstEmpty = digits.findIndex((d) => d === "");
     if (firstEmpty !== -1) {
       handleDigitChange(firstEmpty, val);
@@ -129,14 +127,14 @@ export function KioskOtpInput({
               onChange={(e) => handleDigitChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
               disabled={isLoading}
-              className={`w-8 min-[375px]:w-9 h-14 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
+              className={`w-9 min-[375px]:w-10 h-14 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
                 digit
-                  ? "border-blue-600 bg-white text-slate-900 shadow-xs"
-                  : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-2xs dark:border-cyan-500 dark:bg-[#161D2C] dark:text-cyan-300 dark:shadow-[0_0_12px_rgba(6,182,212,0.3)]"
+                  : "border-slate-300 bg-white text-slate-800 hover:border-slate-400 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-black/40 dark:text-slate-300 dark:hover:border-white/20 dark:focus:border-cyan-500 dark:focus:bg-[#161D2C] dark:focus:ring-4 dark:focus:ring-cyan-500/20"
               }`}
             />
             {idx === 2 && (
-              <span className="hidden min-[375px]:inline mx-1 text-slate-300 font-bold text-xl select-none">
+              <span className="hidden min-[375px]:inline mx-1 text-slate-400 dark:text-slate-600 font-bold text-xl select-none">
                 •
               </span>
             )}
@@ -146,8 +144,8 @@ export function KioskOtpInput({
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 text-xs text-red-800 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+        <div className="flex items-center gap-2 p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 rounded-xl">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -157,12 +155,12 @@ export function KioskOtpInput({
         type="button"
         onClick={() => isComplete && onSubmit(digits.join(""))}
         disabled={!isComplete || isLoading}
-        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-sm text-sm"
+        className="w-full h-13 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 dark:from-cyan-500 dark:via-sky-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-md dark:shadow-[0_0_20px_rgba(6,182,212,0.3)] text-sm font-display"
       >
         {isLoading ? (
           <>
             <RefreshCw className="w-4 h-4 animate-spin" />
-            <span>Resolving Code...</span>
+            <span>Resolving Code…</span>
           </>
         ) : (
           <>
@@ -174,8 +172,8 @@ export function KioskOtpInput({
 
       {/* On-screen Keypad for Touch Kiosks */}
       <div className="pt-2">
-        <p className="text-[11px] font-semibold text-slate-400 text-center uppercase tracking-wider mb-2 font-mono">
-          Touch Terminal Keypad
+        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-500 text-center uppercase tracking-wider mb-2 font-mono">
+          Counter Terminal Keypad
         </p>
         <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "CLEAR", "0", "BACKSPACE"].map(
@@ -185,12 +183,12 @@ export function KioskOtpInput({
                 type="button"
                 onClick={() => handleKeypadPress(key)}
                 disabled={isLoading}
-                className="h-12 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer shadow-2xs"
+                className="h-12 rounded-xl border border-slate-200 dark:border-white/10 bg-white hover:bg-slate-50 dark:bg-[#141926] dark:hover:bg-[#1a2133] text-slate-800 dark:text-slate-200 font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer shadow-2xs dark:shadow-sm"
               >
                 {key === "BACKSPACE" ? (
-                  <Delete className="w-5 h-5 text-slate-600" />
+                  <Delete className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 ) : key === "CLEAR" ? (
-                  <span className="text-xs text-red-600 font-semibold">C</span>
+                  <span className="text-xs text-rose-600 dark:text-rose-400 font-semibold font-mono">CLEAR</span>
                 ) : (
                   key
                 )}

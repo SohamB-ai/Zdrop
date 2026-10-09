@@ -26,20 +26,20 @@ export function NumericStepper({
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-white">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
+    <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-[#121622]/80 transition-colors">
+      <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 font-sans">{label}</span>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={handleDecrement}
           disabled={value <= min}
-          className="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none transition active:scale-[0.96] cursor-pointer"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1A202E] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-blue-400 dark:hover:border-cyan-500/40 disabled:opacity-30 disabled:pointer-events-none transition active:scale-[0.96] cursor-pointer shadow-2xs"
           aria-label="Decrease copies"
         >
-          <Minus className="w-4 h-4" />
+          <Minus className="w-3.5 h-3.5" />
         </button>
 
-        <div className="w-12 text-center font-bold text-base text-slate-900 font-mono font-tabular">
+        <div className="w-10 text-center font-bold text-sm sm:text-base text-slate-900 dark:text-white font-mono font-tabular">
           {value}
         </div>
 
@@ -47,10 +47,10 @@ export function NumericStepper({
           type="button"
           onClick={handleIncrement}
           disabled={value >= max}
-          className="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none transition active:scale-[0.96] cursor-pointer"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1A202E] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-blue-400 dark:hover:border-cyan-500/40 disabled:opacity-30 disabled:pointer-events-none transition active:scale-[0.96] cursor-pointer shadow-2xs"
           aria-label="Increase copies"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

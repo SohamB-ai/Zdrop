@@ -23,7 +23,7 @@ export function SegmentedControl({
 }: SegmentedControlProps) {
   return (
     <div
-      className={`relative flex bg-slate-100 p-1 rounded-lg border border-slate-200 ${className}`}
+      className={`relative flex bg-slate-100 dark:bg-[#121622] p-1 rounded-xl border border-slate-200 dark:border-white/10 transition-colors ${className}`}
       role="radiogroup"
     >
       {options.map((option) => {
@@ -35,20 +35,26 @@ export function SegmentedControl({
             role="radio"
             aria-checked={isSelected}
             onClick={() => onChange(option.id)}
-            className={`relative flex-1 py-2 px-3 text-xs sm:text-sm font-semibold text-center transition-colors duration-150 z-10 active:scale-[0.98] cursor-pointer rounded-md flex flex-col items-center justify-center ${
-              isSelected ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
+            className={`relative flex-1 py-2 px-3 text-xs sm:text-sm font-semibold text-center transition-colors duration-150 z-10 active:scale-[0.98] cursor-pointer rounded-lg flex flex-col items-center justify-center ${
+              isSelected
+                ? "text-blue-700 dark:text-white font-bold"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
             }`}
           >
             <span>{option.label}</span>
             {option.subLabel && (
-              <span className={`text-[10px] font-normal ${isSelected ? "text-slate-500" : "text-slate-400"}`}>
+              <span
+                className={`text-[10px] font-normal ${
+                  isSelected ? "text-blue-600 dark:text-cyan-300" : "text-slate-400 dark:text-slate-500"
+                }`}
+              >
                 {option.subLabel}
               </span>
             )}
             {isSelected && (
               <motion.div
                 layoutId="segmented-pill"
-                className="absolute inset-0 bg-white rounded-md shadow-sm border border-slate-200 -z-10"
+                className="absolute inset-0 bg-white dark:bg-[#1E2536] rounded-lg shadow-xs dark:shadow-sm border border-slate-200/80 dark:border-cyan-500/30 -z-10"
                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
               />
             )}
