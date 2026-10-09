@@ -129,12 +129,12 @@ export function KioskOtpInput({
               disabled={isLoading}
               className={`w-9 min-[375px]:w-10 h-14 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
                 digit
-                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-2xs dark:border-cyan-500 dark:bg-[#161D2C] dark:text-cyan-300 dark:shadow-[0_0_12px_rgba(6,182,212,0.3)]"
-                  : "border-slate-300 bg-white text-slate-800 hover:border-slate-400 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 dark:border-white/10 dark:bg-black/40 dark:text-slate-300 dark:hover:border-white/20 dark:focus:border-cyan-500 dark:focus:bg-[#161D2C] dark:focus:ring-4 dark:focus:ring-cyan-500/20"
+                  ? "border-emerald-500 bg-[#18181b] text-emerald-400 shadow-[0_0_12px_rgba(34,197,94,0.3)]"
+                  : "border-white/10 bg-[#09090b] text-white hover:border-white/20 focus:border-emerald-400 focus:bg-[#18181b] focus:ring-4 focus:ring-emerald-500/20"
               }`}
             />
             {idx === 2 && (
-              <span className="hidden min-[375px]:inline mx-1 text-slate-400 dark:text-slate-600 font-bold text-xl select-none">
+              <span className="hidden min-[375px]:inline mx-1 text-zinc-600 font-bold text-xl select-none">
                 •
               </span>
             )}
@@ -144,8 +144,8 @@ export function KioskOtpInput({
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 rounded-xl">
-          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+        <div className="flex items-center gap-2 p-3 text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 rounded-xl">
+          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -155,24 +155,24 @@ export function KioskOtpInput({
         type="button"
         onClick={() => isComplete && onSubmit(digits.join(""))}
         disabled={!isComplete || isLoading}
-        className="w-full h-13 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 dark:from-cyan-500 dark:via-sky-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-md dark:shadow-[0_0_20px_rgba(6,182,212,0.3)] text-sm font-display"
+        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
       >
         {isLoading ? (
           <>
-            <RefreshCw className="w-4 h-4 animate-spin" />
+            <RefreshCw className="w-4 h-4 animate-spin text-zinc-950" />
             <span>Resolving Code…</span>
           </>
         ) : (
           <>
             <span>Access Session Documents</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-zinc-950" />
           </>
         )}
       </button>
 
       {/* On-screen Keypad for Touch Kiosks */}
       <div className="pt-2">
-        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-500 text-center uppercase tracking-wider mb-2 font-mono">
+        <p className="text-[11px] font-semibold text-zinc-500 text-center uppercase tracking-wider mb-2 font-mono">
           Counter Terminal Keypad
         </p>
         <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
@@ -183,12 +183,12 @@ export function KioskOtpInput({
                 type="button"
                 onClick={() => handleKeypadPress(key)}
                 disabled={isLoading}
-                className="h-12 rounded-xl border border-slate-200 dark:border-white/10 bg-white hover:bg-slate-50 dark:bg-[#141926] dark:hover:bg-[#1a2133] text-slate-800 dark:text-slate-200 font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer shadow-2xs dark:shadow-sm"
+                className="h-12 rounded-xl border border-white/10 bg-[#18181b] hover:bg-[#27272a] hover:border-emerald-500/30 text-white font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer"
               >
                 {key === "BACKSPACE" ? (
-                  <Delete className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                  <Delete className="w-5 h-5 text-zinc-400" />
                 ) : key === "CLEAR" ? (
-                  <span className="text-xs text-rose-600 dark:text-rose-400 font-semibold font-mono">CLEAR</span>
+                  <span className="text-xs text-rose-400 font-semibold font-mono">CLEAR</span>
                 ) : (
                   key
                 )}

@@ -13,8 +13,6 @@ import { Navbar } from "@/components/Navbar";
 import { KioskEntryView } from "@/views/KioskEntryView";
 import { KioskJobConsole } from "@/components/KioskJobConsole";
 import { Footer } from "@/components/landing/Footer";
-import { WavesShaderBackground } from "@/components/WavesShaderBackground";
-
 
 function KioskContent() {
   const searchParams = useSearchParams();
@@ -79,22 +77,30 @@ function KioskContent() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col text-[var(--text-primary)] transition-colors duration-200 overflow-x-hidden">
-      {/* Animated WebGL "Waves" Shader Background */}
-      <WavesShaderBackground />
+    <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-hidden">
+      {/* Atmospheric Background Design from Instructions */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+          alt=""
+          className="w-full h-full object-cover opacity-20 filter contrast-125 brightness-90"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b] ring-1 ring-black/30" />
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
+      </div>
 
       <Navbar currentRole="kiosk" />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-28 pb-12 sm:pt-32">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-24 pb-12 sm:pt-28">
         {errorMessage && session && (
-          <p role="alert" className="p-3 mb-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs text-center">
+          <p role="alert" className="p-3 mb-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs text-center">
             {errorMessage}
           </p>
         )}
 
         {/* Success Toast */}
         {successToast && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold text-center max-w-md mx-auto shadow-sm dark:shadow-lg backdrop-blur-md">
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold text-center max-w-md mx-auto shadow-lg backdrop-blur-md">
             {successToast}
           </div>
         )}
@@ -142,7 +148,7 @@ function KioskContent() {
 
 export default function KioskPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Loading Kiosk Console…</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-zinc-400">Loading Kiosk Console…</div>}>
       <KioskContent />
     </Suspense>
   );

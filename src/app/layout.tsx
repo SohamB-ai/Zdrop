@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +15,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   display: "swap",
 });
-
 
 export const metadata: Metadata = {
   title: "ZDrop - Drop it. Print it. Done.",
@@ -51,15 +43,21 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
                 var stored = localStorage.getItem('zdrop-theme');
-                var isDark = stored ? stored === 'dark' : (stored === 'light' ? false : true);
+                var isDark = stored ? stored === 'dark' : true;
                 if (isDark) {
                   document.documentElement.classList.add('dark');
                   document.documentElement.classList.remove('light');
@@ -74,7 +72,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-[100dvh] bg-[var(--canvas)] text-[var(--text-primary)] font-sans antialiased selection:bg-blue-500/20 selection:text-blue-600 dark:selection:bg-cyan-500/20 dark:selection:text-cyan-300 transition-colors duration-200">
+      <body className="min-h-[100dvh] bg-[#09090b] text-[#fafafa] font-sans antialiased selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200">
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>

@@ -1,0 +1,86 @@
+"use client";
+
+import { UploadCloud, KeyRound, Printer, ArrowRight } from "lucide-react";
+
+export function HowItWorksSummary() {
+  const steps = [
+    {
+      step: "01",
+      icon: UploadCloud,
+      title: "Drop & Configure",
+      description:
+        "Select your PDFs, DOCX, or images on your phone. Choose copies, color mode, and double-sided preferences in 2 taps.",
+    },
+    {
+      step: "02",
+      icon: KeyRound,
+      title: "Show 6-Digit PIN",
+      description:
+        "An ephemeral 6-digit PIN and QR code are instantly generated. Speak the PIN across the counter or flash your screen.",
+    },
+    {
+      step: "03",
+      icon: Printer,
+      title: "Print & Disappear",
+      description:
+        "The operator spools your job instantly. As soon as printing finishes, your documents are permanently wiped with zero trace.",
+    },
+  ];
+
+  return (
+    <section className="py-16 sm:py-24 border-t border-white/5 relative" id="how-it-works">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+            <span>Simple 3-Step Flow</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl text-white font-normal font-instrument-serif tracking-tight">
+            How ZDrop Works in Practice
+          </h2>
+          <p className="mt-3 text-sm text-zinc-400 font-sans">
+            From file selection on your phone to physical printed sheets in under 15 seconds.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          {steps.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={idx}
+                className="relative rounded-2xl border border-white/10 bg-[#121214]/90 p-6 sm:p-7 space-y-4 hover:border-emerald-500/40 transition-all duration-200"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <span className="text-xl font-bold font-mono text-zinc-700">
+                    {item.step}
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold text-white font-sans">
+                  {item.title}
+                </h3>
+
+                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                  {item.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-10 text-center">
+          <a
+            href="#upload"
+            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition"
+          >
+            <span>Ready to try? Drop files above</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
