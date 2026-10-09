@@ -195,12 +195,12 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
         layout
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
         aria-label="Primary Navigation"
-        className="pointer-events-auto relative flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-2 rounded-full border border-slate-200/90 dark:border-white/12 bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.65),0_2px_14px_rgba(6,182,212,0.15)] transition-colors duration-200 max-w-[calc(100vw-1.5rem)] overflow-visible"
+        className="pointer-events-auto relative flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2.5 rounded-full border border-slate-200/90 dark:border-white/12 bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.65),0_2px_14px_rgba(6,182,212,0.15)] transition-colors duration-200 max-w-[calc(100vw-1.5rem)] overflow-visible"
       >
         {/* Brand with Logo */}
         <Link
           href="/"
-          className="flex items-center pl-1 sm:pl-2 pr-2 select-none group"
+          className="flex items-center pl-1 sm:pl-2 pr-1 select-none group shrink-0"
           aria-label="ZDrop Home"
         >
           <ZDropLogo size="md" />
@@ -209,18 +209,18 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
         {/* Section Navigation Icons (Desktop) */}
         {currentRole === "student" && (
           <>
-            <div className="h-6 w-px bg-slate-200 dark:bg-white/10 mx-1 hidden md:block" />
-            <div className="hidden md:flex items-center gap-1">
+            <div className="h-6 w-px bg-slate-200/90 dark:bg-white/10 mx-1 sm:mx-2 hidden md:block shrink-0" />
+            <div className="hidden md:flex items-center gap-1.5 sm:gap-2">
               {sectionLinks.map(renderNavButton)}
             </div>
           </>
         )}
 
         {/* Action Controls Divider */}
-        <div className="h-6 w-px bg-slate-200 dark:bg-white/10 mx-1" />
+        <div className="h-6 w-px bg-slate-200/90 dark:bg-white/10 mx-1 sm:mx-2 shrink-0" />
 
         {/* Action Controls Icons */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {currentRole === "student"
             ? actionLinks.map(renderNavButton)
             : kioskLinks.map(renderNavButton)}
