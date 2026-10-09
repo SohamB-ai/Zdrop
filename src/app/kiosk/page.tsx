@@ -85,7 +85,7 @@ function KioskContent() {
 
       <Navbar currentRole="kiosk" />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-24 pb-12 sm:pt-28">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-28 pb-12 sm:pt-32">
         {errorMessage && session && (
           <p role="alert" className="p-3 mb-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs text-center">
             {errorMessage}

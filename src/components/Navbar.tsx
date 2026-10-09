@@ -96,15 +96,15 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
     const Icon = item.icon;
 
     const baseClass = item.highlight
-      ? `relative h-11 rounded-full px-3.5 flex items-center justify-center transition-all duration-200 select-none active:scale-95 cursor-pointer ${
+      ? `relative h-11 sm:h-12 rounded-2xl px-4 flex items-center justify-center transition-all duration-200 select-none active:scale-95 cursor-pointer ${
           isHovered
             ? "bg-blue-500 dark:bg-cyan-400 text-white shadow-md dark:shadow-[0_0_20px_rgba(6,182,212,0.45)]"
             : "bg-blue-600 dark:bg-cyan-500 text-white shadow-sm dark:shadow-[0_0_14px_rgba(6,182,212,0.3)]"
         }`
-      : `relative h-11 rounded-full px-3 flex items-center justify-center transition-all duration-200 select-none active:scale-95 cursor-pointer ${
+      : `relative h-11 sm:h-12 rounded-2xl px-3.5 flex items-center justify-center transition-all duration-200 select-none active:scale-95 cursor-pointer ${
           isHovered
             ? "bg-blue-50 dark:bg-white/10 text-blue-600 dark:text-cyan-300 shadow-xs"
-            : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+            : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5"
         }`;
 
     const content = (
@@ -189,50 +189,47 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
   };
 
   return (
-    <header className="fixed top-3.5 sm:top-5 inset-x-0 z-50 flex justify-center pointer-events-none px-3 sm:px-4">
-      {/* Floating Pill Bubble Navbar Container */}
-      <motion.nav
-        layout
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        aria-label="Primary Navigation"
-        className="pointer-events-auto relative flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2.5 rounded-full border border-slate-200/90 dark:border-white/12 bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.1),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.65),0_2px_14px_rgba(6,182,212,0.15)] transition-colors duration-200 max-w-[calc(100vw-1.5rem)] overflow-visible"
-      >
-        {/* Brand with Logo */}
-        <Link
-          href="/"
-          className="flex items-center pl-1 sm:pl-2 pr-1 select-none group shrink-0"
-          aria-label="ZDrop Home"
-        >
-          <ZDropLogo size="md" />
-        </Link>
+    <header className="fixed top-0 inset-x-0 z-50 w-full border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#070b14]/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between gap-4">
+        {/* Left: Brand Icon */}
+        <div className="flex items-center shrink-0">
+          <Link
+            href="/"
+            className="flex items-center p-2 rounded-2xl hover:bg-slate-100/60 dark:hover:bg-white/5 transition-all select-none group"
+            aria-label="ZDrop Home"
+          >
+            <ZDropLogo size="md" showText={false} />
+          </Link>
+        </div>
 
-        {/* Section Navigation Icons (Desktop) */}
-        {currentRole === "student" && (
-          <>
-            <div className="h-6 w-px bg-slate-200/90 dark:bg-white/10 mx-1 sm:mx-2 hidden md:block shrink-0" />
-            <div className="hidden md:flex items-center gap-1.5 sm:gap-2">
+        {/* Middle: Page Section Icons */}
+        <nav
+          aria-label="Page Sections"
+          className="flex items-center justify-center flex-1 max-w-xl mx-auto"
+        >
+          {currentRole === "student" && (
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 overflow-x-auto no-scrollbar py-1">
               {sectionLinks.map(renderNavButton)}
             </div>
-          </>
-        )}
+          )}
+        </nav>
 
-        {/* Action Controls Divider */}
-        <div className="h-6 w-px bg-slate-200/90 dark:bg-white/10 mx-1 sm:mx-2 shrink-0" />
-
-        {/* Action Controls Icons */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right: Rest of Icons & Action Buttons */}
+        <div className="flex items-center justify-end gap-2 sm:gap-3 shrink-0">
           {currentRole === "student"
             ? actionLinks.map(renderNavButton)
             : kioskLinks.map(renderNavButton)}
 
-          {/* Theme Toggle (With Smooth Hover Extension) */}
+          <div className="h-6 w-px bg-slate-200/80 dark:bg-white/10 mx-1 shrink-0" />
+
+          {/* Theme Toggle */}
           <ThemeToggle
             isHovered={hoveredKey === "theme"}
             onHoverStart={() => setHoveredKey("theme")}
             onHoverEnd={() => setHoveredKey(null)}
           />
         </div>
-      </motion.nav>
+      </div>
     </header>
   );
 }

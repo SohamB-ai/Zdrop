@@ -113,7 +113,7 @@ export default function StudentPage() {
 
       <Navbar currentRole="student" />
 
-      <main className="flex-1 pt-20 sm:pt-24">
+      <main className="flex-1 pt-24 sm:pt-28">
         {error && (
           <div className="max-w-md mx-auto my-4 px-4">
             <p
