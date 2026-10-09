@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDown, HelpCircle, ShieldCheck } from "lucide-react";
+import HolographicCard from "@/components/ui/holographic-card";
+
 
 export function FaqSection() {
   const faqs = [
@@ -70,8 +72,9 @@ export function FaqSection() {
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <div
+              <HolographicCard
                 key={idx}
+                intensity={22}
                 className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121622]/80 shadow-xs dark:shadow-none backdrop-blur-md overflow-hidden transition-all duration-200"
               >
                 <button
@@ -99,13 +102,16 @@ export function FaqSection() {
                     {faq.answer}
                   </div>
                 )}
-              </div>
+              </HolographicCard>
             );
           })}
         </div>
 
         {/* Support Help Strip */}
-        <div className="mt-12 p-5 rounded-2xl border border-blue-200 dark:border-cyan-500/20 bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/80 dark:from-cyan-950/20 dark:via-[#141926] dark:to-blue-950/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-xs dark:shadow-none transition-colors">
+        <HolographicCard
+          intensity={25}
+          className="mt-12 p-5 rounded-2xl border border-blue-200 dark:border-cyan-500/20 bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/80 dark:from-cyan-950/20 dark:via-[#141926] dark:to-blue-950/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-xs dark:shadow-none transition-colors"
+        >
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <div>
@@ -121,7 +127,7 @@ export function FaqSection() {
           >
             GitHub Repository →
           </a>
-        </div>
+        </HolographicCard>
       </div>
     </section>
   );

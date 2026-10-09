@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   Flame,
 } from "lucide-react";
+import HolographicCard from "@/components/ui/holographic-card";
+
 
 export function SolutionFeaturesSection() {
   const features = [
@@ -237,8 +239,9 @@ export function SolutionFeaturesSection() {
           {features.map((feat) => {
             const Icon = feat.icon;
             return (
-              <div
+              <HolographicCard
                 key={feat.id}
+                intensity={12}
                 className="group relative rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-[#141926]/90 dark:to-[#0D1018]/90 p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:border-blue-400 dark:hover:border-cyan-500/30 transition-all duration-300"
               >
                 {/* Glow hover accent */}
@@ -270,7 +273,7 @@ export function SolutionFeaturesSection() {
                 <div className="relative z-10 pt-5 mt-5 border-t border-slate-200 dark:border-white/10">
                   {feat.visual}
                 </div>
-              </div>
+              </HolographicCard>
             );
           })}
         </div>

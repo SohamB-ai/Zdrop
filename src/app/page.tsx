@@ -19,6 +19,8 @@ import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/landing/Footer";
 import { CodeView } from "@/views/CodeView";
 import { SuccessView } from "@/views/SuccessView";
+import { WavesShaderBackground } from "@/components/WavesShaderBackground";
+
 
 type StudentStep = "UPLOAD" | "CODE" | "SUCCESS";
 
@@ -106,8 +108,12 @@ export default function StudentPage() {
 
   return (
     <div className="relative min-h-[100dvh] flex flex-col bg-[var(--canvas)] text-[var(--text-primary)] transition-colors duration-200 overflow-x-hidden">
+      {/* Animated WebGL "Waves" Shader Background */}
+      <WavesShaderBackground />
+
       {/* Dynamic Multi-Stop Atmospheric Gradient Background Combo */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+
         {/* Upper Celestial Aurora (Electric Blue, Radiant Cyan & Celestial Indigo) */}
         <div className="absolute -top-[15%] left-1/2 -translate-x-1/2 w-[1400px] h-[750px] rounded-full blur-[140px] opacity-75 dark:opacity-45 bg-gradient-to-tr from-blue-500/25 via-cyan-400/30 to-indigo-500/20 dark:from-blue-600/30 dark:via-cyan-500/25 dark:to-indigo-600/20" />
 

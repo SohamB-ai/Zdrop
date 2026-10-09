@@ -5,6 +5,7 @@ import { ArrowRight, ShieldCheck, Zap, Lock, Clock } from "lucide-react";
 import { FileMetadata, PrintPreferences, PrintPreferencesSchema } from "@/lib/types";
 import { DropZone } from "@/components/DropZone";
 import { PrintPreferencesCard } from "@/components/PrintPreferencesCard";
+import HolographicCard from "@/components/ui/holographic-card";
 
 interface HeroSectionProps {
   onGenerateCode: (files: FileMetadata[], preferences: PrintPreferences) => void;
@@ -65,29 +66,38 @@ export function HeroSection({
 
             {/* 3 Core Trust Pillars Badges */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs">
+              <HolographicCard
+                intensity={16}
+                className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs"
+              >
                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1">
                   <Lock className="w-4 h-4" />
                   <span className="text-xs font-bold font-display">100% Anonymous</span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Zero phone numbers, zero emails, zero accounts needed.</p>
-              </div>
+              </HolographicCard>
 
-              <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs">
+              <HolographicCard
+                intensity={16}
+                className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs"
+              >
                 <div className="flex items-center gap-2 text-blue-600 dark:text-cyan-400 mb-1">
                   <ShieldCheck className="w-4 h-4" />
                   <span className="text-xs font-bold font-display">Dual-Trigger Purge</span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Instant wipe on print + 15-minute server TTL failsafe.</p>
-              </div>
+              </HolographicCard>
 
-              <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs">
+              <HolographicCard
+                intensity={16}
+                className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#121622]/70 backdrop-blur-md shadow-2xs"
+              >
                 <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 mb-1">
                   <Clock className="w-4 h-4" />
                   <span className="text-xs font-bold font-display">Zero Queue Lag</span>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Preset preferences prevent verbal misprints at counter.</p>
-              </div>
+              </HolographicCard>
             </div>
 
             {/* Quick Navigation Anchor Guide */}
@@ -107,7 +117,10 @@ export function HeroSection({
 
           {/* Right Column: Live, Interactive Drop & Preferences Widget */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl border border-slate-200/90 dark:border-white/15 bg-white dark:bg-gradient-to-b dark:from-[#141926]/95 dark:to-[#0E121B]/95 p-5 sm:p-7 shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-colors">
+            <HolographicCard
+              intensity={28}
+              className="relative rounded-3xl border border-slate-200/90 dark:border-white/15 bg-white dark:bg-gradient-to-b dark:from-[#141926]/95 dark:to-[#0E121B]/95 p-5 sm:p-7 shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-colors"
+            >
               {/* Card Header Strip */}
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-white/10">
                 <div className="flex items-center gap-2">
@@ -174,7 +187,7 @@ export function HeroSection({
                   </p>
                 </div>
               </form>
-            </div>
+            </HolographicCard>
           </div>
         </div>
       </div>

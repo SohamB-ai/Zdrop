@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageSquareOff, Usb, AlertTriangle, FileWarning, Skull, ShieldAlert } from "lucide-react";
+import HolographicCard from "@/components/ui/holographic-card";
 
 export function ProblemSection() {
   const problems = [
@@ -96,7 +97,7 @@ export function ProblemSection() {
           {problems.map((problem, idx) => {
             const Icon = problem.icon;
             return (
-              <div
+              <HolographicCard
                 key={idx}
                 className="relative rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-[#141926]/90 dark:to-[#0C0F17]/90 p-7 flex flex-col justify-between overflow-hidden shadow-md dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] group hover:border-slate-300 dark:hover:border-white/20 transition-all duration-300"
               >
@@ -136,7 +137,7 @@ export function ProblemSection() {
                     <span className="truncate">{problem.visualBadge}</span>
                   </div>
                 </div>
-              </div>
+              </HolographicCard>
             );
           })}
         </div>
@@ -158,8 +159,9 @@ export function ProblemSection() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 w-full lg:w-auto">
               {costStats.map((stat, idx) => (
-                <div
+                <HolographicCard
                   key={idx}
+                  intensity={18}
                   className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-center space-y-1 shadow-2xs dark:shadow-none"
                 >
                   <div className="text-2xl sm:text-3xl font-black font-display tracking-tight bg-gradient-to-r from-rose-600 to-amber-600 dark:from-rose-400 dark:to-amber-300 bg-clip-text text-transparent">
@@ -171,7 +173,7 @@ export function ProblemSection() {
                   <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-snug line-clamp-2">
                     {stat.detail}
                   </div>
-                </div>
+                </HolographicCard>
               ))}
             </div>
           </div>
@@ -180,3 +182,4 @@ export function ProblemSection() {
     </section>
   );
 }
+

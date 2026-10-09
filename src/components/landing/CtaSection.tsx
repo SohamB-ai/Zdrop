@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUp, Monitor, ShieldCheck, Zap } from "lucide-react";
+import HolographicCard from "@/components/ui/holographic-card";
 
 export function CtaSection() {
   const scrollToUpload = () => {
@@ -18,7 +19,10 @@ export function CtaSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-indigo-500/10 dark:from-cyan-500/10 dark:via-sky-500/10 dark:to-blue-500/10 blur-3xl pointer-events-none -z-10 rounded-full" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-        <div className="relative rounded-3xl border border-blue-200 dark:border-cyan-500/20 bg-gradient-to-b from-blue-50/70 via-white to-sky-50/70 dark:from-[#131927] dark:via-[#0e1320] dark:to-[#080b12] p-8 sm:p-14 text-center overflow-hidden shadow-xl dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-colors">
+        <HolographicCard
+          intensity={30}
+          className="relative rounded-3xl border border-blue-200 dark:border-cyan-500/20 bg-gradient-to-b from-blue-50/70 via-white to-sky-50/70 dark:from-[#131927] dark:via-[#0e1320] dark:to-[#080b12] p-8 sm:p-14 text-center overflow-hidden shadow-xl dark:shadow-[0_16px_64px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-colors"
+        >
           {/* Top highlight pill */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 dark:bg-cyan-950/80 border border-blue-200 dark:border-cyan-500/40 text-blue-800 dark:text-cyan-300 text-xs font-semibold mb-6 shadow-2xs">
             <Zap className="w-3.5 h-3.5 text-blue-600 dark:text-cyan-400" />
@@ -72,7 +76,7 @@ export function CtaSection() {
               15-Minute Instant Shred
             </span>
           </div>
-        </div>
+        </HolographicCard>
       </div>
     </section>
   );

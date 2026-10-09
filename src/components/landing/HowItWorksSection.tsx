@@ -1,6 +1,7 @@
 "use client";
 
 import { UploadCloud, Hash, ScanLine, Trash2, ArrowRight, ShieldCheck, Check } from "lucide-react";
+import HolographicCard from "@/components/ui/holographic-card";
 
 export function HowItWorksSection() {
   const steps = [
@@ -76,8 +77,9 @@ export function HowItWorksSection() {
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <div
+              <HolographicCard
                 key={step.number}
+                intensity={14}
                 className="relative rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gradient-to-b dark:from-[#141926]/90 dark:to-[#0E121B]/90 p-6 flex flex-col justify-between overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] group hover:border-blue-400 dark:hover:border-cyan-500/30 transition-all duration-300"
               >
                 {/* Step Top Bar */}
@@ -118,7 +120,7 @@ export function HowItWorksSection() {
                     <span className="text-[10px] text-slate-500">Step {step.number}</span>
                   </div>
                 </div>
-              </div>
+              </HolographicCard>
             );
           })}
         </div>
