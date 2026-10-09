@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ArrowUpRight, ArrowRight, Play, Menu, X } from "lucide-react";
 import { ZDropLogo } from "@/components/ZDropLogo";
+import { GlowingArcBackground } from "@/components/landing/GlowingArcBackground";
 
 interface NavLink {
   label: string;
@@ -19,6 +20,8 @@ interface Partner {
 interface ResponsiveHeroBannerProps {
   logoUrl?: string;
   backgroundImageUrl?: string;
+  colorScheme?: "emerald" | "amber";
+  customBackground?: React.ReactNode;
   navLinks?: NavLink[];
   ctaButtonText?: string;
   ctaButtonHref?: string;
@@ -38,7 +41,9 @@ interface ResponsiveHeroBannerProps {
 
 const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   logoUrl,
-  backgroundImageUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+  backgroundImageUrl,
+  colorScheme = "emerald",
+  customBackground,
   navLinks = [
     { label: "Home", href: "#", isActive: true },
     { label: "Why ZDrop", href: "#why-zdrop" },
@@ -90,14 +95,21 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
 
   return (
     <section className="w-full isolate min-h-screen overflow-hidden relative bg-[#09090b]">
-      {/* Background image overlay */}
-      <img
-        src={backgroundImageUrl}
-        alt=""
-        className="w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0 opacity-25 filter contrast-125 brightness-90 pointer-events-none"
-      />
-      <div className="pointer-events-none absolute inset-0 ring-1 ring-black/30 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b]" />
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
+      {/* Animated Glowing Arc Background */}
+      {customBackground ? (
+        customBackground
+      ) : backgroundImageUrl ? (
+        <>
+          <img
+            src={backgroundImageUrl}
+            alt=""
+            className="w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0 opacity-25 filter contrast-125 brightness-90 pointer-events-none"
+          />
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-black/30 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b]" />
+        </>
+      ) : (
+        <GlowingArcBackground colorScheme={colorScheme} />
+      )}
 
       {/* Header bar */}
       <header className="z-20 xl:top-4 relative">

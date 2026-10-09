@@ -188,6 +188,66 @@
   opacity: 1;
 }
 
+/* Glowing Arc Background Animations */
+@keyframes arc-breathe {
+  0%, 100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 24px rgba(1, 186, 87, 0.45));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 48px rgba(74, 222, 128, 0.75));
+  }
+}
+
+@keyframes photon-stream {
+  0% {
+    stroke-dashoffset: 2400;
+  }
+  100% {
+    stroke-dashoffset: -400;
+  }
+}
+
+@keyframes flare-pulse {
+  0%, 100% {
+    transform: scale(1) translate3d(0, 0, 0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.08) translate3d(8px, -6px, 0);
+    opacity: 0.95;
+  }
+}
+
+@keyframes stardust-drift {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-40px) scale(1.2);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.animate-arc-breathe {
+  animation: arc-breathe 6s ease-in-out infinite;
+}
+
+.animate-flare-pulse {
+  animation: flare-pulse 8s ease-in-out infinite;
+}
+
+.animate-photon-stream {
+  stroke-dasharray: 260 2200;
+  animation: photon-stream 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

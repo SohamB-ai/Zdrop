@@ -121,15 +121,11 @@ export default function StudentPage() {
 
   return (
     <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-hidden">
-      {/* Global Atmospheric Background */}
+      {/* Global Atmospheric Ambient Mesh */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
-        <img
-          src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
-          alt=""
-          className="w-full h-full object-cover opacity-20 filter contrast-125 brightness-90"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b] ring-1 ring-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-[#09090b] to-[#040605]" />
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-[600px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full" />
       </div>
 
       {/* Global Error Banner */}
