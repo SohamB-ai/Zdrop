@@ -20,7 +20,7 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
 
       {/* Headlines */}
       <div className="space-y-2">
-        <h2 className="text-3xl sm:text-4xl font-normal text-zinc-900 dark:text-white tracking-tight font-instrument-serif">
+        <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight font-sans">
           Files Permanently Destroyed
         </h2>
         <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 max-w-sm mx-auto font-sans leading-relaxed">

@@ -38,7 +38,7 @@ export function WhyZDropSummary() {
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-3">
             <span>The ZDrop Advantage</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-normal font-instrument-serif tracking-tight">
+          <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
             Why Campus Counters Switched to ZDrop
           </h2>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 font-sans">

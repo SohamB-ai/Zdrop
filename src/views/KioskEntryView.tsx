@@ -26,7 +26,7 @@ export function KioskEntryView({
           <span>Operator Counter Station</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-normal text-zinc-900 dark:text-white tracking-tight font-instrument-serif">
+        <h1 className="text-3xl sm:text-5xl font-bold text-zinc-900 dark:text-white tracking-tight font-sans">
           Enter Customer Access Code
         </h1>
 

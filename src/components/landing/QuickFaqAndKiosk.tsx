@@ -30,7 +30,7 @@ export function QuickFaqAndKiosk() {
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Frequently Asked Questions</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-normal font-instrument-serif tracking-tight">
+            <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
               Essential Answers, Zero Fluff
             </h2>
           </div>
@@ -63,7 +63,7 @@ export function QuickFaqAndKiosk() {
                 <Monitor className="w-3.5 h-3.5" />
                 <span>For Print Shop & Counter Operators</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-normal font-instrument-serif">
+              <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
                 Running a Xerox Counter or Copy Shop?
               </h3>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-sans">
