@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { ZDropLogo } from "./ZDropLogo";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavbarProps {
   currentRole?: "student" | "kiosk";
@@ -48,8 +49,8 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
   };
 
   return (
-    <header className="fixed top-3 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-5 py-2.5 rounded-full bg-[#09090b]/85 border border-white/10 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.7)] pointer-events-auto">
+    <header className="fixed top-3 inset-x-0 z-[100] px-4 sm:px-6 pointer-events-none">
+      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-5 py-2.5 rounded-full bg-white/85 dark:bg-[#09090b]/85 border border-zinc-200/80 dark:border-white/10 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.7)] pointer-events-auto transition-colors">
         {/* Brand Logo */}
         <Link
           href="/"
@@ -61,32 +62,32 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
 
         {/* Center: Section Links (Student view) */}
         {currentRole === "student" && (
-          <nav aria-label="Page Sections" className="hidden md:flex items-center gap-1 rounded-full bg-white/5 px-2 py-1 border border-white/10 backdrop-blur">
+          <nav aria-label="Page Sections" className="hidden md:flex items-center gap-1 rounded-full bg-zinc-100/80 dark:bg-white/5 px-2 py-1 border border-zinc-200/60 dark:border-white/10 backdrop-blur">
             <a
               href="#why-zdrop"
               onClick={(e) => handleNavClick(e, "#why-zdrop")}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-full hover:bg-zinc-200/60 dark:hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               Why ZDrop
             </a>
             <a
               href="#how-it-works"
               onClick={(e) => handleNavClick(e, "#how-it-works")}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-full hover:bg-zinc-200/60 dark:hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               How It Works
             </a>
             <a
               href="#faq"
               onClick={(e) => handleNavClick(e, "#faq")}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/5 transition-colors font-sans cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-full hover:bg-zinc-200/60 dark:hover:bg-white/5 transition-colors font-sans cursor-pointer"
             >
               FAQ
             </a>
             <a
               href="#upload"
               onClick={(e) => handleNavClick(e, "#upload")}
-              className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 rounded-full hover:bg-emerald-500/10 transition-colors font-sans cursor-pointer"
+              className="px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-full hover:bg-emerald-500/10 transition-colors font-sans cursor-pointer"
             >
               Drop Files
             </a>
@@ -95,6 +96,9 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
+          {/* Theme Toggle Button */}
+          <ThemeToggle />
+
           {currentRole === "student" ? (
             <>
               <a
@@ -102,7 +106,7 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub Repository"
-                className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Github className="w-4 h-4" />
               </a>
@@ -130,7 +134,7 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
           {currentRole === "student" && (
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition"
+              className="md:hidden inline-flex items-center justify-center w-8 h-8 rounded-full text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -141,49 +145,53 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 max-w-5xl mx-auto p-4 rounded-2xl bg-[#09090b]/95 border border-white/10 backdrop-blur-2xl shadow-xl pointer-events-auto space-y-2 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="md:hidden mt-2 max-w-5xl mx-auto p-4 rounded-2xl bg-white/95 dark:bg-[#09090b]/95 border border-zinc-200 dark:border-white/10 backdrop-blur-2xl shadow-xl pointer-events-auto space-y-2 animate-in fade-in slide-in-from-top-2 duration-150">
           <a
             href="#upload"
             onClick={(e) => handleNavClick(e, "#upload")}
-            className="block px-3 py-2 text-sm font-semibold text-emerald-400 rounded-lg hover:bg-white/5 cursor-pointer"
+            className="block px-3 py-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 cursor-pointer"
           >
             Drop Files & Print
           </a>
           <a
             href="#why-zdrop"
             onClick={(e) => handleNavClick(e, "#why-zdrop")}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
+            className="block px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 cursor-pointer"
           >
             Why ZDrop
           </a>
           <a
             href="#how-it-works"
             onClick={(e) => handleNavClick(e, "#how-it-works")}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
+            className="block px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 cursor-pointer"
           >
             How It Works
           </a>
           <a
             href="#faq"
             onClick={(e) => handleNavClick(e, "#faq")}
-            className="block px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5 cursor-pointer"
+            className="block px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 cursor-pointer"
           >
             FAQ
           </a>
           <Link
             href="/kiosk"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between px-3 py-2 text-sm font-medium text-zinc-300 rounded-lg hover:bg-white/5"
+            className="flex items-center justify-between px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5"
           >
             <span>Operator Kiosk Mode</span>
-            <ArrowRight className="w-4 h-4 text-emerald-400" />
+            <ArrowRight className="w-4 h-4 text-emerald-500" />
           </Link>
+          <div className="pt-2 border-t border-zinc-200 dark:border-white/10 flex items-center justify-between px-3">
+            <span className="text-xs text-zinc-500">Theme</span>
+            <ThemeToggle />
+          </div>
           <a
             href="https://github.com/SohamB-ai/Zdrop"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-400 rounded-lg hover:bg-white/5"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5"
           >
             <Github className="w-4 h-4" />
             <span>GitHub Repository</span>

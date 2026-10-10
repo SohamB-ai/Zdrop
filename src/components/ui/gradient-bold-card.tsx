@@ -76,7 +76,7 @@ const GradientBlobCard: React.FC<GradientBlobCardProps> = ({
   // When used to wrap cards across the app:
   return (
     <div
-      className={`relative rounded-2xl overflow-hidden shadow-[20px_20px_60px_rgba(0,0,0,0.5)] dark:shadow-[20px_20px_60px_#09090b,-20px_-20px_60px_#18181b] border border-white/10 group ${className}`}
+      className={`relative rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[20px_20px_60px_#09090b,-20px_-20px_60px_#18181b] border border-zinc-200 dark:border-white/10 group ${className}`}
       {...props}
     >
       {/* Animated Gradient Blob */}
@@ -86,7 +86,7 @@ const GradientBlobCard: React.FC<GradientBlobCardProps> = ({
 
       {/* Glassy Background layer */}
       <div
-        className={`absolute inset-[3px] bg-white/95 dark:bg-[#121214]/90 backdrop-blur-[24px] rounded-[inherit] outline outline-1 outline-white/10 dark:outline-gray-800/80 z-10 ${innerClassName}`}
+        className={`absolute inset-[3px] bg-white/95 dark:bg-[#121214]/90 backdrop-blur-[24px] rounded-[inherit] outline outline-1 outline-zinc-200/80 dark:outline-gray-800/80 z-10 ${innerClassName}`}
       />
 
       {/* Card Content */}

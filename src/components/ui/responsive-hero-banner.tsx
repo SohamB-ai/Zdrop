@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowUpRight, ArrowRight, Play, Menu, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { ZDropLogo } from "@/components/ZDropLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavLink {
   label: string;
@@ -148,23 +149,9 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   };
 
   return (
-    <section className="w-full isolate min-h-screen overflow-hidden relative bg-transparent">
-      {/* Background layer */}
-      {customBackground ? (
-        customBackground
-      ) : backgroundImageUrl ? (
-        <>
-          <img
-            src={backgroundImageUrl}
-            alt=""
-            className="w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0 opacity-25 filter contrast-125 brightness-90 pointer-events-none"
-          />
-          <div className="pointer-events-none absolute inset-0 ring-1 ring-black/30 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b]" />
-        </>
-      ) : null}
-
+    <>
       {/* Fixed Sticky Header Navbar */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-[#09090b]/85 backdrop-blur-xl border-b border-white/10 transition-colors">
+      <header className="fixed top-0 inset-x-0 z-[100] bg-white/85 dark:bg-[#09090b]/85 backdrop-blur-xl border-b border-zinc-200/80 dark:border-white/10 transition-colors shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between py-3">
             <a
@@ -183,8 +170,8 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
               )}
             </a>
 
-            <nav className="hidden md:flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-1 ring-1 ring-white/10 backdrop-blur">
+            <div className="hidden md:flex items-center gap-2">
+              <nav className="flex items-center gap-1 rounded-full bg-zinc-100/80 dark:bg-white/5 px-2 py-1 ring-1 ring-zinc-200/80 dark:ring-white/10 backdrop-blur">
                 {navLinks.map((link, index) => {
                   const isCurrent = activeHref === link.href || (link.href === "#" && activeHref === "#");
                   return (
@@ -194,8 +181,8 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                       onClick={(e) => handleNavClick(e, link.href)}
                       className={`px-3 py-1.5 text-xs font-semibold font-sans transition-all duration-200 rounded-full cursor-pointer ${
                         isCurrent
-                          ? "text-emerald-400 bg-emerald-500/15 shadow-[0_0_12px_rgba(34,197,94,0.2)]"
-                          : "text-zinc-300 hover:text-white hover:bg-white/10"
+                          ? "text-emerald-700 dark:text-emerald-400 bg-emerald-500/15 shadow-[0_0_12px_rgba(34,197,94,0.2)]"
+                          : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-white/10"
                       }`}
                     >
                       {link.label}
@@ -209,22 +196,28 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                   <span>{ctaButtonText}</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
-              </div>
-            </nav>
+              </nav>
 
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur text-white/90 cursor-pointer"
-              aria-expanded={mobileMenuOpen}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
+              {/* Theme Toggle Button */}
+              <ThemeToggle />
+            </div>
+
+            <div className="flex md:hidden items-center gap-2">
+              <ThemeToggle />
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 dark:bg-white/10 ring-1 ring-zinc-200 dark:ring-white/15 backdrop-blur text-zinc-700 dark:text-white/90 cursor-pointer"
+                aria-expanded={mobileMenuOpen}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile drawer dropdown */}
           {mobileMenuOpen && (
-            <div className="md:hidden mt-2 mb-4 p-4 rounded-2xl bg-[#121214]/95 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-2 animate-fade-slide-in-1">
+            <div className="md:hidden mt-2 mb-4 p-4 rounded-2xl bg-white/95 dark:bg-[#121214]/95 border border-zinc-200 dark:border-white/10 backdrop-blur-2xl shadow-2xl space-y-2 animate-fade-slide-in-1">
               {navLinks.map((link, idx) => {
                 const isCurrent = activeHref === link.href;
                 return (
@@ -234,8 +227,8 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                     onClick={(e) => handleNavClick(e, link.href)}
                     className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                       isCurrent
-                        ? "text-emerald-400 bg-emerald-950/40"
-                        : "text-zinc-300 hover:bg-white/5"
+                        ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-semibold"
+                        : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5"
                     }`}
                   >
                     {link.label}
@@ -255,31 +248,46 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
         </div>
       </header>
 
-      {/* Main hero fold */}
-      <div className="z-10 relative pt-16 sm:pt-20">
+      <section className="w-full min-h-screen overflow-hidden relative bg-transparent">
+        {/* Background layer */}
+        {customBackground ? (
+          customBackground
+        ) : backgroundImageUrl ? (
+          <>
+            <img
+              src={backgroundImageUrl}
+              alt=""
+              className="w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0 opacity-10 dark:opacity-25 filter contrast-125 brightness-90 pointer-events-none"
+            />
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-black/5 dark:ring-black/30 bg-gradient-to-b from-zinc-50/80 via-zinc-50/90 to-zinc-50 dark:from-[#09090b]/80 dark:via-[#09090b]/90 dark:to-[#09090b]" />
+          </>
+        ) : null}
+
+        {/* Main hero fold */}
+        <div className="z-10 relative pt-16 sm:pt-20">
         <div className="sm:pt-20 md:pt-24 lg:pt-28 max-w-7xl mx-auto pt-16 px-4 sm:px-6 pb-16">
           <div className="mx-auto max-w-3xl text-center">
             {/* Pill Badge */}
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-white/10 px-3 py-1.5 ring-1 ring-white/15 backdrop-blur animate-fade-slide-in-1">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-emerald-50 dark:bg-white/10 px-3 py-1.5 ring-1 ring-emerald-500/20 dark:ring-white/15 backdrop-blur animate-fade-slide-in-1">
               <span className="inline-flex items-center text-xs font-bold text-zinc-950 bg-emerald-400 rounded-full py-0.5 px-2.5 font-sans">
                 {badgeLabel}
               </span>
-              <span className="text-sm font-medium text-emerald-200 font-sans">
+              <span className="text-sm font-medium text-emerald-800 dark:text-emerald-200 font-sans">
                 {badgeText}
               </span>
             </div>
 
             {/* Instrument Serif Display Headline */}
-            <h1 className="sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] text-4xl text-white tracking-tight font-instrument-serif font-normal animate-fade-slide-in-2">
+            <h1 className="sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] text-4xl text-zinc-900 dark:text-white tracking-tight font-instrument-serif font-normal animate-fade-slide-in-2">
               {title}
               <br className="hidden sm:block" />
-              <span className="text-emerald-400 italic block sm:inline mt-1 sm:mt-0 font-instrument-serif">
+              <span className="text-emerald-600 dark:text-emerald-400 italic block sm:inline mt-1 sm:mt-0 font-instrument-serif">
                 {" "}{titleLine2}
               </span>
             </h1>
 
             {/* Description Copy */}
-            <p className="sm:text-lg animate-fade-slide-in-3 text-base text-zinc-300 max-w-2xl mt-6 mx-auto font-sans leading-relaxed">
+            <p className="sm:text-lg animate-fade-slide-in-3 text-base text-zinc-600 dark:text-zinc-300 max-w-2xl mt-6 mx-auto font-sans leading-relaxed">
               {description}
             </p>
 
@@ -295,9 +303,9 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
               </a>
               <a
                 href={secondaryButtonHref}
-                className="inline-flex items-center gap-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 px-6 py-3.5 text-sm font-medium text-white font-sans transition-all active:scale-95"
+                className="inline-flex items-center gap-2 rounded-full bg-white hover:bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 border border-zinc-200 dark:border-white/15 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-white font-sans transition-all active:scale-95 shadow-xs dark:shadow-none"
               >
-                <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                <Play className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 fill-emerald-500 dark:fill-emerald-400" />
                 <span>{secondaryButtonText}</span>
               </a>
             </div>
@@ -312,18 +320,18 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
 
           {/* Partners / Campus Trust Agencies */}
           <div className="mx-auto mt-20 max-w-5xl">
-            <p className="animate-fade-slide-in-1 text-xs uppercase tracking-wider text-zinc-400 text-center font-mono">
+            <p className="animate-fade-slide-in-1 text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-center font-mono">
               {partnersTitle}
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 animate-fade-slide-in-2 text-zinc-400 mt-6 items-center justify-items-center gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 animate-fade-slide-in-2 text-zinc-500 dark:text-zinc-400 mt-6 items-center justify-items-center gap-4">
               {partners.map((partner, index) => (
                 <a
                   key={index}
                   href={partner.href}
                   title={partner.name || "Campus Print Partner"}
-                  className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-emerald-500/30 text-xs text-zinc-300 font-sans transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-full border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-zinc-50 dark:hover:bg-white/10 hover:border-emerald-500/30 text-xs text-zinc-700 dark:text-zinc-300 font-sans transition-all shadow-2xs dark:shadow-none"
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span className="truncate max-w-[120px]">{partner.name || `Partner ${index + 1}`}</span>
                 </a>
               ))}
@@ -332,6 +340,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
         </div>
       </div>
     </section>
+    </>
   );
 };
 

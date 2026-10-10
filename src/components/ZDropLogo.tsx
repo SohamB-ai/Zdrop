@@ -78,9 +78,9 @@ export function ZDropLogo({
       </div>
 
       {showText && (
-        <span className={`font-sans font-extrabold tracking-tight text-white flex items-center ${textStyles}`}>
+        <span className={`font-sans font-extrabold tracking-tight text-zinc-900 dark:text-white flex items-center ${textStyles}`}>
           <span className="text-[#01ba57] font-instrument-serif italic font-normal text-[1.25em] mr-0.5">Z</span>
-          <span className="text-white">Drop</span>
+          <span className="text-zinc-900 dark:text-white">Drop</span>
         </span>
       )}
     </div>

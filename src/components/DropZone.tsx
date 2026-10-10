@@ -154,8 +154,8 @@ export function DropZone({
           onClick={() => !disabled && inputRef.current?.click()}
           className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-7 text-center cursor-pointer transition-all duration-200 ${
             isDragging
-              ? "border-emerald-500 bg-emerald-950/30 shadow-[0_0_24px_rgba(34,197,94,0.3)]"
-              : "border-white/15 hover:border-emerald-500/60 hover:bg-white/[0.02] bg-[#121214]/80"
+              ? "border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 shadow-[0_0_24px_rgba(34,197,94,0.3)]"
+              : "border-zinc-300 dark:border-white/15 hover:border-emerald-500/70 hover:bg-emerald-50/20 dark:hover:border-emerald-500/60 dark:hover:bg-white/[0.02] bg-zinc-50/80 dark:bg-[#121214]/80"
           } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
         >
           <input
@@ -168,18 +168,18 @@ export function DropZone({
             disabled={disabled}
           />
 
-          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-2xs">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-2xs">
             <UploadCloud className="w-6 h-6" />
           </div>
 
-          <h3 className="text-sm sm:text-base font-bold text-white mb-1 font-sans">
+          <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-1 font-sans">
             Tap to select or drop documents
           </h3>
-          <p className="text-xs text-zinc-400 max-w-xs mx-auto mb-3 font-sans">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mb-3 font-sans">
             PDF, DOCX, JPG, or PNG (up to {maxSizeMb}MB each)
           </p>
 
-          <span className="inline-block text-[11px] font-mono font-medium text-emerald-300 bg-emerald-950/70 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+          <span className="inline-block text-[11px] font-mono font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/30">
             {files.length}/{maxFiles} files selected
           </span>
         </motion.div>

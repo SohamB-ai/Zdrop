@@ -21,16 +21,16 @@ export function QuickFaqAndKiosk() {
   ];
 
   return (
-    <section className="py-16 sm:py-24 border-t border-white/5 relative" id="faq">
+    <section className="py-16 sm:py-24 border-t border-zinc-200 dark:border-white/5 relative" id="faq">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-16">
         {/* Concise FAQ Grid */}
         <div>
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-3">
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Frequently Asked Questions</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl text-white font-normal font-instrument-serif tracking-tight">
+            <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-normal font-instrument-serif tracking-tight">
               Essential Answers, Zero Fluff
             </h2>
           </div>
@@ -42,11 +42,11 @@ export function QuickFaqAndKiosk() {
                 className="h-full hover:border-emerald-500/40 transition-all duration-200"
               >
                 <div className="p-5 sm:p-6 space-y-2.5 h-full">
-                  <h3 className="text-sm font-bold text-white font-sans flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-sans flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>{faq.q}</span>
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
                     {faq.a}
                   </p>
                 </div>
@@ -59,14 +59,14 @@ export function QuickFaqAndKiosk() {
         <GradientBlobCard className="rounded-3xl border border-emerald-500/30">
           <div className="p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-left max-w-xl">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-xs font-semibold">
                 <Monitor className="w-3.5 h-3.5" />
                 <span>For Print Shop & Counter Operators</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl text-white font-normal font-instrument-serif">
+              <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-normal font-instrument-serif">
                 Running a Xerox Counter or Copy Shop?
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 font-sans">
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-sans">
                 Enter customer PINs or scan QR codes to spool print files directly to your connected laser printers with zero manual downloading.
               </p>
             </div>

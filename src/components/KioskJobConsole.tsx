@@ -66,35 +66,35 @@ export function KioskJobConsole({
   }, [selectedFile, onPrint]);
 
   return (
-    <div className="rounded-3xl border border-emerald-500/30 bg-[#121214]/95 shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl overflow-hidden transition-colors">
+    <div className="rounded-3xl border border-emerald-500/30 bg-white/95 dark:bg-[#121214]/95 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-xl overflow-hidden transition-colors">
       {/* Console Top Header */}
-      <div className="p-4 sm:p-6 border-b border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#09090b]/60">
+      <div className="p-4 sm:p-6 border-b border-zinc-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3 bg-zinc-50/80 dark:bg-[#09090b]/60">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="p-2 rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:bg-white/10 transition active:scale-[0.98] cursor-pointer"
+            className="p-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition active:scale-[0.98] cursor-pointer"
             aria-label="Back to code entry"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-zinc-400 uppercase">
+              <span className="text-xs font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase">
                 Session Code:
               </span>
-              <span className="text-lg font-extrabold font-mono text-emerald-400">
+              <span className="text-lg font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
                 {session.accessCode}
               </span>
             </div>
-            <p className="text-xs text-zinc-400 font-sans">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
               {session.files.length} document{session.files.length > 1 ? "s" : ""} attached ({formatBytes(session.totalSizeBytes)})
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-mono">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30 font-mono">
             Status: Accessed
           </span>
         </div>
@@ -103,58 +103,58 @@ export function KioskJobConsole({
       <div className="p-5 sm:p-7 space-y-6">
         {/* Print Preferences Summary Cards */}
         <div>
-          <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3 font-mono">
+          <h4 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3 font-mono">
             Customer Print Configuration
           </h4>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {/* Copies */}
-            <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-1">
-              <div className="flex items-center gap-1.5 text-emerald-400">
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/30 space-y-1">
+              <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                 <Printer className="w-4 h-4" />
                 <span className="text-xs font-medium">Copies</span>
               </div>
-              <p className="text-xl font-extrabold text-white font-mono">
+              <p className="text-xl font-extrabold text-zinc-900 dark:text-white font-mono">
                 {preferences.copies} {preferences.copies === 1 ? "Set" : "Sets"}
               </p>
             </div>
 
             {/* Color Mode */}
-            <div className="p-4 rounded-2xl bg-[#09090b] border border-white/10 space-y-1">
-              <div className="flex items-center gap-1.5 text-zinc-400">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-[#09090b] border border-zinc-200 dark:border-white/10 space-y-1">
+              <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Palette className="w-4 h-4" />
                 <span className="text-xs font-medium">Color Mode</span>
               </div>
-              <p className="text-base font-bold text-white">
+              <p className="text-base font-bold text-zinc-900 dark:text-white">
                 {preferences.colorMode === "BW" ? "Black & White" : "Full Color"}
               </p>
             </div>
 
             {/* Sides */}
-            <div className="p-4 rounded-2xl bg-[#09090b] border border-white/10 space-y-1">
-              <div className="flex items-center gap-1.5 text-zinc-400">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-[#09090b] border border-zinc-200 dark:border-white/10 space-y-1">
+              <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Layers className="w-4 h-4" />
                 <span className="text-xs font-medium">Print Sides</span>
               </div>
-              <p className="text-base font-bold text-white">
+              <p className="text-base font-bold text-zinc-900 dark:text-white">
                 {preferences.sides === "DOUBLE" ? "Double-Sided" : "Single-Sided"}
               </p>
             </div>
 
             {/* Pages */}
-            <div className="p-4 rounded-2xl bg-[#09090b] border border-white/10 space-y-1">
-              <div className="flex items-center gap-1.5 text-zinc-400">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-[#09090b] border border-zinc-200 dark:border-white/10 space-y-1">
+              <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <FileSpreadsheet className="w-4 h-4" />
                 <span className="text-xs font-medium">Page Selection</span>
               </div>
-              <p className="text-base font-bold text-white truncate">
+              <p className="text-base font-bold text-zinc-900 dark:text-white truncate">
                 {preferences.pageRange === "ALL" ? "All Pages" : `Pages: ${preferences.pageRange}`}
               </p>
             </div>
           </div>
 
           {preferences.customerNotes && (
-            <div className="mt-3 p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/30 text-xs text-amber-200 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="mt-3 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold">Special Customer Request: </span>
                 <span>{preferences.customerNotes}</span>
@@ -165,7 +165,7 @@ export function KioskJobConsole({
 
         {/* Document Selection Tabs & Preview */}
         <div className="space-y-3">
-          <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider font-mono">
+          <h4 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-mono">
             Documents ({session.files.length})
           </h4>
 
@@ -180,13 +180,13 @@ export function KioskJobConsole({
                   onClick={() => setSelectedFile(file)}
                   className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition cursor-pointer active:scale-[0.98] ${
                     isSelected
-                      ? "border-emerald-500 bg-emerald-950/40 text-emerald-200 shadow-2xs"
-                      : "border-white/10 bg-white/5 text-zinc-300 hover:border-white/20"
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200 shadow-2xs"
+                      : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/5 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-white/20"
                   }`}
                 >
-                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span className="truncate max-w-[180px]">{file.name}</span>
-                  <span className="text-[10px] text-zinc-400 font-mono">
+                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
                     ({file.pageCount ? `${file.pageCount} ${file.pageCount === 1 ? "page" : "pages"} · ` : ""}{formatBytes(file.size)})
                   </span>
                 </button>
@@ -196,7 +196,7 @@ export function KioskJobConsole({
 
           {/* Preview Canvas Box */}
           {selectedFile && (
-            <div className="p-4 rounded-2xl border border-white/10 bg-[#09090b] flex flex-col items-center justify-center min-h-[240px]">
+            <div className="p-4 rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#09090b] flex flex-col items-center justify-center min-h-[240px]">
               {selectedFile.previewUrl && selectedFile.type.startsWith("image/") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -210,16 +210,16 @@ export function KioskJobConsole({
                     ref={previewRef}
                     src={selectedFile.previewUrl}
                     title="PDF Preview"
-                    className="w-full h-80 rounded-xl border border-white/10 bg-white"
+                    className="w-full h-80 rounded-xl border border-zinc-200 dark:border-white/10 bg-white"
                   />
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3">
                     <FileText className="w-7 h-7" />
                   </div>
-                  <p className="text-sm font-bold text-white font-sans">{selectedFile.name}</p>
-                  <p className="text-xs text-zinc-400 mt-1 font-sans">
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white font-sans">{selectedFile.name}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-sans">
                     DOCX files stream via native application dialog.
                   </p>
                 </div>
@@ -230,7 +230,7 @@ export function KioskJobConsole({
 
         {selectedFile?.previewUrl && (
           <a
-            className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:underline font-mono transition"
+            className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-mono transition"
             href={selectedFile.previewUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -240,7 +240,7 @@ export function KioskJobConsole({
           </a>
         )}
 
-        <p className="text-xs text-zinc-400 font-sans">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans">
           Apply customer’s copies, color, sides, and page range in your physical printer dialog. Print all attached documents before finalizing the job.
         </p>
 
@@ -262,12 +262,12 @@ export function KioskJobConsole({
         />
 
         {/* Action Hub */}
-        <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-4 border-t border-zinc-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <button
             type="button"
             onClick={onCancel}
             disabled={isPurging}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white text-xs font-semibold transition active:scale-[0.98] cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white text-xs font-semibold transition active:scale-[0.98] cursor-pointer"
           >
             Close Terminal
           </button>
@@ -287,9 +287,9 @@ export function KioskJobConsole({
               type="button"
               onClick={() => setConfirmPurge(true)}
               disabled={isPurging}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl border border-white/10 bg-white/10 hover:bg-white/15 text-white font-bold text-sm font-sans flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl border border-rose-300 dark:border-white/10 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white font-bold text-sm font-sans flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer disabled:opacity-50"
             >
-              <Trash2 className="w-4 h-4 text-rose-400" />
+              <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               <span>{isPurging ? "Purging Files..." : "Mark Printed & Purge"}</span>
             </button>
           </div>

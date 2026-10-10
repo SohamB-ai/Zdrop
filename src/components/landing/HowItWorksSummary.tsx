@@ -29,16 +29,16 @@ export function HowItWorksSummary() {
   ];
 
   return (
-    <section className="py-16 sm:py-24 border-t border-white/5 relative" id="how-it-works">
+    <section className="py-16 sm:py-24 border-t border-zinc-200 dark:border-white/5 relative" id="how-it-works">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-3">
             <span>Simple 3-Step Flow</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl text-white font-normal font-instrument-serif tracking-tight">
+          <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-normal font-instrument-serif tracking-tight">
             How ZDrop Works in Practice
           </h2>
-          <p className="mt-3 text-sm text-zinc-400 font-sans">
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 font-sans">
             From file selection on your phone to physical printed sheets in under 15 seconds.
           </p>
         </div>
@@ -54,19 +54,19 @@ export function HowItWorksSummary() {
                 <div className="p-6 sm:p-7 space-y-4 h-full flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-xl font-bold font-mono text-zinc-600 dark:text-zinc-500">
+                      <span className="text-xl font-bold font-mono text-zinc-400 dark:text-zinc-500">
                         {item.step}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-white font-sans">
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white font-sans">
                       {item.title}
                     </h3>
 
-                    <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-sans">
+                    <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
                       {item.description}
                     </p>
                   </div>
@@ -79,7 +79,7 @@ export function HowItWorksSummary() {
         <div className="mt-10 text-center">
           <a
             href="#upload"
-            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition cursor-pointer"
           >
             <span>Ready to try? Drop files above</span>
             <ArrowRight className="w-3.5 h-3.5" />

@@ -77,15 +77,15 @@ function KioskContent() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col bg-[#09090b] text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-hidden">
+    <div className="relative min-h-[100dvh] flex flex-col bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-700 dark:selection:text-emerald-300 transition-colors duration-200 overflow-x-hidden">
       {/* Atmospheric Background Design from Instructions */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
         <img
           src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
           alt=""
-          className="w-full h-full object-cover opacity-20 filter contrast-125 brightness-90"
+          className="w-full h-full object-cover opacity-10 dark:opacity-20 filter contrast-125 brightness-90"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#09090b]/80 via-[#09090b]/90 to-[#09090b] ring-1 ring-black/30" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-zinc-50/80 via-zinc-50/95 to-zinc-50 dark:from-[#09090b]/80 dark:via-[#09090b]/90 dark:to-[#09090b] ring-1 ring-black/5 dark:ring-black/30" />
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
       </div>
 
@@ -93,14 +93,14 @@ function KioskContent() {
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-24 pb-12 sm:pt-28">
         {errorMessage && session && (
-          <p role="alert" className="p-3 mb-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs text-center">
+          <p role="alert" className="p-3 mb-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs text-center">
             {errorMessage}
           </p>
         )}
 
         {/* Success Toast */}
         {successToast && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold text-center max-w-md mx-auto shadow-lg backdrop-blur-md">
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold text-center max-w-md mx-auto shadow-lg backdrop-blur-md">
             {successToast}
           </div>
         )}

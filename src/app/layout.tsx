@@ -43,7 +43,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable} light`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -57,7 +57,7 @@ export default function RootLayout({
             __html: `
               try {
                 var stored = localStorage.getItem('zdrop-theme');
-                var isDark = stored ? stored === 'dark' : true;
+                var isDark = stored ? stored === 'dark' : false;
                 if (isDark) {
                   document.documentElement.classList.add('dark');
                   document.documentElement.classList.remove('light');
@@ -72,7 +72,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-[100dvh] bg-[#09090b] text-[#fafafa] font-sans antialiased selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200">
+      <body className="min-h-[100dvh] bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-[#fafafa] font-sans antialiased selection:bg-emerald-500/25 selection:text-emerald-700 dark:selection:text-emerald-300 transition-colors duration-200">
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>

@@ -122,7 +122,7 @@ export default function StudentPage() {
   };
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col bg-transparent text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-300 transition-colors duration-200 overflow-x-clip">
+    <div className="relative min-h-[100dvh] flex flex-col bg-transparent text-zinc-900 dark:text-[#fafafa] selection:bg-emerald-500/25 selection:text-emerald-700 dark:selection:text-emerald-300 transition-colors duration-200 overflow-x-clip">
       {/* Full-Page Reactive GridPulse Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
         <GridPulse className="size-full [mask-image:none]" />
@@ -130,10 +130,10 @@ export default function StudentPage() {
 
       {/* Global Error Banner */}
       {error && (
-        <div className="fixed top-20 inset-x-0 z-50 max-w-md mx-auto px-4">
+        <div className="fixed top-20 inset-x-0 z-[90] max-w-md mx-auto px-4">
           <p
             role="alert"
-            className="p-3 text-xs text-rose-300 bg-rose-950/80 border border-rose-500/40 rounded-xl text-center shadow-xl backdrop-blur-md"
+            className="p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-500/40 rounded-xl text-center shadow-xl backdrop-blur-md"
           >
             {error}
           </p>
@@ -170,14 +170,14 @@ export default function StudentPage() {
               {/* Interactive Print Terminal Card with Gradient Blob Effect */}
               <GradientBlobCard className="rounded-3xl border border-emerald-500/30">
                 <div className="p-5 sm:p-7">
-                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-200 dark:border-white/10">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-xs font-bold text-white uppercase tracking-wider font-sans">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider font-sans">
                         Interactive Print Terminal
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono font-medium text-zinc-400 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                    <span className="text-[10px] font-mono font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-white/5 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-white/10">
                       Max 3 Files · 25MB
                     </span>
                   </div>
@@ -186,10 +186,10 @@ export default function StudentPage() {
                     {/* Step 1: Select Files */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
+                        <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider font-mono">
                           Step 1: Select Files
                         </label>
-                        <span className="text-[11px] text-emerald-400 font-mono">PDF, DOCX, JPG, PNG</span>
+                        <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono">PDF, DOCX, JPG, PNG</span>
                       </div>
                       <DropZone files={files} onFilesChange={setFiles} disabled={isGenerating} />
                     </div>
@@ -197,7 +197,7 @@ export default function StudentPage() {
                     {/* Step 2: Print Settings */}
                     {files.length > 0 && (
                       <div className="space-y-2 pt-1 animate-in fade-in duration-200">
-                        <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono block">
+                        <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider font-mono block">
                           Step 2: Print Settings
                         </label>
                         <PrintPreferencesCard
@@ -209,7 +209,7 @@ export default function StudentPage() {
                     )}
 
                     {!validation.success && (
-                      <p role="alert" className="text-xs text-rose-300 bg-rose-950/40 border border-rose-500/30 p-2.5 rounded-xl">
+                      <p role="alert" className="text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 p-2.5 rounded-xl">
                         {validation.error.issues[0].message}
                       </p>
                     )}
@@ -229,8 +229,8 @@ export default function StudentPage() {
                         <ArrowRight className="w-4 h-4 text-zinc-950" />
                       </button>
 
-                      <p className="mt-3 text-[11px] text-zinc-400 text-center flex items-center justify-center gap-1.5 font-sans">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 inline" />
+                      <p className="mt-3 text-[11px] text-zinc-500 dark:text-zinc-400 text-center flex items-center justify-center gap-1.5 font-sans">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 inline" />
                         <span>Dual-Purge: Permanently deleted upon print or after 15 mins</span>
                       </p>
                     </div>
@@ -267,7 +267,7 @@ export default function StudentPage() {
               <button
                 type="button"
                 onClick={() => setStep("UPLOAD")}
-                className="text-xs font-semibold text-emerald-400 hover:underline"
+                className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
               >
                 Back to Terminal
               </button>
