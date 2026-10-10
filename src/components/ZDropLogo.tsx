@@ -72,6 +72,7 @@ export function ZDropLogo({
           alt="ZDrop"
           width={iconDimensions.width}
           height={iconDimensions.height}
+          style={{ width: "auto", height: "auto" }}
           className="w-full h-full object-contain drop-shadow-[0_2px_10px_rgba(1,186,87,0.45)]"
           priority
         />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { ArrowUpRight, ArrowRight, Play, Menu, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { ZDropLogo } from "@/components/ZDropLogo";
@@ -189,13 +190,13 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                     </a>
                   );
                 })}
-                <a
+                <Link
                   href={ctaButtonHref}
                   className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-3.5 py-1.5 text-xs font-bold font-sans transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
                 >
                   <span>{ctaButtonText}</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
+                </Link>
               </nav>
 
               {/* Theme Toggle Button */}
@@ -235,14 +236,14 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                   </a>
                 );
               })}
-              <a
+              <Link
                 href={ctaButtonHref}
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-between px-3 py-2.5 text-sm font-bold text-zinc-950 bg-emerald-500 rounded-xl"
               >
                 <span>{ctaButtonText}</span>
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
             </div>
           )}
         </div>
@@ -301,13 +302,13 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                 <span>{primaryButtonText}</span>
                 <ArrowRight className="h-4 w-4" />
               </a>
-              <a
+              <Link
                 href={secondaryButtonHref}
                 className="inline-flex items-center gap-2 rounded-full bg-white hover:bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 border border-zinc-200 dark:border-white/15 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-white font-sans transition-all active:scale-95 shadow-xs dark:shadow-none"
               >
                 <Play className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 fill-emerald-500 dark:fill-emerald-400" />
                 <span>{secondaryButtonText}</span>
-              </a>
+              </Link>
             </div>
           </div>
 

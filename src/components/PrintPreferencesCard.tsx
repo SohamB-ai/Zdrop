@@ -66,6 +66,7 @@ export function PrintPreferencesCard({
           Color Mode
         </label>
         <SegmentedControl
+          name="colorMode"
           options={[
             { id: "BW", label: "Black & White", subLabel: "Economy" },
             { id: "COLOR", label: "Full Color", subLabel: "Vibrant" },
@@ -81,6 +82,7 @@ export function PrintPreferencesCard({
           Print Sides
         </label>
         <SegmentedControl
+          name="sides"
           options={[
             { id: "DOUBLE", label: "Double-Sided", subLabel: "Duplex" },
             { id: "SINGLE", label: "Single-Sided", subLabel: "Front Only" },

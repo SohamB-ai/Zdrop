@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, RefreshCw, X } from "lucide-react";
 import { SessionData, FileMetadata, PrintPreferences, PrintPreferencesSchema } from "@/lib/types";
 import {
   createSession,
@@ -80,7 +80,14 @@ export default function StudentPage() {
 
   const handleGenerateCode = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!canSubmit) return;
+    if (files.length === 0) {
+      setError("Please select at least one document (PDF, DOCX, JPG, or PNG) above to generate your print code.");
+      return;
+    }
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message || "Please check your print preferences.");
+      return;
+    }
 
     setIsGenerating(true);
     setUploadProgress(0);
@@ -130,13 +137,21 @@ export default function StudentPage() {
 
       {/* Global Error Banner */}
       {error && (
-        <div className="fixed top-20 inset-x-0 z-[90] max-w-md mx-auto px-4">
-          <p
+        <div className="fixed top-20 inset-x-0 z-[90] max-w-md mx-auto px-4 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div
             role="alert"
-            className="p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-500/40 rounded-xl text-center shadow-xl backdrop-blur-md"
+            className="p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50/95 dark:bg-rose-950/90 border border-rose-200 dark:border-rose-500/40 rounded-xl shadow-xl backdrop-blur-md flex items-center justify-between gap-2"
           >
-            {error}
-          </p>
+            <span className="flex-1 text-center">{error}</span>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="p-1 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-lg text-rose-600 dark:text-rose-400 cursor-pointer shrink-0"
+              aria-label="Dismiss error"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -218,15 +233,20 @@ export default function StudentPage() {
                     <div className="pt-2">
                       <button
                         type="submit"
-                        disabled={!canSubmit || isGenerating}
-                        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-30 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
+                        disabled={isGenerating}
+                        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
                       >
-                        <span>
-                          {isGenerating
-                            ? `Encrypting & Uploading… ${uploadProgress}%`
-                            : "Generate 6-Digit Access Code"}
-                        </span>
-                        <ArrowRight className="w-4 h-4 text-zinc-950" />
+                        {isGenerating ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin text-zinc-950" />
+                            <span>Encrypting & Uploading… {uploadProgress}%</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Generate 6-Digit Access Code</span>
+                            <ArrowRight className="w-4 h-4 text-zinc-950" />
+                          </>
+                        )}
                       </button>
 
                       <p className="mt-3 text-[11px] text-zinc-500 dark:text-zinc-400 text-center flex items-center justify-center gap-1.5 font-sans">

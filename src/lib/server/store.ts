@@ -111,12 +111,28 @@ export async function withSessionLock<T>(id: string, operation: () => Promise<T>
     });
   } else {
     await mkdir(root, { recursive: true });
-    try { await mkdir(lockPath); }
-    catch {
-      const info = await stat(lockPath);
-      if (Date.now() - info.mtimeMs < 300000) throw new Error('Session busy');
-      await rm(lockPath, { recursive: true, force: true });
-      await mkdir(lockPath);
+    const startTime = Date.now();
+    let acquired = false;
+    while (!acquired) {
+      try {
+        await mkdir(lockPath);
+        acquired = true;
+      } catch {
+        try {
+          const info = await stat(lockPath);
+          if (Date.now() - info.mtimeMs >= 300000) {
+            await rm(lockPath, { recursive: true, force: true });
+            continue;
+          }
+        } catch {
+          // Lock was just released by another process; retry immediately
+          continue;
+        }
+        if (Date.now() - startTime >= 3000) {
+          throw new Error('Session busy');
+        }
+        await new Promise((res) => setTimeout(res, 50));
+      }
     }
   }
   try { return await operation(); }

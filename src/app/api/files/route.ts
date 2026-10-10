@@ -17,6 +17,5 @@ export async function GET(req: NextRequest) {
   const session = await readSession(id);
   const token = req.nextUrl.searchParams.get('token');
   if (!session || !token || token !== session.operatorToken) return new Response('File unavailable', { status: 410 });
-  try { return await withSessionLock(id, () => serve(req)); }
-  catch { return new Response('File temporarily unavailable', { status: 409 }); }
+  return serve(req);
 }

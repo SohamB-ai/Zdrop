@@ -13,6 +13,7 @@ interface SegmentedControlProps {
   value: string;
   onChange: (val: string) => void;
   className?: string;
+  name?: string;
 }
 
 export function SegmentedControl({
@@ -20,6 +21,7 @@ export function SegmentedControl({
   value,
   onChange,
   className = "",
+  name,
 }: SegmentedControlProps) {
   return (
     <div
@@ -53,7 +55,7 @@ export function SegmentedControl({
             )}
             {isSelected && (
               <motion.div
-                layoutId="segmented-pill"
+                layoutId={`segmented-pill-${name || options[0]?.id || "default"}`}
                 className="absolute inset-0 bg-white dark:bg-[#18181b] rounded-lg shadow-xs border border-emerald-500/30 dark:border-emerald-500/40 -z-10 shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_0_12px_rgba(34,197,94,0.15)]"
                 transition={{ type: "spring", stiffness: 450, damping: 35 }}
               />

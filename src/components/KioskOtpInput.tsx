@@ -28,32 +28,36 @@ export function KioskOtpInput({
     if (onClearError) onClearError();
     const clean = value.replace(/[^0-9]/g, "");
     if (!clean) {
-      const updated = [...digits];
-      updated[index] = "";
-      setDigits(updated);
+      setDigits((prev) => {
+        const updated = [...prev];
+        updated[index] = "";
+        return updated;
+      });
       return;
     }
 
     const lastChar = clean[clean.length - 1];
-    const updated = [...digits];
-    updated[index] = lastChar;
-    setDigits(updated);
-
-    // Auto-advance
-    if (index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    } else {
-      // Completed 6th digit
-      const fullCode = updated.join("");
-      if (fullCode.length === 6) {
-        onSubmit(fullCode);
+    setDigits((prev) => {
+      const updated = [...prev];
+      updated[index] = lastChar;
+      if (index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      } else {
+        const fullCode = updated.join("");
+        if (fullCode.length === 6 && updated.every((d) => d !== "")) {
+          setTimeout(() => onSubmit(fullCode), 10);
+        }
       }
-    }
+      return updated;
+    });
   };
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace") {
+      if (onClearError) onClearError();
+      if (!digits[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
     } else if (e.key === "ArrowLeft" && index > 0) {
       inputRefs.current[index - 1]?.focus();
     } else if (e.key === "ArrowRight" && index < 5) {
@@ -67,31 +71,34 @@ export function KioskOtpInput({
     const pasted = e.clipboardData.getData("text").replace(/[^0-9]/g, "").slice(0, 6);
     if (!pasted) return;
 
-    const updated = [...digits];
-    for (let i = 0; i < pasted.length; i++) {
-      updated[i] = pasted[i];
-    }
-    setDigits(updated);
-
-    if (pasted.length === 6) {
-      onSubmit(pasted);
-    } else if (pasted.length < 6) {
-      inputRefs.current[pasted.length]?.focus();
-    }
+    setDigits(() => {
+      const updated = ["", "", "", "", "", ""];
+      for (let i = 0; i < pasted.length; i++) {
+        updated[i] = pasted[i];
+      }
+      if (pasted.length === 6) {
+        setTimeout(() => onSubmit(pasted), 10);
+      } else if (pasted.length < 6) {
+        inputRefs.current[pasted.length]?.focus();
+      }
+      return updated;
+    });
   };
 
   const handleKeypadPress = (val: string) => {
     if (onClearError) onClearError();
     if (val === "BACKSPACE") {
-      for (let i = 5; i >= 0; i--) {
-        if (digits[i]) {
-          const updated = [...digits];
-          updated[i] = "";
-          setDigits(updated);
-          inputRefs.current[i]?.focus();
-          break;
+      setDigits((prev) => {
+        const updated = [...prev];
+        for (let i = 5; i >= 0; i--) {
+          if (updated[i]) {
+            updated[i] = "";
+            inputRefs.current[i]?.focus();
+            break;
+          }
         }
-      }
+        return updated;
+      });
       return;
     }
 
@@ -101,10 +108,27 @@ export function KioskOtpInput({
       return;
     }
 
-    const firstEmpty = digits.findIndex((d) => d === "");
-    if (firstEmpty !== -1) {
-      handleDigitChange(firstEmpty, val);
-    }
+    setDigits((prev) => {
+      const firstEmpty = prev.findIndex((d) => d === "");
+      if (firstEmpty !== -1) {
+        const updated = [...prev];
+        updated[firstEmpty] = val;
+        if (firstEmpty < 5) {
+          inputRefs.current[firstEmpty + 1]?.focus();
+        } else {
+          const fullCode = updated.join("");
+          if (fullCode.length === 6 && updated.every((d) => d !== "")) {
+            setTimeout(() => onSubmit(fullCode), 10);
+          }
+        }
+        return updated;
+      } else {
+        // If all 6 digits were already filled, start fresh with the new digit in slot 0
+        const updated = [val, "", "", "", "", ""];
+        inputRefs.current[1]?.focus();
+        return updated;
+      }
+    });
   };
 
   const isComplete = digits.every((d) => d !== "");
@@ -119,11 +143,15 @@ export function KioskOtpInput({
               ref={(el) => {
                 inputRefs.current[idx] = el;
               }}
+              id={`kiosk-otp-${idx}`}
+              name={`kiosk-otp-${idx}`}
               type="text"
               inputMode="numeric"
+              autoComplete={idx === 0 ? "one-time-code" : "off"}
               aria-label={`Access code digit ${idx + 1}`}
               maxLength={1}
               value={digit}
+              onFocus={(e) => e.target.select()}
               onChange={(e) => handleDigitChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
               disabled={isLoading}
