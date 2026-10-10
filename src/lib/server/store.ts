@@ -8,10 +8,9 @@ import { getStorage } from 'firebase-admin/storage';
 import { SessionData } from '../types';
 
 export interface StoredSession extends SessionData { ownerToken: string; operatorToken?: string; purging?: boolean; uploadSealed?: boolean; purgeSource?: SessionData["deletionSource"]; uploadSlots?: Record<string, { size: number; type: string }> }
-const root = path.resolve(process.env.ZDROP_DATA_DIR || '.zdrop-data');
+const root = path.resolve(process.env.ZDROP_DATA_DIR || (process.env.VERCEL ? path.join('/tmp', '.zdrop-data') : '.zdrop-data'));
 const cloud = process.env.ZDROP_STORAGE === 'firebase';
 export const isCloud = cloud;
-if (process.env.VERCEL && !cloud) throw new Error('Vercel requires ZDROP_STORAGE=firebase.');
 export const database = () => firebase().db;
 function firebase() {
   if (!getApps().length) initializeApp({ credential: process.env.FIREBASE_PRIVATE_KEY ? cert({ projectId: process.env.FIREBASE_PROJECT_ID, clientEmail: process.env.FIREBASE_CLIENT_EMAIL, privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') }) : applicationDefault(), storageBucket: process.env.FIREBASE_STORAGE_BUCKET });
