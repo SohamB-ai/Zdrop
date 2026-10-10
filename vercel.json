@@ -1,1 +1,1 @@
-{"crons":[{"path":"/api/cron/purge-expired","schedule":"* * * * *"}]}
+{"crons":[{"path":"/api/cron/purge-expired","schedule":"0 0 * * *"}]}
