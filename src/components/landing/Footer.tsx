@@ -36,7 +36,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/kiosk" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
-                  Operator Kiosk Mode
+                  Print Shop
                 </Link>
               </li>
               <li>

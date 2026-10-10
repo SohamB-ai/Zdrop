@@ -3,6 +3,7 @@
 import { QrScanner } from "@/components/QrScanner";
 import { Printer, Shield, Clock } from "lucide-react";
 import { KioskOtpInput } from "@/components/KioskOtpInput";
+import { RoleToggleSwitch } from "@/components/RoleToggleSwitch";
 
 interface KioskEntryViewProps {
   onSubmitCode: (code: string) => void;
@@ -19,11 +20,16 @@ export function KioskEntryView({
 }: KioskEntryViewProps) {
   return (
     <div className="max-w-xl mx-auto px-4 py-8 sm:py-12 space-y-8 text-center">
+      {/* Mode Switcher */}
+      <div className="flex justify-center">
+        <RoleToggleSwitch activeRole="kiosk" />
+      </div>
+
       {/* Kiosk Hero */}
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold font-sans">
           <Printer className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Operator Counter Station</span>
+          <span>Print Shop Station</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-bold text-zinc-900 dark:text-white tracking-tight font-heading">

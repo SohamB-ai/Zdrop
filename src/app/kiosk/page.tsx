@@ -148,7 +148,7 @@ function KioskContent() {
 
 export default function KioskPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-zinc-400">Loading Kiosk Console…</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-zinc-400">Loading Print Shop Console…</div>}>
       <KioskContent />
     </Suspense>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HelpCircle, Monitor, ArrowRight, ShieldCheck } from "lucide-react";
+import { HelpCircle, Printer, ArrowRight, ShieldCheck } from "lucide-react";
 import GradientBlobCard from "@/components/ui/gradient-bold-card";
 
 export function QuickFaqAndKiosk() {
@@ -60,7 +60,7 @@ export function QuickFaqAndKiosk() {
           <div className="p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-left max-w-xl">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-xs font-semibold">
-                <Monitor className="w-3.5 h-3.5" />
+                <Printer className="w-3.5 h-3.5" />
                 <span>For Print Shop & Counter Operators</span>
               </div>
               <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-bold tracking-tight font-heading">
@@ -75,8 +75,8 @@ export function QuickFaqAndKiosk() {
               href="/kiosk"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-sm font-bold font-heading transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.4)] shrink-0 cursor-pointer"
             >
-              <Monitor className="w-4 h-4" />
-              <span>Launch Operator Kiosk</span>
+              <Printer className="w-4 h-4" />
+              <span>Print Shop</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

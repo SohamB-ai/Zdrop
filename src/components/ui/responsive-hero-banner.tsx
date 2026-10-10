@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ArrowRight, Play, Menu, X } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Play, Menu, X, Printer } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { ZDropLogo } from "@/components/ZDropLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { RoleToggleSwitch } from "@/components/RoleToggleSwitch";
 
 interface NavLink {
   label: string;
@@ -51,7 +52,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
     { label: "FAQ", href: "#faq" },
     { label: "Drop Files", href: "#upload" },
   ],
-  ctaButtonText = "Operator Kiosk",
+  ctaButtonText = "Print Shop",
   ctaButtonHref = "/kiosk",
   badgeLabel = "Zero-Trace",
   badgeText = "Instant Campus Document Printing",
@@ -60,7 +61,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
   description = "Print campus documents in 10 seconds flat. Drop files on your phone, select print options in two taps, and hand a 6-digit PIN across the counter. No WhatsApp downloads, no flash drives, zero file leaks.",
   primaryButtonText = "Drop Files Below",
   primaryButtonHref = "#upload",
-  secondaryButtonText = "Operator Kiosk",
+  secondaryButtonText = "Print Shop",
   secondaryButtonHref = "/kiosk",
   partnersTitle = "Trusted across university xerox counters and campus copy centers",
   partners = [
@@ -190,13 +191,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                     </a>
                   );
                 })}
-                <Link
-                  href={ctaButtonHref}
-                  className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-3.5 py-1.5 text-xs font-bold font-sans transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
-                >
-                  <span>{ctaButtonText}</span>
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
+                <RoleToggleSwitch activeRole="upload" size="sm" className="ml-1" />
               </nav>
 
               {/* Theme Toggle Button */}
@@ -236,12 +231,18 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                   </a>
                 );
               })}
+              <div className="pt-2 pb-1">
+                <RoleToggleSwitch activeRole="upload" className="w-full justify-center" />
+              </div>
               <Link
                 href={ctaButtonHref}
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-2.5 text-sm font-bold text-zinc-950 bg-emerald-500 rounded-xl"
+                className="flex items-center justify-between px-3 py-2.5 text-sm font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-white/10 rounded-xl"
               >
-                <span>{ctaButtonText}</span>
+                <span className="flex items-center gap-2">
+                  <Printer className="w-4 h-4 text-emerald-500" />
+                  <span>{ctaButtonText}</span>
+                </span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -306,7 +307,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
                 href={secondaryButtonHref}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white hover:bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 border border-zinc-200 dark:border-white/15 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-white font-heading transition-all active:scale-95 shadow-xs dark:shadow-none touch-manipulation min-h-[48px]"
               >
-                <Play className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 fill-emerald-500 dark:fill-emerald-400" />
+                <Printer className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>{secondaryButtonText}</span>
               </Link>
             </div>
@@ -315,6 +316,10 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
           {/* Optional Children Slot (e.g. Interactive Print Terminal) */}
           {children && (
             <div className="mt-8 sm:mt-12 max-w-3xl mx-auto animate-fade-slide-in-4" id="upload">
+              {/* Send files vs Print shop Toggle Switch right above Terminal */}
+              <div className="flex justify-center mb-6">
+                <RoleToggleSwitch activeRole="upload" />
+              </div>
               {children}
             </div>
           )}

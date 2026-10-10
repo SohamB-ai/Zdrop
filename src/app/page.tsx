@@ -176,9 +176,9 @@ export default function StudentPage() {
               description="Print campus documents in 10 seconds flat. Drop files on your phone, configure copies and sides in two taps, and hand a 6-digit PIN across the desk. No WhatsApp downloads, no flash drives, zero file leaks."
               primaryButtonText="Drop Files Below"
               primaryButtonHref="#upload"
-              secondaryButtonText="Operator Kiosk"
+              secondaryButtonText="Print Shop"
               secondaryButtonHref="/kiosk"
-              ctaButtonText="Launch Kiosk"
+              ctaButtonText="Print Shop"
               ctaButtonHref="/kiosk"
               partnersTitle="Trusted across university xerox counters & campus copy centers"
             >
