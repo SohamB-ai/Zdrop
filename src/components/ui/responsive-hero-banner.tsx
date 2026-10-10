@@ -279,32 +279,32 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
             </div>
 
             {/* Display Headline */}
-            <h1 className="sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] text-4xl text-zinc-900 dark:text-white font-extrabold tracking-tight sm:tracking-tighter font-sans animate-fade-slide-in-2">
+            <h1 className="text-3xl min-[360px]:text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] text-zinc-900 dark:text-white font-extrabold tracking-tight sm:tracking-tighter font-heading animate-fade-slide-in-2">
               {title}
               <br className="hidden sm:block" />
-              <span className="text-emerald-600 dark:text-emerald-400 italic block sm:inline mt-1 sm:mt-0 font-sans font-extrabold">
+              <span className="text-emerald-600 dark:text-emerald-400 italic block sm:inline mt-1 sm:mt-0 font-heading font-extrabold">
                 {" "}{titleLine2}
               </span>
             </h1>
 
             {/* Description Copy */}
-            <p className="sm:text-lg animate-fade-slide-in-3 text-base text-zinc-600 dark:text-zinc-300 max-w-2xl mt-6 mx-auto font-sans leading-relaxed">
+            <p className="text-sm min-[360px]:text-base sm:text-lg animate-fade-slide-in-3 text-zinc-600 dark:text-zinc-300 max-w-2xl mt-5 sm:mt-6 mx-auto font-sans leading-relaxed">
               {description}
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:gap-4 mt-8 gap-3 items-center justify-center animate-fade-slide-in-4">
+            <div className="flex flex-col sm:flex-row sm:gap-4 mt-7 sm:mt-8 gap-3 items-stretch sm:items-center justify-center w-full max-w-md sm:max-w-none mx-auto animate-fade-slide-in-4">
               <a
                 href={primaryButtonHref}
                 onClick={(e) => handleNavClick(e, primaryButtonHref)}
-                className="inline-flex items-center gap-2 text-sm font-bold text-zinc-950 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 rounded-full py-3.5 px-6 font-sans transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.35)] cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-bold text-zinc-950 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 rounded-full py-3.5 px-6 font-heading transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.35)] cursor-pointer touch-manipulation min-h-[48px]"
               >
                 <span>{primaryButtonText}</span>
                 <ArrowRight className="h-4 w-4" />
               </a>
               <Link
                 href={secondaryButtonHref}
-                className="inline-flex items-center gap-2 rounded-full bg-white hover:bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 border border-zinc-200 dark:border-white/15 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-white font-sans transition-all active:scale-95 shadow-xs dark:shadow-none"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white hover:bg-zinc-100 dark:bg-white/5 dark:hover:bg-white/10 border border-zinc-200 dark:border-white/15 px-6 py-3.5 text-sm font-semibold text-zinc-900 dark:text-white font-heading transition-all active:scale-95 shadow-xs dark:shadow-none touch-manipulation min-h-[48px]"
               >
                 <Play className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 fill-emerald-500 dark:fill-emerald-400" />
                 <span>{secondaryButtonText}</span>
@@ -314,7 +314,7 @@ const ResponsiveHeroBanner: React.FC<ResponsiveHeroBannerProps> = ({
 
           {/* Optional Children Slot (e.g. Interactive Print Terminal) */}
           {children && (
-            <div className="mt-12 max-w-3xl mx-auto animate-fade-slide-in-4" id="upload">
+            <div className="mt-8 sm:mt-12 max-w-3xl mx-auto animate-fade-slide-in-4" id="upload">
               {children}
             </div>
           )}

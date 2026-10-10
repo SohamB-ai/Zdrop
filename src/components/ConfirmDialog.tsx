@@ -79,7 +79,7 @@ export function ConfirmDialog({
             </div>
 
             <div>
-              <h3 id="confirm-title" className="text-base font-bold text-zinc-900 dark:text-white font-sans">
+              <h3 id="confirm-title" className="text-base font-bold text-zinc-900 dark:text-white font-heading">
                 {title}
               </h3>
               <p id="confirm-description" className="text-xs text-zinc-600 dark:text-zinc-300 mt-1.5 font-sans leading-relaxed">
@@ -92,7 +92,7 @@ export function ConfirmDialog({
                 type="button"
                 onClick={onCancel}
                 disabled={isConfirming}
-                className="flex-1 py-2.5 px-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 hover:bg-zinc-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition active:scale-[0.98] cursor-pointer"
+                className="flex-1 py-2.5 px-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 hover:bg-zinc-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition active:scale-[0.98] cursor-pointer font-heading"
               >
                 {cancelLabel}
               </button>
@@ -101,7 +101,7 @@ export function ConfirmDialog({
                 type="button"
                 onClick={onConfirm}
                 disabled={isConfirming}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white text-xs font-bold transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-display shadow-sm dark:shadow-[0_0_15px_rgba(244,63,94,0.35)]"
+                className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white text-xs font-bold transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-heading shadow-sm dark:shadow-[0_0_15px_rgba(244,63,94,0.35)]"
               >
                 {isConfirming ? "Deleting..." : confirmLabel}
               </button>

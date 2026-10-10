@@ -113,7 +113,7 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
 
               <Link
                 href="/kiosk"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold font-sans transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold font-heading transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
               >
                 <Monitor className="w-3.5 h-3.5" />
                 <span>Operator Kiosk</span>
@@ -123,7 +123,7 @@ export function Navbar({ currentRole = "student" }: NavbarProps) {
           ) : (
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold font-sans transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold font-heading transition-all active:scale-95 shadow-[0_0_16px_rgba(34,197,94,0.35)]"
             >
               <UploadCloud className="w-3.5 h-3.5" />
               <span>Back to Upload</span>

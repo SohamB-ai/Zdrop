@@ -20,7 +20,7 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
 
       {/* Headlines */}
       <div className="space-y-2">
-        <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight font-sans">
+        <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight font-heading">
           Files Permanently Destroyed
         </h2>
         <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 max-w-sm mx-auto font-sans leading-relaxed">
@@ -35,7 +35,7 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
       {/* Anonymous Destruction Certificate Card */}
       <div className="p-5 rounded-2xl border border-emerald-500/30 bg-white/90 dark:bg-[#121214]/90 shadow-sm dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] text-left text-xs space-y-3 max-w-sm mx-auto backdrop-blur-md transition-colors">
         <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-white/10">
-          <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white font-sans">
+          <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white font-heading">
             <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
             <span>Zero-Retention Audit Receipt</span>
           </div>
@@ -85,7 +85,7 @@ export function SuccessView({ session, onReset }: SuccessViewProps) {
         <button
           type="button"
           onClick={onReset}
-          className="w-full max-w-sm mx-auto h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
+          className="w-full max-w-sm mx-auto h-12 min-[375px]:h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-heading touch-manipulation"
         >
           <span>Print Another Document</span>
           <ArrowRight className="w-4 h-4 text-zinc-950" />

@@ -54,7 +54,7 @@ export function CodeView({
       {/* Preferences Summary Micro-Card */}
       <div className="p-4 sm:p-5 rounded-2xl border border-zinc-200 dark:border-white/10 bg-white/90 dark:bg-[#121214]/90 backdrop-blur-md shadow-sm dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs space-y-2.5 transition-colors">
         <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-white/10">
-          <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white font-sans">
+          <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white font-heading">
             <Sliders className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
             <span>Configured Print Parameters</span>
           </div>

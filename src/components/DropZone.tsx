@@ -152,7 +152,7 @@ export function DropZone({
           }}
           aria-label="Select documents"
           onClick={() => !disabled && inputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-7 text-center cursor-pointer transition-all duration-200 ${
+          className={`relative border-2 border-dashed rounded-2xl p-5 sm:p-7 text-center cursor-pointer transition-all duration-200 touch-manipulation ${
             isDragging
               ? "border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 shadow-[0_0_24px_rgba(34,197,94,0.3)]"
               : "border-zinc-300 dark:border-white/15 hover:border-emerald-500/70 hover:bg-emerald-50/20 dark:hover:border-emerald-500/60 dark:hover:bg-white/[0.02] bg-zinc-50/80 dark:bg-[#121214]/80"
@@ -172,7 +172,7 @@ export function DropZone({
             <UploadCloud className="w-6 h-6" />
           </div>
 
-          <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-1 font-sans">
+          <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-1 font-heading">
             Tap to select or drop documents
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto mb-3 font-sans">

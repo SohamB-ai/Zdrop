@@ -25,7 +25,7 @@ export function Footer() {
 
           {/* Column: Application */}
           <div className="space-y-3">
-            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-mono">
+            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-heading">
               Terminal
             </h4>
             <ul className="space-y-2 font-medium">
@@ -54,7 +54,7 @@ export function Footer() {
 
           {/* Column: Security & Privacy */}
           <div className="space-y-3">
-            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-mono">
+            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-heading">
               Privacy Specs
             </h4>
             <ul className="space-y-2 font-medium">
@@ -83,7 +83,7 @@ export function Footer() {
 
           {/* Column: Open Source */}
           <div className="space-y-3">
-            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-mono">
+            <h4 className="text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-wider font-heading">
               Open Source
             </h4>
             <ul className="space-y-2 font-medium">

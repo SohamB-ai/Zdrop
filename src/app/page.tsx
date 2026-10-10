@@ -183,12 +183,13 @@ export default function StudentPage() {
               partnersTitle="Trusted across university xerox counters & campus copy centers"
             >
               {/* Interactive Print Terminal Card with Gradient Blob Effect */}
-              <GradientBlobCard className="rounded-3xl border border-emerald-500/30">
-                <div className="p-5 sm:p-7">
-                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-200 dark:border-white/10">
+              {/* Interactive Print Terminal Card with Gradient Blob Effect */}
+              <GradientBlobCard className="rounded-2xl sm:rounded-3xl border border-emerald-500/30">
+                <div className="p-4 min-[375px]:p-5 sm:p-7">
+                  <div className="flex items-center justify-between pb-3 sm:pb-4 mb-4 border-b border-zinc-200 dark:border-white/10">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider font-sans">
+                      <span className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider font-heading">
                         Interactive Print Terminal
                       </span>
                     </div>
@@ -224,7 +225,7 @@ export default function StudentPage() {
                     )}
 
                     {!validation.success && (
-                      <p role="alert" className="text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 p-2.5 rounded-xl">
+                      <p role="alert" className="text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 p-2.5 rounded-xl font-sans">
                         {validation.error.issues[0].message}
                       </p>
                     )}
@@ -234,7 +235,7 @@ export default function StudentPage() {
                       <button
                         type="submit"
                         disabled={isGenerating}
-                        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
+                        className="w-full h-12 min-[375px]:h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-heading touch-manipulation"
                       >
                         {isGenerating ? (
                           <>

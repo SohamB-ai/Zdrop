@@ -30,7 +30,7 @@ export function QuickFaqAndKiosk() {
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Frequently Asked Questions</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
+            <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-heading">
               Essential Answers, Zero Fluff
             </h2>
           </div>
@@ -42,7 +42,7 @@ export function QuickFaqAndKiosk() {
                 className="h-full hover:border-emerald-500/40 transition-all duration-200"
               >
                 <div className="p-5 sm:p-6 space-y-2.5 h-full">
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-sans flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-heading flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>{faq.q}</span>
                   </h3>
@@ -63,7 +63,7 @@ export function QuickFaqAndKiosk() {
                 <Monitor className="w-3.5 h-3.5" />
                 <span>For Print Shop & Counter Operators</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
+              <h3 className="text-2xl sm:text-3xl text-zinc-900 dark:text-white font-bold tracking-tight font-heading">
                 Running a Xerox Counter or Copy Shop?
               </h3>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-sans">
@@ -73,7 +73,7 @@ export function QuickFaqAndKiosk() {
 
             <Link
               href="/kiosk"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-sm font-bold font-sans transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.4)] shrink-0 cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-sm font-bold font-heading transition-all active:scale-95 shadow-[0_0_24px_rgba(34,197,94,0.4)] shrink-0 cursor-pointer"
             >
               <Monitor className="w-4 h-4" />
               <span>Launch Operator Kiosk</span>

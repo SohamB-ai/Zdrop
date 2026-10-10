@@ -35,7 +35,7 @@ export function HowItWorksSummary() {
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-3">
             <span>Simple 3-Step Flow</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-sans">
+          <h2 className="text-3xl sm:text-4xl text-zinc-900 dark:text-white font-bold tracking-tight font-heading">
             How ZDrop Works in Practice
           </h2>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 font-sans">
@@ -62,7 +62,7 @@ export function HowItWorksSummary() {
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white font-sans">
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white font-heading">
                       {item.title}
                     </h3>
 
@@ -79,7 +79,7 @@ export function HowItWorksSummary() {
         <div className="mt-10 text-center">
           <a
             href="#upload"
-            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold font-heading text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition cursor-pointer"
           >
             <span>Ready to try? Drop files above</span>
             <ArrowRight className="w-3.5 h-3.5" />

@@ -136,7 +136,7 @@ export function KioskOtpInput({
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       {/* 6 Digit Input Boxes */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-3" onPaste={handlePaste}>
+      <div className="flex items-center justify-center gap-1 min-[360px]:gap-1.5 sm:gap-3" onPaste={handlePaste}>
         {digits.map((digit, idx) => (
           <div key={idx} className="flex items-center">
             <input
@@ -155,14 +155,14 @@ export function KioskOtpInput({
               onChange={(e) => handleDigitChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
               disabled={isLoading}
-              className={`w-9 min-[375px]:w-10 h-14 sm:w-14 sm:h-20 text-center text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none ${
+              className={`w-8 min-[360px]:w-9 min-[400px]:w-11 sm:w-14 h-12 min-[360px]:h-14 sm:h-20 text-center text-xl min-[360px]:text-2xl sm:text-3xl font-extrabold font-mono rounded-xl border-2 transition-all outline-none touch-manipulation ${
                 digit
                   ? "border-emerald-500 bg-emerald-50/60 dark:bg-[#18181b] text-emerald-700 dark:text-emerald-400 shadow-[0_0_12px_rgba(34,197,94,0.3)]"
                   : "border-zinc-300 dark:border-white/10 bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-white hover:border-zinc-400 dark:hover:border-white/20 focus:border-emerald-500 focus:bg-white dark:focus:bg-[#18181b] focus:ring-4 focus:ring-emerald-500/20"
               }`}
             />
             {idx === 2 && (
-              <span className="hidden min-[375px]:inline mx-1 text-zinc-400 dark:text-zinc-600 font-bold text-xl select-none">
+              <span className="hidden min-[390px]:inline mx-0.5 sm:mx-1 text-zinc-400 dark:text-zinc-600 font-bold text-lg select-none">
                 •
               </span>
             )}
@@ -172,7 +172,7 @@ export function KioskOtpInput({
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 rounded-xl">
+        <div className="flex items-center gap-2 p-3 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 rounded-xl font-sans">
           <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -183,7 +183,7 @@ export function KioskOtpInput({
         type="button"
         onClick={() => isComplete && onSubmit(digits.join(""))}
         disabled={!isComplete || isLoading}
-        className="w-full h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-sans"
+        className="w-full h-12 min-[375px]:h-13 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)] text-sm font-heading touch-manipulation"
       >
         {isLoading ? (
           <>
@@ -211,7 +211,7 @@ export function KioskOtpInput({
                 type="button"
                 onClick={() => handleKeypadPress(key)}
                 disabled={isLoading}
-                className="h-12 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#18181b] hover:bg-zinc-100 dark:hover:bg-[#27272a] hover:border-emerald-500/30 text-zinc-900 dark:text-white font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer shadow-2xs dark:shadow-none"
+                className="h-12 min-[375px]:h-13 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#18181b] hover:bg-zinc-100 dark:hover:bg-[#27272a] hover:border-emerald-500/30 text-zinc-900 dark:text-white font-heading font-bold text-base flex items-center justify-center active:scale-[0.96] transition cursor-pointer shadow-2xs dark:shadow-none touch-manipulation"
               >
                 {key === "BACKSPACE" ? (
                   <Delete className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />

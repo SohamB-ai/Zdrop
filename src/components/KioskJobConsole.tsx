@@ -267,7 +267,7 @@ export function KioskJobConsole({
             type="button"
             onClick={onCancel}
             disabled={isPurging}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white text-xs font-semibold transition active:scale-[0.98] cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white text-xs font-semibold font-heading transition active:scale-[0.98] cursor-pointer"
           >
             Close Terminal
           </button>
@@ -277,7 +277,7 @@ export function KioskJobConsole({
               type="button"
               onClick={handlePrintClick}
               disabled={isPurging}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold text-sm font-sans flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)]"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-400 text-zinc-950 font-bold text-sm font-heading flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer shadow-[0_0_24px_rgba(34,197,94,0.35)]"
             >
               <Printer className="w-4 h-4 text-zinc-950" />
               <span>Print Document (Ctrl+P)</span>
@@ -287,7 +287,7 @@ export function KioskJobConsole({
               type="button"
               onClick={() => setConfirmPurge(true)}
               disabled={isPurging}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl border border-rose-300 dark:border-white/10 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white font-bold text-sm font-sans flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl border border-rose-300 dark:border-white/10 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white font-bold text-sm font-heading flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer disabled:opacity-50"
             >
               <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               <span>{isPurging ? "Purging Files..." : "Mark Printed & Purge"}</span>

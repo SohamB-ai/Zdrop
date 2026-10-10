@@ -48,7 +48,7 @@ export function PrintPreferencesCard({
       {/* Header */}
       <div className="flex items-center gap-2 pb-3 border-b border-zinc-200 dark:border-white/5">
         <SlidersHorizontal className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-        <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white tracking-tight font-sans">
+        <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white tracking-tight font-heading">
           Print Preferences
         </h3>
       </div>
@@ -62,7 +62,7 @@ export function PrintPreferencesCard({
 
       {/* Color Mode */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-sans">
+        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-heading">
           Color Mode
         </label>
         <SegmentedControl
@@ -78,7 +78,7 @@ export function PrintPreferencesCard({
 
       {/* Print Sides */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-sans">
+        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-heading">
           Print Sides
         </label>
         <SegmentedControl
@@ -94,7 +94,7 @@ export function PrintPreferencesCard({
 
       {/* Page Selection */}
       <div className="space-y-2 pt-1">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-sans">
+        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-heading">
           Page Range
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -102,14 +102,14 @@ export function PrintPreferencesCard({
             type="button"
             onClick={() => handlePageRangeRadio(false)}
             disabled={disabled}
-            className={`p-2.5 rounded-xl border text-left transition cursor-pointer active:scale-[0.98] ${
+            className={`p-2.5 rounded-xl border text-left transition cursor-pointer active:scale-[0.98] touch-manipulation ${
               !isCustomPageRange
                 ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:border-emerald-500/60 dark:bg-emerald-950/40 dark:text-emerald-200 font-semibold shadow-2xs"
                 : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 dark:border-white/10 dark:bg-[#18181b] dark:text-zinc-400 dark:hover:border-white/20"
             }`}
           >
-            <div className="text-xs font-medium">All Pages</div>
-            <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal">
+            <div className="text-xs font-medium font-sans">All Pages</div>
+            <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal font-sans">
               Print entire document
             </div>
           </button>
@@ -118,14 +118,14 @@ export function PrintPreferencesCard({
             type="button"
             onClick={() => handlePageRangeRadio(true)}
             disabled={disabled}
-            className={`p-2.5 rounded-xl border text-left transition cursor-pointer active:scale-[0.98] ${
+            className={`p-2.5 rounded-xl border text-left transition cursor-pointer active:scale-[0.98] touch-manipulation ${
               isCustomPageRange
                 ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:border-emerald-500/60 dark:bg-emerald-950/40 dark:text-emerald-200 font-semibold shadow-2xs"
                 : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 dark:border-white/10 dark:bg-[#18181b] dark:text-zinc-400 dark:hover:border-white/20"
             }`}
           >
-            <div className="text-xs font-medium">Custom Range</div>
-            <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal">
+            <div className="text-xs font-medium font-sans">Custom Range</div>
+            <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal font-sans">
               Select specific pages
             </div>
           </button>
@@ -138,7 +138,7 @@ export function PrintPreferencesCard({
               placeholder="e.g. 1-5, 8, 11-14"
               value={preferences.pageRange === "ALL" ? "" : preferences.pageRange}
               onChange={(e) => updateField("pageRange", e.target.value)}
-              className="w-full h-10 px-3 rounded-xl border border-zinc-300 bg-white text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono dark:border-white/10 dark:bg-[#09090b] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400"
+              className="w-full h-11 sm:h-10 px-3 rounded-xl border border-zinc-300 bg-white text-base sm:text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono dark:border-white/10 dark:bg-[#09090b] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 touch-manipulation"
             />
           </div>
         )}
@@ -146,7 +146,7 @@ export function PrintPreferencesCard({
 
       {/* Optional Note */}
       <div className="space-y-1.5 pt-1">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-sans">
+        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block font-heading">
           Instructions for Operator (Optional)
         </label>
         <input
@@ -155,7 +155,7 @@ export function PrintPreferencesCard({
           placeholder="e.g. Staple top-left, landscape mode"
           value={preferences.customerNotes || ""}
           onChange={(e) => updateField("customerNotes", e.target.value)}
-          className="w-full h-10 px-3 rounded-xl border border-zinc-300 bg-white text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-sans dark:border-white/10 dark:bg-[#09090b] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400"
+          className="w-full h-11 sm:h-10 px-3 rounded-xl border border-zinc-300 bg-white text-base sm:text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-sans dark:border-white/10 dark:bg-[#09090b] dark:text-white dark:placeholder:text-zinc-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 touch-manipulation"
         />
       </div>
     </fieldset>
