@@ -9,6 +9,7 @@
   --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-inter: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-garamond: var(--font-garamond), "EB Garamond", Garamond, "Apple Garamond", "Baskerville", Georgia, serif;
   --color-background: var(--bg-0);
   --color-foreground: var(--text-100);
 }
@@ -18,6 +19,7 @@
   --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-inter: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-garamond: var(--font-garamond), "EB Garamond", Garamond, "Apple Garamond", "Baskerville", Georgia, serif;
 
   --bg-0: #fafafa;
   --bg-100: #ffffff;
@@ -119,6 +121,10 @@
 .font-inter,
 .font-body {
   font-family: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-garamond {
+  font-family: var(--font-garamond), "EB Garamond", Garamond, "Apple Garamond", "Baskerville", Georgia, serif;
 }
 
 .animate-fade-slide-in-1 {
