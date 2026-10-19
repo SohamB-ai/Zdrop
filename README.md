@@ -62,3 +62,13 @@ The final sources passed TypeScript and a production Next.js build in a clean ch
 Playwright browser checks verified mobile upload and print preferences, code and QR display, a separate kiosk tab with PDF preview and the same preferences, explicit deletion confirmation, and the student's live deletion receipt. Production pages had no browser-console errors, code entry fit 320px without horizontal overflow, and camera permission denial preserved manual entry. Actual camera hardware, physical printers, and a live Firebase project remain environment acceptance checks; no credentials were available, and the local Firebase emulator also requires a Java runtime that is not installed here.
 
 Run `npm run test:api` and `npm run test:formats` against a running local server. `npm run test:edge` is a local-only test: run it from the same directory as the local server because it changes test-session expiry and lock files in `.zdrop-data`. Set `ZDROP_TEST_URL` if using a different port. Edge tests intentionally reach the one-minute lookup rate limit.
+
+## Contributors
+
+Thanks to everyone contributing to and building ZDrop:
+
+- **[Soham Belwadkar](https://github.com/SohamB-ai)** — Project Lead & Creator
+- **[Rehan Sanadi](https://github.com/rehansanadi007)** — Core Contributor
+- **[Harsh Nimbalkar](https://github.com/Hars6175)** — Contributor
+
+Contributions, issues, and feature requests are welcome!

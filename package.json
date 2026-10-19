@@ -1,7 +1,23 @@
 {
   "name": "zdrop",
   "version": "1.0.0",
+  "description": "Anonymous document handoff for print shops",
   "private": true,
+  "author": "Soham Belwadkar",
+  "contributors": [
+    {
+      "name": "Soham Belwadkar",
+      "url": "https://github.com/SohamB-ai"
+    },
+    {
+      "name": "Rehan Sanadi",
+      "url": "https://github.com/rehansanadi007"
+    },
+    {
+      "name": "Harsh Nimbalkar",
+      "url": "https://github.com/Hars6175"
+    }
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
