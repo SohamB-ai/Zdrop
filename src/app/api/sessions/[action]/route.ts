@@ -134,6 +134,7 @@ async function handle(req: NextRequest, action: string) {
     console.error('[sessions error]:', e);
     if (e instanceof DocumentError) return reply({ error: e.message }, 400);
     if (e instanceof z.ZodError) return reply({ error: e.issues[0].message }, 400);
+    if (e instanceof SyntaxError) return reply({ error: 'Malformed JSON payload.' }, 400);
     return reply({ error: (e as Error)?.message || 'The operation could not be completed. Please retry.' }, 500);
   }
 }

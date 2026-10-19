@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         profile = {
           id: raw.id,
           email: raw.email,
-          name: raw.user_metadata?.full_name || raw.user_metadata?.name || raw.email.split('@')[0],
+          name: raw.user_metadata?.full_name || raw.user_metadata?.name || raw.email?.split('@')[0] || 'User',
           avatarUrl: raw.user_metadata?.avatar_url || raw.user_metadata?.picture,
           role: 'user',
           createdAt: Date.now(),

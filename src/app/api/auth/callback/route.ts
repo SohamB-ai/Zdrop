@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       const profile: UserProfile = {
         id: rawUser.id,
         email: rawUser.email,
-        name: rawUser.user_metadata?.full_name || rawUser.user_metadata?.name || rawUser.email.split('@')[0],
+        name: rawUser.user_metadata?.full_name || rawUser.user_metadata?.name || rawUser.email?.split('@')[0] || 'User',
         avatarUrl: rawUser.user_metadata?.avatar_url || rawUser.user_metadata?.picture,
         role: 'user',
         createdAt: Date.now(),
