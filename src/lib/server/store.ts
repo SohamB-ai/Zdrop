@@ -43,12 +43,14 @@ function currentLease(id: string) {
 }
 
 function firebase() {
-  // Keep the Admin SDK out of Supabase and local route initialization.
-  // Its JWKS dependency is ESM-only and can fail when loaded by a Node CJS function.
-  const { initializeApp, getApps, cert, applicationDefault } = require('firebase-admin/app') as typeof import('firebase-admin/app');
-  const { getFirestore } = require('firebase-admin/firestore') as typeof import('firebase-admin/firestore');
-  const { getAuth } = require('firebase-admin/auth') as typeof import('firebase-admin/auth');
-  const { getStorage } = require('firebase-admin/storage') as typeof import('firebase-admin/storage');
+  const adminApp = 'firebase-admin/app';
+  const adminFirestore = 'firebase-admin/firestore';
+  const adminAuth = 'firebase-admin/auth';
+  const adminStorage = 'firebase-admin/storage';
+  const { initializeApp, getApps, cert, applicationDefault } = require(adminApp) as typeof import('firebase-admin/app');
+  const { getFirestore } = require(adminFirestore) as typeof import('firebase-admin/firestore');
+  const { getAuth } = require(adminAuth) as typeof import('firebase-admin/auth');
+  const { getStorage } = require(adminStorage) as typeof import('firebase-admin/storage');
   if (!getApps().length) {
     initializeApp({
       credential: process.env.FIREBASE_PRIVATE_KEY
