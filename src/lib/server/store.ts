@@ -15,7 +15,7 @@ import {
   getSupabaseSignedUrl,
   getSupabaseFileBytes,
   putSupabaseFileBytes,
-  deleteSupabasePrefix,
+  deleteSupabaseFiles,
 } from './supabase-storage';
 
 export interface StoredSession extends SessionData {
@@ -183,9 +183,9 @@ export async function purge(s: StoredSession, source: StoredSession['deletionSou
   await saveSession(s);
 
   if (isSupabaseStorage) {
-    await deleteSupabasePrefix(`sessions/${s.id}`).catch(() => {});
+    await deleteSupabaseFiles(s.files.map((file) => `sessions/${s.id}/${file.fileId}`));
   } else if (isFirebaseStorage) {
-    await firebase().bucket.deleteFiles({ prefix: `sessions/${s.id}/` }).catch(() => {});
+    await firebase().bucket.deleteFiles({ prefix: `sessions/${s.id}/` });
   } else {
     await Promise.all(s.files.map((f) => rm(path.join(root, s.id, f.fileId), { force: true })));
   }

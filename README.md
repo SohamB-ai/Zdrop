@@ -29,7 +29,7 @@ A signed-in customer with a verified Google connection appears in the shop owner
 
 For Vercel and Netlify, leave `ZDROP_STORAGE` unset to use Supabase or set an explicit cloud mode. Set the provider credentials in the deployment environment. The `local` setting in `.env.example` is for local development. On hosted deployments it resolves to Supabase so stale development settings cannot send data to temporary disk.
 
-Apply the files in `supabase/migrations` in order before deploying the hosted shop API. The pricing migration adds the persistent rates and UPI fields and restricts shop RPC execution to the backend service role.
+Apply the files in `supabase/migrations` in order before deploying the hosted shop API. The session migration bootstraps OTPs, file storage, and cleanup for fresh projects. It leaves a complete pre-existing session RPC setup in place and stops on a partial legacy setup. The pricing migration adds the persistent rates and UPI fields and restricts shop RPC execution to the backend service role.
 
 ## Firebase and Vercel setup
 

@@ -4,18 +4,18 @@ function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error('Supabase configuration missing.');
-  return { url: url.replace(/\/$/, ''), key };
+  const headers = { apikey: key, ...(key.startsWith('sb_secret_') ? {} : { Authorization: `Bearer ${key}` }) };
+  return { url: url.replace(/\/$/, ''), headers };
 }
 
 const BUCKET = 'zdrop-documents';
 
 export async function createSupabaseUploadUrl(filePath: string): Promise<string> {
-  const { url, key } = getSupabaseConfig();
+  const { url, headers } = getSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/upload/sign/${BUCKET}/${filePath}`, {
     method: 'POST',
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...headers,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ upsert: true }),
@@ -27,13 +27,12 @@ export async function createSupabaseUploadUrl(filePath: string): Promise<string>
 }
 
 export async function getSupabaseSignedUrl(filePath: string, expiresAt: number): Promise<string> {
-  const { url, key } = getSupabaseConfig();
+  const { url, headers } = getSupabaseConfig();
   const expiresIn = Math.max(10, Math.min(60, Math.floor((expiresAt - Date.now()) / 1000)));
   const res = await fetch(`${url}/storage/v1/object/sign/${BUCKET}/${filePath}`, {
     method: 'POST',
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...headers,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ expiresIn }),
@@ -45,11 +44,10 @@ export async function getSupabaseSignedUrl(filePath: string, expiresAt: number):
 }
 
 export async function getSupabaseFileBytes(filePath: string): Promise<Buffer> {
-  const { url, key } = getSupabaseConfig();
+  const { url, headers } = getSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/authenticated/${BUCKET}/${filePath}`, {
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...headers,
     },
     cache: 'no-store',
   });
@@ -58,12 +56,11 @@ export async function getSupabaseFileBytes(filePath: string): Promise<Buffer> {
 }
 
 export async function putSupabaseFileBytes(filePath: string, bytes: Buffer, contentType: string): Promise<void> {
-  const { url, key } = getSupabaseConfig();
+  const { url, headers } = getSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/${BUCKET}/${filePath}`, {
     method: 'POST',
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...headers,
       'Content-Type': contentType,
       'x-upsert': 'true',
     },
@@ -73,16 +70,16 @@ export async function putSupabaseFileBytes(filePath: string, bytes: Buffer, cont
   if (!res.ok) throw new Error(`Supabase file save failed (${res.status})`);
 }
 
-export async function deleteSupabasePrefix(prefix: string): Promise<void> {
-  const { url, key } = getSupabaseConfig();
+export async function deleteSupabaseFiles(paths: string[]): Promise<void> {
+  if (!paths.length) return;
+  const { url, headers } = getSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/${BUCKET}`, {
     method: 'DELETE',
     headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
+      ...headers,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ prefixes: [prefix] }),
+    body: JSON.stringify({ prefixes: paths }),
     cache: 'no-store',
   });
   if (!res.ok) throw new Error(`Supabase delete failed (${res.status})`);
