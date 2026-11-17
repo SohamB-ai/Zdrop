@@ -2,8 +2,9 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { Store, QrCode, BadgePercent } from "lucide-react";
+import { Store, QrCode, BadgePercent, Lock, ArrowRight } from "lucide-react";
 import { SessionData } from "@/lib/types";
 import {
   resolveByAccessCode,
@@ -15,11 +16,13 @@ import { KioskEntryView } from "@/views/KioskEntryView";
 import { KioskJobConsole } from "@/components/KioskJobConsole";
 import { Footer } from "@/components/landing/Footer";
 import { useAuth } from "@/lib/auth-context";
+import { useUser } from "@clerk/nextjs";
 import { ShopQrModal } from "@/components/ShopQrModal";
 import { ShopPricingModal } from "@/components/ShopPricingModal";
 
 function KioskContent() {
-  const { shop } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
+  const { shop, refreshShop } = useAuth();
   const searchParams = useSearchParams();
   const [session, setSession] = useState<SessionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +57,7 @@ function KioskContent() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      setSession(await resolveByAccessCode(code));
+      setSession(await resolveByAccessCode(code, shop?.id));
     } catch (e) {
       setErrorMessage((e as Error).message);
     } finally {
@@ -83,6 +86,113 @@ function KioskContent() {
     setErrorMessage(null);
   };
 
+  if (!isLoaded) {
+    return (
+      <div className="zd-app min-h-screen flex items-center justify-center">
+        <p className="text-xs text-slate-400">Loading Print Counter…</p>
+      </div>
+    );
+  }
+
+  // 1. Unauthenticated Visitor Barrier (Customers cannot enter kiosk)
+  if (!isSignedIn) {
+    return (
+      <div className="zd-app">
+        <Navbar currentRole="kiosk" showSections={false} />
+        <main id="main-content" className="zd-main py-16 px-4">
+          <div className="max-w-md mx-auto text-center space-y-6">
+            <div className="zd-card-panel p-8 space-y-5">
+              <div className="w-14 h-14 mx-auto rounded-full bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
+                <Store size={26} />
+              </div>
+
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800">
+                  Shop Partner Portal
+                </span>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-3">
+                  Print Shop Operator Access
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  Are you a print shop owner or copy center operator? Sign in with your Google or work account via Clerk to accept student print codes, manage your rates, and receive instant direct UPI payments.
+                </p>
+              </div>
+
+              <div className="pt-2 space-y-2">
+                <Link
+                  href="/sign-in?redirect_url=/kiosk"
+                  className="zd-button zd-button--primary w-full justify-center"
+                >
+                  <span>Sign In with Google / Clerk</span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link
+                  href="/"
+                  className="zd-button zd-button--secondary w-full justify-center"
+                >
+                  <span>I&apos;m a Student (Upload & Print)</span>
+                </Link>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 text-[11px] text-slate-400">
+                <span>Want to run a ZDrop counter? </span>
+                <Link
+                  href="/sign-up?redirect_url=/shop/onboarding"
+                  className="text-blue-600 dark:text-blue-400 font-semibold underline"
+                >
+                  Register your print shop
+                </Link>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 2. Signed-in user who hasn't registered a shop yet
+  if (!shop) {
+    return (
+      <div className="zd-app">
+        <Navbar currentRole="kiosk" showSections={false} />
+        <main id="main-content" className="zd-main py-16 px-4">
+          <div className="max-w-md mx-auto text-center space-y-6">
+            <div className="zd-card-panel p-8 space-y-5">
+              <div className="w-14 h-14 mx-auto rounded-full bg-amber-50 dark:bg-amber-950/60 flex items-center justify-center text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/40">
+                <Store size={26} />
+              </div>
+
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                  Step 2: Counter Setup
+                </span>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mt-3">
+                  Shop Profile & UPI Required
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  You are signed in via Google / Clerk. Please register your shop name, per-page rates, and counter UPI ID so students can pay you directly when you accept their print OTPs.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/shop/onboarding"
+                  className="zd-button zd-button--primary w-full justify-center"
+                >
+                  <span>Complete Shop Setup & UPI (1 min)</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="zd-app">
       <Navbar currentRole="kiosk" />
@@ -96,44 +206,47 @@ function KioskContent() {
           )}
 
           {/* Shop Owner Status Banner */}
-          {shop && (
-            <div className="zd-shop-banner">
-              <div className="zd-shop-banner-info">
-                <div className="zd-shop-banner-icon">
-                  <Store size={20} />
-                </div>
-                <div>
-                  <div className="zd-shop-banner-title">
-                    <h2>{shop.shopName}</h2>
-                    <span className="zd-shop-code-pill">
-                      CODE: {shop.shopCode}
-                    </span>
-                  </div>
-                  <p className="zd-shop-banner-address">{shop.campusAddress}</p>
-                </div>
+          <div className="zd-shop-banner">
+            <div className="zd-shop-banner-info">
+              <div className="zd-shop-banner-icon">
+                <Store size={20} />
               </div>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setShowPricingModal(true)}
-                  className="zd-button zd-button--secondary"
-                >
-                  <BadgePercent size={16} />
-                  <span>Rates & UPI Setup</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowQrModal(true)}
-                  className="zd-button zd-button--secondary"
-                >
-                  <QrCode size={16} />
-                  <span>Counter QR Standee</span>
-                </button>
+              <div>
+                <div className="zd-shop-banner-title">
+                  <h2>{shop.shopName}</h2>
+                  <span className="zd-shop-code-pill">
+                    CODE: {shop.shopCode}
+                  </span>
+                  {shop.pricing?.upiId && (
+                    <span className="zd-pill-active" style={{ fontSize: "10px", padding: "2px 8px" }}>
+                      UPI: {shop.pricing.upiId}
+                    </span>
+                  )}
+                </div>
+                <p className="zd-shop-banner-address">{shop.campusAddress}</p>
               </div>
             </div>
-          )}
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowPricingModal(true)}
+                className="zd-button zd-button--secondary"
+              >
+                <BadgePercent size={16} />
+                <span>Rates & UPI Setup</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowQrModal(true)}
+                className="zd-button zd-button--secondary"
+              >
+                <QrCode size={16} />
+                <span>Counter QR Standee</span>
+              </button>
+            </div>
+          </div>
 
           {/* Success Toast */}
           {successToast && (
@@ -182,33 +295,30 @@ function KioskContent() {
       <Footer />
 
       {/* Printable Counter QR Standee Modal */}
-      {shop && (
-        <ShopQrModal
-          shop={shop}
-          isOpen={showQrModal}
-          onClose={() => setShowQrModal(false)}
-        />
-      )}
+      <ShopQrModal
+        shop={shop}
+        isOpen={showQrModal}
+        onClose={() => setShowQrModal(false)}
+      />
 
       {/* Shop Rates & UPI Counter Pricing Modal */}
-      {shop && (
-        <ShopPricingModal
-          shop={shop}
-          isOpen={showPricingModal}
-          onClose={() => setShowPricingModal(false)}
-          onSaved={() => {
-            setSuccessToast("Pricing rates and UPI setup saved successfully!");
-            setTimeout(() => setSuccessToast(null), 3500);
-          }}
-        />
-      )}
+      <ShopPricingModal
+        shop={shop}
+        isOpen={showPricingModal}
+        onClose={() => setShowPricingModal(false)}
+        onSaved={async () => {
+          await refreshShop();
+          setSuccessToast("Pricing rates and UPI setup saved successfully!");
+          setTimeout(() => setSuccessToast(null), 3500);
+        }}
+      />
     </div>
   );
 }
 
 export default function KioskPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Loading Kiosk Console…</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Loading Print Counter…</div>}>
       <KioskContent />
     </Suspense>
   );

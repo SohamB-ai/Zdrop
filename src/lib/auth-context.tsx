@@ -1,178 +1,71 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getRedirectResult, signInWithPopup, signInWithRedirect, type UserCredential } from 'firebase/auth';
-import { getClientAuth, getGoogleProvider } from './firebase-client';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { UserProfile, ShopProfile } from './types';
-
-interface RegisterShopData {
-  shopName: string;
-  ownerName: string;
-  email: string;
-  password: string;
-  phone: string;
-  campusAddress: string;
-  shopCode?: string;
-}
 
 interface AuthContextType {
   user: UserProfile | null;
   shop: ShopProfile | null;
   isLoading: boolean;
-  loginWithGoogle: (redirectTo?: string) => Promise<void>;
-  loginWithDevMock: (name?: string, email?: string) => Promise<void>;
-  loginShopOwner: (email: string, password: string) => Promise<void>;
-  registerShopOwner: (data: RegisterShopData) => Promise<void>;
+  isShopOwner: boolean;
+  refreshShop: () => Promise<void>;
   logout: () => Promise<void>;
-  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const clerk = useClerk();
   const [shop, setShop] = useState<ShopProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isShopLoading, setIsShopLoading] = useState(false);
 
-  const refresh = useCallback(async () => {
+  const fetchShop = useCallback(async (ownerId: string) => {
+    setIsShopLoading(true);
     try {
-      const res = await fetch('/api/auth/me', { cache: 'no-store' });
+      const res = await fetch(`/api/shops?ownerId=${encodeURIComponent(ownerId)}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user || null);
         setShop(data.shop || null);
       } else {
-        setUser(null);
         setShop(null);
       }
     } catch {
-      setUser(null);
       setShop(null);
     } finally {
-      setIsLoading(false);
+      setIsShopLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  const finishGoogleSignIn = useCallback(async (result: UserCredential, redirectTo?: string) => {
-    const idToken = await result.user.getIdToken();
-    const res = await fetch('/api/auth/token-exchange', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken }),
-    });
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || 'Failed to authenticate with server');
+    if (isSignedIn && clerkUser) {
+      fetchShop(clerkUser.id);
+    } else {
+      setShop(null);
     }
-    const data = await res.json();
-    setUser(data.user);
-    if (redirectTo && redirectTo !== window.location.pathname) {
-      window.location.href = redirectTo;
-    }
-  }, []);
+  }, [isSignedIn, clerkUser, fetchShop]);
 
-  useEffect(() => {
-    const auth = getClientAuth();
-    getRedirectResult(auth).then(async (result) => {
-      if (!result) return;
-      const redirectTo = sessionStorage.getItem('zdrop_auth_redirect') || '/';
-      sessionStorage.removeItem('zdrop_auth_redirect');
-      await finishGoogleSignIn(result, redirectTo);
-    }).catch((err) => {
-      console.error('Google redirect sign-in error:', err);
-      alert((err as Error).message || 'Google Sign-In failed. Please try again.');
-    });
-  }, [finishGoogleSignIn]);
-
-  const loginWithGoogle = async (redirectTo = typeof window !== 'undefined' ? window.location.pathname : '/') => {
-    setIsLoading(true);
-    try {
-      const auth = getClientAuth();
-      const provider = getGoogleProvider();
-
-      const result = await signInWithPopup(auth, provider);
-      await finishGoogleSignIn(result, redirectTo);
-    } catch (err: unknown) {
-      console.error('Google sign-in error:', err);
-      const firebaseError = err as { code?: string; message?: string };
-      if (firebaseError?.code === 'auth/popup-blocked') {
-        sessionStorage.setItem('zdrop_auth_redirect', redirectTo);
-        await signInWithRedirect(getClientAuth(), getGoogleProvider());
-        return;
+  const user: UserProfile | null = clerkUser
+    ? {
+        id: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress || '',
+        name: clerkUser.fullName || clerkUser.firstName || clerkUser.primaryEmailAddress?.emailAddress || 'User',
+        avatarUrl: clerkUser.imageUrl,
+        role: (clerkUser.publicMetadata?.role as 'user' | 'shop_owner') || (shop ? 'shop_owner' : 'user'),
+        shopId: shop?.id,
       }
-      if (
-        firebaseError?.code !== 'auth/popup-closed-by-user' &&
-        firebaseError?.code !== 'auth/cancelled-popup-request'
-      ) {
-        alert(firebaseError?.message || 'Google Sign-In failed. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    : null;
 
-  const loginWithDevMock = async (name?: string, email?: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/mock-google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      setUser(data.user);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loginShopOwner = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/shop/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      setUser(data.user);
-      setShop(data.shop || null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const registerShopOwner = async (data: RegisterShopData) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/auth/shop/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const resData = await res.json();
-      if (!res.ok) throw new Error(resData.error || 'Registration failed');
-      setUser(resData.user);
-      setShop(resData.shop || null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const isShopOwner = Boolean(shop || user?.role === 'shop_owner');
 
   const logout = async () => {
-    setIsLoading(true);
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null);
-      setShop(null);
-    } finally {
-      setIsLoading(false);
+    await clerk.signOut({ redirectUrl: '/' });
+  };
+
+  const refreshShop = async () => {
+    if (clerkUser) {
+      await fetchShop(clerkUser.id);
     }
   };
 
@@ -181,13 +74,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         shop,
-        isLoading,
-        loginWithGoogle,
-        loginWithDevMock,
-        loginShopOwner,
-        registerShopOwner,
+        isLoading: !isLoaded || isShopLoading,
+        isShopOwner,
+        refreshShop,
         logout,
-        refresh,
       }}
     >
       {children}

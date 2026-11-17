@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateShopPricing } from '@/lib/server/shops-store';
-import { getAuthUserFromCookie } from '@/lib/server/auth';
+import { updateShopPricing, getShopById } from '@/lib/server/shops-store';
+import { auth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
-    const user = getAuthUserFromCookie(req.headers.get('cookie'));
-    if (!user) {
+    const { userId } = await auth();
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
@@ -16,8 +16,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Shop ID and pricing are required.' }, { status: 400 });
     }
 
-    // Verify user owns the shop (or is admin/shop_owner)
-    if (user.role === 'shop_owner' && user.shopId && user.shopId !== shopId) {
+    const shop = await getShopById(shopId);
+    if (!shop) {
+      return NextResponse.json({ error: 'Shop not found.' }, { status: 404 });
+    }
+
+    // Verify user owns the shop
+    if (shop.ownerId && shop.ownerId !== userId) {
       return NextResponse.json({ error: 'Access denied for this shop.' }, { status: 403 });
     }
 

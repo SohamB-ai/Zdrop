@@ -72,10 +72,77 @@ export function calculatePrintCost(
   const copies = Math.max(1, preferences.copies || 1);
   const totalPages = effectivePagesPerCopy * copies;
 
-  // 4. Rate per page based on Color vs B&W
-  const isColor = preferences.colorMode === "COLOR";
-  const ratePerPage = isColor ? pricing.colorRate : pricing.bwRate;
-  const subtotal = Math.round(totalPages * ratePerPage * 100) / 100;
+  // 4. Rate per page based on Color Mode (BW, COLOR, or AUTO Smart Color Saver)
+  let detectedColorPages = 0;
+  let detectedBwPages = 0;
+  const colorPageNumbers: number[] = [];
+
+  for (const f of files) {
+    if (Array.isArray(f.colorPages) && f.colorPages.length > 0) {
+      detectedColorPages += f.colorPages.length;
+      colorPageNumbers.push(...f.colorPages);
+      if (Array.isArray(f.bwPages)) {
+        detectedBwPages += f.bwPages.length;
+      }
+    } else if (f.type?.startsWith("image/")) {
+      detectedColorPages += 1;
+      colorPageNumbers.push(1);
+    } else {
+      detectedBwPages += (f.pageCount || 1);
+    }
+  }
+
+  const isAuto = preferences.colorMode === "AUTO";
+  const isForcedColor = preferences.colorMode === "COLOR";
+
+  let ratePerPage = pricing.bwRate;
+  let subtotal = 0;
+  let colorPagesCount = 0;
+  let bwPagesCount = 0;
+  let savingsVsFullColor = 0;
+  let colorPagesList: string | undefined;
+
+  const sym = pricing.currencySymbol || "₹";
+  const sidesLabel = preferences.sides === "DOUBLE" ? " · 2-Sided" : "";
+
+  if (isForcedColor) {
+    ratePerPage = pricing.colorRate;
+    colorPagesCount = totalPages;
+    bwPagesCount = 0;
+    subtotal = Math.round(totalPages * ratePerPage * 100) / 100;
+  } else if (isAuto) {
+    if (detectedColorPages > 0) {
+      const colorPerCopy = Math.min(effectivePagesPerCopy, detectedColorPages);
+      const bwPerCopy = Math.max(0, effectivePagesPerCopy - colorPerCopy);
+
+      colorPagesCount = colorPerCopy * copies;
+      bwPagesCount = bwPerCopy * copies;
+
+      const colorCost = colorPagesCount * pricing.colorRate;
+      const bwCost = bwPagesCount * pricing.bwRate;
+      subtotal = Math.round((colorCost + bwCost) * 100) / 100;
+
+      const fullColorCost = totalPages * pricing.colorRate;
+      savingsVsFullColor = Math.max(0, Math.round((fullColorCost - subtotal) * 100) / 100);
+      ratePerPage = pricing.colorRate;
+
+      if (colorPageNumbers.length > 0) {
+        colorPagesList = Array.from(new Set(colorPageNumbers)).sort((a, b) => a - b).join(", ");
+      }
+    } else {
+      // Document is pure monochrome text or not analyzed yet
+      ratePerPage = pricing.bwRate;
+      bwPagesCount = totalPages;
+      colorPagesCount = 0;
+      subtotal = Math.round(totalPages * ratePerPage * 100) / 100;
+    }
+  } else {
+    // Forced B&W
+    ratePerPage = pricing.bwRate;
+    bwPagesCount = totalPages;
+    colorPagesCount = 0;
+    subtotal = Math.round(totalPages * ratePerPage * 100) / 100;
+  }
 
   // 5. Duplex savings (if double-sided discount is configured)
   let discount = 0;
@@ -87,24 +154,40 @@ export function calculatePrintCost(
 
   const totalAmount = Math.max(1, Math.round((subtotal - discount) * 100) / 100);
 
-  const sym = pricing.currencySymbol || "₹";
-  const modeLabel = isColor ? "Color" : "B&W";
-  const sidesLabel = preferences.sides === "DOUBLE" ? " · 2-Sided" : "";
-  const formula = `${effectivePagesPerCopy} ${
-    effectivePagesPerCopy === 1 ? "page" : "pages"
-  } × ${copies} ${copies === 1 ? "copy" : "copies"} @ ${sym}${ratePerPage.toFixed(
-    2
-  )} (${modeLabel}${sidesLabel})`;
+  let formula = "";
+  if (isAuto && colorPagesCount > 0 && bwPagesCount > 0) {
+    formula = `${colorPagesCount} Color (@ ${sym}${pricing.colorRate}) + ${bwPagesCount} B&W (@ ${sym}${pricing.bwRate})${sidesLabel}`;
+    if (savingsVsFullColor > 0) {
+      formula += ` · Saved ${sym}${savingsVsFullColor.toFixed(2)}!`;
+    }
+  } else if (isAuto && colorPagesCount > 0) {
+    formula = `${totalPages} Color pages @ ${sym}${pricing.colorRate.toFixed(2)} (Smart Color)${sidesLabel}`;
+  } else if (isAuto) {
+    formula = `${totalPages} pages B&W @ ${sym}${pricing.bwRate.toFixed(2)} (All Text Detected)${sidesLabel}`;
+  } else {
+    const modeLabel = isForcedColor ? "Color" : "B&W";
+    formula = `${effectivePagesPerCopy} ${
+      effectivePagesPerCopy === 1 ? "page" : "pages"
+    } × ${copies} ${copies === 1 ? "copy" : "copies"} @ ${sym}${ratePerPage.toFixed(
+      2
+    )} (${modeLabel}${sidesLabel})`;
+  }
 
   return {
     totalPages,
     copies,
     ratePerPage,
+    colorPagesCount,
+    bwPagesCount,
+    savingsVsFullColor,
+    colorPagesList,
     subtotal,
     discount,
     totalAmount,
     currencySymbol: sym,
     formula,
+    upiId: pricing.upiId || "",
+    payeeName: pricing.payeeName || "",
   };
 }
 

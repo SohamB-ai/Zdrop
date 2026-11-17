@@ -19,17 +19,17 @@ export function KioskEntryView({
 }: KioskEntryViewProps) {
   return (
     <div className="space-y-6">
-      {/* Kiosk Hero */}
+      {/* Print Shop Counter Hero */}
       <div className="zd-kiosk-hero">
         <p className="zd-eyebrow">
           <span className="zd-dot" aria-hidden="true" />
-          Operator Counter Station
+          Print Shop Counter
         </p>
 
-        <h1>Enter Customer Access Code</h1>
+        <h1>Enter 6-Digit Print Code</h1>
 
         <p>
-          Type the 6-digit OTP dictated by the customer or scan their QR code to stream verified documents directly into the print buffer.
+          Type the 6-digit code given by the student or scan their phone screen to unlock and print their document.
         </p>
       </div>
 
@@ -54,9 +54,9 @@ export function KioskEntryView({
             <Shield size={18} />
           </div>
           <div className="zd-guideline-text">
-            <h3>Zero Hard Drive Clutter</h3>
+            <h3>No File Clutter</h3>
             <p>
-              Documents stream into native print buffers. No files saved to your PC’s Downloads folder.
+              Print directly from the browser. No files are saved to your computer&apos;s Downloads folder.
             </p>
           </div>
         </div>
@@ -66,9 +66,9 @@ export function KioskEntryView({
             <Lock size={18} />
           </div>
           <div className="zd-guideline-text">
-            <h3>Anti-Screenshot Shield</h3>
+            <h3>Customer Privacy</h3>
             <p>
-              Direct print only. File downloads, right-click saving, and screen capture are restricted.
+              Direct print only. Files are permanently shredded from the server as soon as you finish printing.
             </p>
           </div>
         </div>
@@ -78,9 +78,9 @@ export function KioskEntryView({
             <Clock size={18} />
           </div>
           <div className="zd-guideline-text">
-            <h3>Pre-Locked Preferences</h3>
+            <h3>Ready Print Settings</h3>
             <p>
-              Copies, color mode, and page ranges are selected by the customer on their phone.
+              Copies, color mode, and page ranges are already set by the customer on their phone.
             </p>
           </div>
         </div>

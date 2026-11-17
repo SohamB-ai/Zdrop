@@ -4,7 +4,7 @@ import { PrintPreferencesSchema, AllowedMimeTypesEnum } from '@/lib/types';
 import { active, byCode, newId, newToken, publicSession, purge, putFile, readSession, reserve, saveSession, withSessionLock, StoredSession, cloudUpload, isCloud, enforceFileNoStore, activateSession } from '@/lib/server/store';
 import { inspectDocument, DocumentError } from '@/lib/server/documents';
 import { rateLimit } from '@/lib/server/rate-limit';
-import { getAuthUserFromCookie } from '@/lib/server/auth';
+import { auth, currentUser } from '@clerk/nextjs/server';
 export const runtime = 'nodejs';
 export const maxDuration = 300;
 const metadata = z.object({
@@ -22,7 +22,23 @@ const createSchema = z.object({
 const reply = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 async function handle(req: NextRequest, action: string) {
   try {
-    const authUser = getAuthUserFromCookie(req.headers.get('cookie'));
+    let authUser: { id: string; email?: string; name?: string; avatarUrl?: string; role?: string } | null = null;
+    try {
+      const { userId } = await auth();
+      if (userId) {
+        const u = await currentUser();
+        authUser = {
+          id: userId,
+          email: u?.primaryEmailAddress?.emailAddress,
+          name: u?.fullName || u?.firstName || 'User',
+          avatarUrl: u?.imageUrl,
+          role: (u?.publicMetadata?.role as string) || 'user',
+        };
+      }
+    } catch {
+      // Unauthenticated session
+    }
+
     if (action === 'create' && req.method === 'POST') {
       const input = createSchema.parse(await req.json());
       const s: StoredSession = {
@@ -51,10 +67,14 @@ async function handle(req: NextRequest, action: string) {
 
       try {
         const { calculatePrintCost } = await import('@/lib/pricing');
-        const { getShopById } = await import('@/lib/server/shops-store');
-        const shop = input.shopId ? await getShopById(input.shopId) : null;
+        const { getShopById, getShopByCode } = await import('@/lib/server/shops-store');
+        const shop = input.shopId ? (await getShopById(input.shopId)) || (await getShopByCode(input.shopId)) : null;
         s.costEstimate = calculatePrintCost(s.files, s.preferences, shop?.pricing);
         s.paymentStatus = 'UNPAID';
+        if (shop) {
+          s.shopId = shop.id;
+          s.shopName = shop.shopName;
+        }
       } catch (err) {
         console.warn('Cost estimation init error:', err);
       }
@@ -71,12 +91,45 @@ async function handle(req: NextRequest, action: string) {
       if (!s) return reply({ error: 'Code not found.' }, 404);
       if (!await active(s)) return reply({ error: 'Code expired or files deleted.' }, 410);
       if (s.status === 'PENDING_UPLOAD') return reply({ error: 'Upload is still in progress.' }, 409);
+
+      // Determine accepting shop:
+      // 1. Authenticated Clerk operator
+      // 2. Query param shopId
+      // 3. Pre-existing s.shopId
+      // 4. Default active shop from database
+      const { getShopByOwnerId, getShopById, getShopByCode, listShops } = await import('@/lib/server/shops-store');
+      let shop = null;
+      if (authUser?.id) {
+        shop = await getShopByOwnerId(authUser.id);
+      }
+      const shopIdParam = req.nextUrl.searchParams.get('shopId');
+      if (!shop && shopIdParam) {
+        shop = (await getShopById(shopIdParam)) || (await getShopByCode(shopIdParam));
+      }
+      if (!shop && s.shopId) {
+        shop = (await getShopById(s.shopId)) || (await getShopByCode(s.shopId));
+      }
+      if (!shop) {
+        const allShops = await listShops();
+        if (allShops.length > 0) {
+          shop = allShops[0];
+        }
+      }
+
       s.status = 'ACCESSED';
       s.accessedAt ||= Date.now();
       s.operatorToken ||= newToken();
-      if (authUser?.role === 'shop_owner') {
+
+      if (shop) {
+        s.shopId = shop.id;
+        s.shopName = shop.shopName;
+        s.operatorId = authUser?.id || shop.ownerId;
+        const { calculatePrintCost } = await import('@/lib/pricing');
+        s.costEstimate = calculatePrintCost(s.files, s.preferences, shop.pricing);
+      } else if (authUser?.role === 'shop_owner' || authUser?.id) {
         s.operatorId = authUser.id;
       }
+
       await saveSession(s);
       return reply({ session: publicSession(s, s.operatorToken), token: s.operatorToken });
     }
@@ -109,11 +162,23 @@ async function handle(req: NextRequest, action: string) {
       const { getFile } = await import('@/lib/server/store');
       s.uploadSealed = true; await saveSession(s); // Seal direct uploads before inspecting immutable contents.
       try {
-        for (const f of s.files) { if (isCloud) await enforceFileNoStore(s.id, f.fileId); const bytes = await getFile(s.id, f.fileId); if (bytes.length !== f.size) throw new DocumentError('Upload incomplete or file size mismatch.'); const pages = await inspectDocument(bytes, f.type); if (pages) f.pageCount = pages; }
+        for (const f of s.files) {
+          if (isCloud) await enforceFileNoStore(s.id, f.fileId);
+          const bytes = await getFile(s.id, f.fileId);
+          if (bytes.length !== f.size) throw new DocumentError('Upload incomplete or file size mismatch.');
+          const inspected = await inspectDocument(bytes, f.type);
+          if (inspected) {
+            f.pageCount = typeof inspected === 'number' ? inspected : inspected.pageCount;
+            if (typeof inspected === 'object') {
+              f.colorPages = inspected.colorPages;
+              f.bwPages = inspected.bwPages;
+            }
+          }
+        }
         // Update accurate cost estimate now that page counts are verified
         const { calculatePrintCost } = await import('@/lib/pricing');
-        const { getShopById } = await import('@/lib/server/shops-store');
-        const shop = s.shopId ? await getShopById(s.shopId) : null;
+        const { getShopById, getShopByCode } = await import('@/lib/server/shops-store');
+        const shop = s.shopId ? (await getShopById(s.shopId)) || (await getShopByCode(s.shopId)) : null;
         s.costEstimate = calculatePrintCost(s.files, s.preferences, shop?.pricing);
       } catch (error) { await purge(s, 'STUDENT_REVOKE'); throw error; }
       await activateSession(s); return reply({ session: publicSession(s) });

@@ -5,7 +5,7 @@ const faqs = [
   {
     question: "Does the print shop need an app?",
     answer:
-      "No. The operator opens the ZDrop print shop in a browser, then enters your six-digit code or scans your QR with the kiosk camera.",
+      "No. The operator opens the ZDrop print shop in a browser, then enters your six-digit code or scans your QR code.",
   },
   {
     question: "When are my files deleted?",

@@ -31,6 +31,7 @@ export async function createShop(data: {
   phone: string;
   campusAddress: string;
   shopCode: string;
+  pricing?: Partial<import('../types').ShopPricing>;
 }): Promise<ShopProfile> {
   const shopId = `shop_${randomUUID()}`;
   const now = Date.now();
@@ -47,6 +48,14 @@ export async function createShop(data: {
     shopCode: cleanCode || `SHOP-${randomUUID().slice(0, 4).toUpperCase()}`,
     createdAt: now,
     isActive: true,
+    pricing: {
+      bwRate: Math.max(0.1, Number(data.pricing?.bwRate) || 2),
+      colorRate: Math.max(0.1, Number(data.pricing?.colorRate) || 10),
+      duplexDiscount: Math.max(0, Number(data.pricing?.duplexDiscount) || 0),
+      currencySymbol: data.pricing?.currencySymbol?.trim() || '₹',
+      upiId: data.pricing?.upiId?.trim() || '',
+      payeeName: data.pricing?.payeeName?.trim() || data.shopName.trim(),
+    },
   };
 
   if (isCloud) {
@@ -135,6 +144,7 @@ export async function updateShopPricing(
     duplexDiscount: Math.max(0, Number(pricing.duplexDiscount) || 0),
     currencySymbol: pricing.currencySymbol?.trim() || '₹',
     upiId: pricing.upiId?.trim() || '',
+    payeeName: pricing.payeeName?.trim() || shop.shopName,
   };
 
   shops[shopId] = shop;

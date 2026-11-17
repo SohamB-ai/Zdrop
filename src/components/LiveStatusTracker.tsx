@@ -14,22 +14,22 @@ export function LiveStatusTracker({ status }: LiveStatusTrackerProps) {
   const steps = [
     {
       id: "UPLOADED",
-      label: "Uploaded & Encrypted",
-      desc: "Files staged in temporary volatile memory",
+      label: "Uploaded Safely",
+      desc: "Waiting for print shop to accept your code",
       isDone: ["ACTIVE", "ACCESSED", "PRINTED", "DELETED"].includes(status),
       isCurrent: status === "ACTIVE",
     },
     {
       id: "ACCESSED",
-      label: "Accessed by Kiosk Operator",
-      desc: "Shopkeeper verified code & parameters",
+      label: "Accepted by Print Shop",
+      desc: "Shop owner unlocked document & prepared printer",
       isDone: ["ACCESSED", "PRINTED", "DELETED"].includes(status),
       isCurrent: status === "ACCESSED",
     },
     {
       id: "PRINTED",
-      label: "Printed & Destroyed",
-      desc: "Hardware print finished, files incinerated",
+      label: "Printed & Deleted",
+      desc: "Paper printed, files completely deleted",
       isDone: ["PRINTED", "DELETED"].includes(status),
       isCurrent: status === "PRINTED" || status === "DELETED",
     },
@@ -40,7 +40,7 @@ export function LiveStatusTracker({ status }: LiveStatusTrackerProps) {
       <div className="flex items-center gap-2 pb-3 mb-4" style={{ borderBottom: "1px solid var(--line)" }}>
         <Clock size={16} style={{ color: "var(--text-secondary)" }} />
         <h4 className="text-xs font-bold uppercase tracking-wider font-mono" style={{ color: "var(--text-primary)", margin: 0 }}>
-          Real-Time Spooling Pipeline
+          Live Print Status
         </h4>
       </div>
 

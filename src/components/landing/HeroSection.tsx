@@ -20,7 +20,6 @@ import {
 import { DropZone } from "@/components/DropZone";
 import { PrintPreferencesCard } from "@/components/PrintPreferencesCard";
 import { useAuth } from "@/lib/auth-context";
-import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { ZDropStickerMark } from "@/components/ZDropLogo";
 
 interface HeroSectionProps {
@@ -48,7 +47,6 @@ export function HeroSection({
   });
   const [shops, setShops] = useState<ShopProfile[]>([]);
   const [selectedShopId, setSelectedShopId] = useState("");
-  const [showSignIn, setShowSignIn] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -84,10 +82,6 @@ export function HeroSection({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!canSubmit || isGenerating || isLoading) return;
-    if (!user) {
-      setShowSignIn(true);
-      return;
-    }
     const chosen = shops.find((shop) => shop.id === selectedShopId);
     onGenerateCode(
       files,
@@ -267,18 +261,8 @@ export function HeroSection({
             <p className="zd-workbench-help">
               {files.length === 0
                 ? "Add a document to choose your print settings."
-                : user
-                  ? "Show your code or QR to the print shop operator."
-                  : "Sign in with Google before uploading your documents."}
+                : "Show your 6-digit code or QR to the print shop operator."}
             </p>
-            {showSignIn && !user && (
-              <div className="zd-upload-sign-in">
-                <p role="status">
-                  Your files are still on your device. Sign in to continue.
-                </p>
-                <GoogleSignInButton label="Continue with Google" />
-              </div>
-            )}
           </form>
           <div className="zd-workbench-footer">
             <Clock3 size={15} />

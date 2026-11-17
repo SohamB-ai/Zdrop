@@ -46,16 +46,22 @@ export function PrintPreferencesCard({
       />
       <div className="zd-pref-grid">
         <div className="zd-field">
-          <span>Color</span>
+          <span>Color Mode</span>
           <SegmentedControl
             ariaLabel="Color mode"
             options={[
+              { id: "AUTO", label: "Auto (Smart)" },
               { id: "BW", label: "B & W" },
-              { id: "COLOR", label: "Color" },
+              { id: "COLOR", label: "Full Color" },
             ]}
             value={preferences.colorMode}
-            onChange={(value) => update("colorMode", value as "BW" | "COLOR")}
+            onChange={(value) => update("colorMode", value as "AUTO" | "BW" | "COLOR")}
           />
+          {preferences.colorMode === "AUTO" && (
+            <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-1.5 leading-snug">
+              Auto Color Checker: Only pages with pictures are printed in color, saving you money on text pages.
+            </p>
+          )}
         </div>
         <div className="zd-field">
           <span>Sides</span>

@@ -86,11 +86,15 @@ export async function createSession(
   }
 }
 
-export async function resolveByAccessCode(code: string): Promise<SessionData> {
+export async function resolveByAccessCode(code: string, shopId?: string): Promise<SessionData> {
   let lastError: Error | null = null;
+  const q = new URLSearchParams({ code });
+  if (shopId) q.set("shopId", shopId);
+  const url = `/api/sessions/resolve?${q.toString()}`;
+
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
-      const result = await request(`/api/sessions/resolve?code=${encodeURIComponent(code)}`);
+      const result = await request(url);
       tokens.set(result.session.id, result.token);
       return result.session;
     } catch (e: any) {

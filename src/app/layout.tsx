@@ -1,10 +1,10 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { MotionConfig } from "motion/react";
 import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
-import "@/components/auth.css";
 import "@/components/print-desk.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -90,11 +90,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-[100dvh] font-sans antialiased">
-        <ThemeProvider>
+        <ClerkProvider>
+          <ThemeProvider>
           <AuthProvider>
-            <MotionConfig reducedMotion="user">{children}</MotionConfig>
+          <MotionConfig reducedMotion="user">{children}</MotionConfig>
           </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

@@ -156,20 +156,20 @@ export function KioskOtpInput({
         {isLoading ? (
           <>
             <RefreshCw className="animate-spin" size={16} />
-            <span>Resolving Code…</span>
+            <span>Checking Code…</span>
           </>
         ) : (
           <>
-            <span>Access Session Documents</span>
+            <span>Unlock Print Job</span>
             <ArrowRight size={17} />
           </>
         )}
       </button>
 
-      {/* On-screen Keypad for Touch Kiosks */}
+      {/* On-screen Keypad for Touchscreens */}
       <div className="zd-keypad-wrapper">
         <p className="zd-keypad-label">
-          Counter Terminal Keypad
+          Touchscreen Number Pad
         </p>
         <div className="zd-keypad-grid">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "CLEAR", "0", "BACKSPACE"].map(

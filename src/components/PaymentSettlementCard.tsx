@@ -17,6 +17,7 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  Store,
 } from "lucide-react";
 
 interface PaymentSettlementCardProps {
@@ -37,11 +38,19 @@ export function PaymentSettlementCard({
   const [selectedMethod, setSelectedMethod] = useState<"UPI" | "COUNTER">("UPI");
   const [showBreakdown, setShowBreakdown] = useState(false);
 
-  // Fallback demo/merchant UPI handle if the shop hasn't configured a custom one
-  const targetUpiId = "zdrop.prints@okaxis";
+  // Resolve active shop UPI ID and payee name
+  const targetUpiId =
+    estimate.upiId ||
+    (session.shopName ? `${session.shopName.toLowerCase().replace(/[^a-z0-9]/g, "")}@upi` : "counter@upi");
+
+  const payeeName =
+    estimate.payeeName ||
+    session.shopName ||
+    "Print Shop Counter";
+
   const upiUrl = generateUpiUrl({
     upiId: targetUpiId,
-    payeeName: session.shopName ? `${session.shopName} (ZDrop)` : "ZDrop Print Counter",
+    payeeName: payeeName,
     amount: estimate.totalAmount,
     accessCode: session.accessCode,
   });
@@ -142,12 +151,30 @@ export function PaymentSettlementCard({
               <strong>{estimate.copies}</strong>
             </div>
             <div className="zd-payment-item-row">
-              <span>Rate per Page ({session.preferences.colorMode}):</span>
+              <span>Mode:</span>
               <strong>
-                {estimate.currencySymbol}
-                {estimate.ratePerPage.toFixed(2)}
+                {session.preferences.colorMode === "AUTO"
+                  ? "Auto (Smart Color Saver)"
+                  : session.preferences.colorMode === "COLOR"
+                  ? "Full Color"
+                  : "Black & White"}
               </strong>
             </div>
+            {estimate.colorPagesList && (
+              <div className="zd-payment-item-row" style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
+                <span>Pages with Images (Color):</span>
+                <strong>Pages [{estimate.colorPagesList}]</strong>
+              </div>
+            )}
+            {estimate.savingsVsFullColor && estimate.savingsVsFullColor > 0 ? (
+              <div className="zd-payment-item-row" style={{ color: "#059669" }}>
+                <span>Auto Color Saver:</span>
+                <strong>
+                  Saved {estimate.currencySymbol}
+                  {estimate.savingsVsFullColor.toFixed(2)}!
+                </strong>
+              </div>
+            ) : null}
             {estimate.discount > 0 && (
               <div className="zd-payment-item-row zd-discount-text">
                 <span>Duplex Paper Discount:</span>
@@ -197,6 +224,31 @@ export function PaymentSettlementCard({
 
           {selectedMethod === "UPI" ? (
             <div className="zd-upi-container">
+              {/* Verified Shop UPI Badge */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  background: "var(--surface-soft)",
+                  border: "1px solid var(--line)",
+                  fontSize: "12px",
+                  flexWrap: "wrap",
+                  gap: "6px",
+                  marginBottom: "12px"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <Store size={15} style={{ color: "var(--accent)" }} />
+                  <strong>Payee: {payeeName}</strong>
+                </div>
+                <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontWeight: 700, color: "var(--text-primary)" }}>
+                  UPI: {targetUpiId}
+                </span>
+              </div>
+
               {/* Desktop / Tablet QR view */}
               {upiQrUrl && (
                 <div className="zd-upi-qr-section">

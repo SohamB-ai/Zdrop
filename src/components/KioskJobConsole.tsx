@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Clock,
   Banknote,
+  Sparkles,
 } from "lucide-react";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { SessionData, FileMetadata } from "@/lib/types";
@@ -202,7 +203,11 @@ export function KioskJobConsole({
                 <span>Color Mode</span>
               </div>
               <p className="zd-console-pref-card-val">
-                {preferences.colorMode === "BW" ? "Black & White" : "Full Color"}
+                {preferences.colorMode === "AUTO"
+                  ? "Auto (Smart Color)"
+                  : preferences.colorMode === "COLOR"
+                  ? "Full Color"
+                  : "Black & White"}
               </p>
             </div>
 
@@ -228,6 +233,39 @@ export function KioskJobConsole({
               </p>
             </div>
           </div>
+
+          {/* Smart Auto Color Checker Banner for Operator */}
+          {preferences.colorMode === "AUTO" && (
+            <div
+              style={{
+                marginTop: "12px",
+                padding: "12px 16px",
+                borderRadius: "10px",
+                background: "rgba(37, 99, 235, 0.08)",
+                border: "1px solid rgba(37, 99, 235, 0.25)",
+                fontSize: "13px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: 700, color: "#1d4ed8" }}>
+                <Sparkles size={16} />
+                <span>Smart Auto Color Checker Instructions</span>
+              </div>
+              <p style={{ marginTop: "4px", color: "var(--text-primary)", fontSize: "12px" }}>
+                {estimate.colorPagesList ? (
+                  <span>
+                    Print in <strong>Color</strong>: Pages <strong>[{estimate.colorPagesList}]</strong> · Print in <strong>Black & White</strong>: remaining pages.
+                  </span>
+                ) : estimate.colorPagesCount && estimate.colorPagesCount > 0 ? (
+                  <span>
+                    Print <strong>{estimate.colorPagesCount}</strong> pages in Color and <strong>{estimate.bwPagesCount}</strong> pages in B&W.
+                  </span>
+                ) : (
+                  <span>All pages detected as plain monochrome text. Print all in <strong>Black & White</strong>.</span>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
 
           {preferences.customerNotes && (
             <div
@@ -309,7 +347,6 @@ export function KioskJobConsole({
               </div>
             </div>
           </div>
-        </div>
 
         {/* Document Selection Tabs & Preview */}
         <div style={{ marginBottom: "20px" }}>

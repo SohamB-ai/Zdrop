@@ -11,7 +11,7 @@ export type AllowedMimeType = z.infer<typeof AllowedMimeTypesEnum>;
 
 export const PrintPreferencesSchema = z.object({
   copies: z.number().int().min(1).max(99).default(1),
-  colorMode: z.enum(["BW", "COLOR"]).default("BW"),
+  colorMode: z.enum(["BW", "COLOR", "AUTO"]).default("AUTO"),
   sides: z.enum(["SINGLE", "DOUBLE"]).default("DOUBLE"),
   pageRange: z.string().max(50).refine(v => v === "ALL" || (/^\s*\d+(?:\s*-\s*\d+)?(?:\s*,\s*\d+(?:\s*-\s*\d+)?)*\s*$/.test(v) && v.split(",").every(part => { const [a, b] = part.trim().split(/\s*-\s*/).map(Number); return a > 0 && (b === undefined || b >= a); })), "Enter valid pages, such as 1-5, 8.").default("ALL"),
   customerNotes: z.string().max(120).optional(),
@@ -25,6 +25,8 @@ export const FileMetadataSchema = z.object({
   size: z.number().int().max(25 * 1024 * 1024), // 25 MB max
   type: z.string(),
   pageCount: z.number().int().optional(),
+  colorPages: z.array(z.number()).optional(),
+  bwPages: z.array(z.number()).optional(),
   previewUrl: z.string().optional(),
 });
 
@@ -54,17 +56,24 @@ export interface ShopPricing {
   duplexDiscount: number;      // Discount per sheet if printed double-sided (default 0)
   currencySymbol: string;      // e.g. "₹", "$", "€", "£"
   upiId?: string;              // Shop UPI VPA for digital payments (e.g. "xerox@upi")
+  payeeName?: string;          // Business / Payee display name for UPI
 }
 
 export interface CostEstimate {
   totalPages: number;
   copies: number;
   ratePerPage: number;
+  colorPagesCount?: number;
+  bwPagesCount?: number;
+  savingsVsFullColor?: number;
+  colorPagesList?: string;
   subtotal: number;
   discount: number;
   totalAmount: number;
   currencySymbol: string;
   formula: string;
+  upiId?: string;
+  payeeName?: string;
 }
 
 export interface ShopProfile {

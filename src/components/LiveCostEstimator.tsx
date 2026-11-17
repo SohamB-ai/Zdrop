@@ -63,6 +63,12 @@ export function LiveCostEstimator({
 
         <div className="zd-cost-formula-wrap">
           <p className="zd-cost-formula">{estimate.formula}</p>
+          {estimate.savingsVsFullColor && estimate.savingsVsFullColor > 0 ? (
+            <span className="zd-cost-discount-badge" style={{ background: "rgba(16, 185, 129, 0.12)", color: "#059669", borderColor: "rgba(16, 185, 129, 0.3)" }}>
+              <Sparkles size={12} />
+              Saved {estimate.currencySymbol}{estimate.savingsVsFullColor.toFixed(2)} with Auto Color Saver!
+            </span>
+          ) : null}
           {estimate.discount > 0 && (
             <span className="zd-cost-discount-badge">
               <Sparkles size={12} />
