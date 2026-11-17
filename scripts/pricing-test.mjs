@@ -82,62 +82,63 @@ assert.equal(payData.session.paymentMethod, 'UPI');
 console.log('✔ Test 4 passed: Payment updated to PAID_ONLINE (UPI).');
 
 // 5. Test Auto Color Checker with Mixed PDF (1 B&W page + 1 Image page)
-const { PDFDocument } = await import('pdf-lib');
+const { PDFDocument, rgb } = await import('pdf-lib');
 const doc = await PDFDocument.create();
 const p1 = doc.addPage([600, 400]);
 p1.drawText('Black and White Text on Page 1');
 const p2 = doc.addPage([600, 400]);
-const pngBytes = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
-const img = await doc.embedPng(pngBytes);
+const { createCanvas } = await import('@napi-rs/canvas');
+const bitmap = createCanvas(16, 16);
+const context = bitmap.getContext('2d');
+context.fillStyle = '#ff0000';
+context.fillRect(0, 0, 16, 16);
+const img = await doc.embedPng(bitmap.toBuffer('image/png'));
 p2.drawImage(img, { x: 50, y: 50, width: 100, height: 100 });
+
+const p3 = doc.addPage([600, 400]);
+context.fillStyle = '#777777';
+context.fillRect(0, 0, 16, 16);
+const grey = await doc.embedPng(bitmap.toBuffer('image/png'));
+p3.drawRectangle({ x: 50, y: 50, width: 100, height: 100, color: rgb(1, 0, 0) });
+p3.drawImage(grey, { x: 50, y: 50, width: 100, height: 100 });
 const multiPdf = Buffer.from(await doc.save());
 
-const autoCreateRes = await fetch(`${base}/api/sessions/create`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    files: [
-      { fileName: 'mixed.pdf', fileSize: multiPdf.length, mimeType: 'application/pdf' },
-    ],
-    preferences: {
-      copies: 1,
-      colorMode: 'AUTO',
-      sides: 'SINGLE',
-      pageRange: 'ALL',
-    },
-  }),
-});
-assert.equal(autoCreateRes.status, 201);
-const { session: autoSession, token: autoToken } = await autoCreateRes.json();
-
-await fetch(`${base}/api/sessions/upload?sessionId=${autoSession.id}&fileId=${autoSession.files[0].fileId}`, {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${autoToken}` },
-  body: multiPdf,
-});
-
-const autoConfRes = await fetch(`${base}/api/sessions/confirm`, {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${autoToken}`, 'Content-Type': 'application/json' },
-  body: JSON.stringify({ sessionId: autoSession.id }),
-});
-assert.equal(autoConfRes.status, 200);
-const autoConfData = await autoConfRes.json();
-
-assert.equal(autoConfData.session.files[0].pageCount, 2);
-assert.deepEqual(autoConfData.session.files[0].colorPages, [2], 'Page 2 should be detected as color image');
-assert.deepEqual(autoConfData.session.files[0].bwPages, [1], 'Page 1 should be detected as B&W');
-assert.equal(autoConfData.session.costEstimate.colorPagesCount, 1);
-assert.equal(autoConfData.session.costEstimate.bwPagesCount, 1);
-assert.ok(autoConfData.session.costEstimate.savingsVsFullColor > 0, 'Auto Color Saver should save vs full color');
-console.log(`✔ Test 5 passed: Auto Color Checker correctly marked Page 2 as Color and Page 1 as B&W (Saved ₹${autoConfData.session.costEstimate.savingsVsFullColor}).`);
-
-// Cleanup auto session
-await fetch(`${base}/api/sessions/delete`, {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${autoToken}`, 'Content-Type': 'application/json' },
-  body: JSON.stringify({ sessionId: autoSession.id }),
-});
+async function runColourCheck(pageRange, expectedColour, expectedBw) {
+  const create = await fetch(`${base}/api/sessions/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      files: [{ fileName: 'mixed.pdf', fileSize: multiPdf.length, mimeType: 'application/pdf' }],
+      preferences: { copies: 1, colorMode: 'AUTO', sides: 'SINGLE', pageRange },
+    }),
+  });
+  assert.equal(create.status, 201);
+  const { session, token } = await create.json();
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  try {
+    const upload = await fetch(`${base}/api/sessions/upload?sessionId=${session.id}&fileId=${session.files[0].fileId}`, {
+      method: 'POST', headers: { Authorization: headers.Authorization }, body: multiPdf,
+    });
+    assert.equal(upload.status, 200, await upload.clone().text());
+    const confirm = await fetch(`${base}/api/sessions/confirm`, {
+      method: 'POST', headers, body: JSON.stringify({ sessionId: session.id }),
+    });
+    assert.equal(confirm.status, 200, await confirm.clone().text());
+    const { session: verified } = await confirm.json();
+    assert.equal(verified.files[0].pageCount, 3);
+    assert.deepEqual(verified.files[0].colorPages, [2]);
+    assert.deepEqual(verified.files[0].bwPages, [1, 3]);
+    assert.equal(verified.costEstimate.colorPagesCount, expectedColour);
+    assert.equal(verified.costEstimate.bwPagesCount, expectedBw);
+  } finally {
+    await fetch(`${base}/api/sessions/delete`, {
+      method: 'POST', headers, body: JSON.stringify({ sessionId: session.id }),
+    });
+  }
+}
+await runColourCheck('ALL', 1, 2);
+await runColourCheck('1,3', 0, 2);
+console.log('✔ Test 5 passed: Visible colour, grayscale scans, covered artwork, and page-range pricing.');
 
 // 6. Cleanup initial session
 const delRes = await fetch(`${base}/api/sessions/delete`, {

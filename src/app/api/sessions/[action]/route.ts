@@ -136,7 +136,7 @@ async function handle(req: NextRequest, action: string) {
       while (true) { const chunk = await reader.read(); if (chunk.done) break; size += chunk.value.length; if (size > f.size || size > 25 * 1024 * 1024) { await reader.cancel(); return reply({ error: 'File too large.' }, 413); } chunks.push(chunk.value); }
       const bytes = Buffer.concat(chunks);
       if (bytes.length !== f.size) return reply({ error: 'File size does not match.' }, 400);
-      await inspectDocument(bytes, f.type);
+      await inspectDocument(bytes, f.type, false);
       await putFile(s.id, f.fileId, bytes, f.type);
       return reply({ success: true });
     }

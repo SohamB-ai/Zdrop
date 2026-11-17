@@ -1,6 +1,6 @@
-import { PDFDocument, PDFName, PDFDict, PDFArray } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
-import zlib from 'node:zlib';
+import { dirname, join, sep } from 'node:path';
 
 export class DocumentError extends Error {}
 
@@ -10,99 +10,70 @@ export interface DocumentInspection {
   bwPages?: number[];
 }
 
-export async function inspectDocument(bytes: Uint8Array, type: string): Promise<DocumentInspection | undefined> {
+// Render at a bounded resolution and ignore very small RGB differences from
+// antialiasing and compression. Transparency is composited onto white paper.
+function hasColour(pixels: Uint8ClampedArray) {
+  for (let i = 0; i < pixels.length; i += 4) {
+    const r = pixels[i];
+    const g = pixels[i + 1];
+    const b = pixels[i + 2];
+    if (Math.max(r, g, b) - Math.min(r, g, b) >= 15) return true;
+  }
+  return false;
+}
+
+async function inspectPdfColour(bytes: Uint8Array): Promise<DocumentInspection> {
+  const { createCanvas } = await import('@napi-rs/canvas');
+  const { getDocument, VerbosityLevel } = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const resolve = process.getBuiltinModule('module')!.createRequire(join(process.cwd(), 'package.json')).resolve;
+  const assets = dirname(resolve('pdfjs-dist/package.json'));
+  const task = getDocument({
+    data: Uint8Array.from(bytes),
+    cMapUrl: join(assets, 'cmaps') + sep,
+    standardFontDataUrl: join(assets, 'standard_fonts') + sep,
+    wasmUrl: join(assets, 'wasm') + sep,
+    verbosity: VerbosityLevel.ERRORS,
+  });
+
+  try {
+    const pdf = await task.promise;
+    const colorPages: number[] = [];
+    const bwPages: number[] = [];
+    for (let number = 1; number <= pdf.numPages; number++) {
+      const page = await pdf.getPage(number);
+      const size = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale: Math.min(1, 1024 / Math.max(size.width, size.height)) });
+      const canvas = createCanvas(Math.max(1, Math.ceil(viewport.width)), Math.max(1, Math.ceil(viewport.height)));
+      try {
+        // PDF.js accepts the Node canvas implementation at runtime.
+        await page.render({ canvas: canvas as unknown as HTMLCanvasElement, viewport, intent: 'print' }).promise;
+        const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+        (hasColour(pixels) ? colorPages : bwPages).push(number);
+      } finally {
+        page.cleanup();
+        canvas.width = canvas.height = 1;
+      }
+    }
+    return { pageCount: pdf.numPages, colorPages, bwPages };
+  } finally {
+    await task.destroy();
+  }
+}
+
+export async function inspectDocument(
+  bytes: Uint8Array,
+  type: string,
+  detectColour = true,
+): Promise<DocumentInspection | undefined> {
   if (type === 'application/pdf') {
     try {
+      if (detectColour) return await inspectPdfColour(bytes);
       const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
-      const totalPages = pdf.getPageCount();
-      if (!totalPages) throw new Error();
-
-      const colorPages: number[] = [];
-      const bwPages: number[] = [];
-
-      for (let i = 0; i < totalPages; i++) {
-        const pageNum = i + 1;
-        const page = pdf.getPage(i);
-        let isColor = false;
-
-        // 1. Check for /XObject images in Resources
-        const resources = page.node.Resources();
-        if (resources) {
-          const xObject = resources.get(PDFName.of('XObject'));
-          if (xObject instanceof PDFDict) {
-            for (const [_, ref] of xObject.entries()) {
-              const obj = pdf.context.lookup(ref);
-              const dict = obj instanceof PDFDict ? obj : (obj && (obj as any).dict ? (obj as any).dict : null);
-              if (dict) {
-                const subtype = dict.get(PDFName.of('Subtype'));
-                if (subtype && subtype.toString() === '/Image') {
-                  isColor = true;
-                  break;
-                }
-              }
-            }
-          }
-        }
-
-        // 2. Check content streams for non-grayscale color operators or inline images
-        if (!isColor) {
-          const contents = page.node.Contents();
-          if (contents) {
-            const resolved = pdf.context.lookup(contents);
-            const streamArray = resolved instanceof PDFArray ? resolved.asArray() : [contents];
-            for (const ref of streamArray) {
-              const s = pdf.context.lookup(ref);
-              if (s && (s as any).getContents) {
-                const rawBytes = (s as any).getContents();
-                let text = '';
-                try {
-                  text = zlib.inflateSync(rawBytes).toString('latin1');
-                } catch {
-                  text = Buffer.from(rawBytes).toString('latin1');
-                }
-
-                // Check inline images: BI ... ID ... EI
-                if (/\bBI\b[\s\S]*?\bID\b[\s\S]*?\bEI\b/.test(text)) {
-                  isColor = true;
-                  break;
-                }
-
-                // Check RGB operators: r g b rg / RG
-                const rgbMatches = [...text.matchAll(/([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s+[rR][gG]/g)];
-                const hasColorRgb = rgbMatches.some(m => {
-                  const r = Number(m[1]), g = Number(m[2]), b = Number(m[3]);
-                  return Math.abs(r - g) > 0.05 || Math.abs(g - b) > 0.05 || Math.abs(r - b) > 0.05;
-                });
-                if (hasColorRgb) {
-                  isColor = true;
-                  break;
-                }
-
-                // Check CMYK color operators
-                const cmykMatches = [...text.matchAll(/([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)\s+[kK]/g)];
-                const hasColorCmyk = cmykMatches.some(m => {
-                  const c = Number(m[1]), mVal = Number(m[2]), y = Number(m[3]);
-                  return c > 0.05 || mVal > 0.05 || y > 0.05;
-                });
-                if (hasColorCmyk) {
-                  isColor = true;
-                  break;
-                }
-              }
-            }
-          }
-        }
-
-        if (isColor) {
-          colorPages.push(pageNum);
-        } else {
-          bwPages.push(pageNum);
-        }
-      }
-
-      return { pageCount: totalPages, colorPages, bwPages };
+      const pageCount = pdf.getPageCount();
+      if (!pageCount) throw new Error();
+      return { pageCount };
     } catch {
-      throw new DocumentError('This PDF is invalid or password protected. Upload an unlocked PDF.');
+      throw new DocumentError('This PDF could not be read. Upload a valid, unlocked PDF.');
     }
   }
 
@@ -121,5 +92,20 @@ export async function inspectDocument(bytes: Uint8Array, type: string): Promise<
     : type === 'image/jpeg' && bytes.length > 4 && bytes[0] === 255 && bytes[1] === 216 && bytes[bytes.length - 2] === 255 && bytes[bytes.length - 1] === 217;
 
   if (!valid) throw new DocumentError('The image is invalid or does not match its format.');
-  return { pageCount: 1, colorPages: [1], bwPages: [] };
+  if (!detectColour) return { pageCount: 1 };
+  try {
+    const { createCanvas, loadImage } = await import('@napi-rs/canvas');
+    const image = await loadImage(Buffer.from(bytes));
+    const scale = Math.min(1, 1024 / Math.max(image.width, image.height));
+    const canvas = createCanvas(Math.max(1, Math.ceil(image.width * scale)), Math.max(1, Math.ceil(image.height * scale)));
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return hasColour(context.getImageData(0, 0, canvas.width, canvas.height).data)
+      ? { pageCount: 1, colorPages: [1], bwPages: [] }
+      : { pageCount: 1, colorPages: [], bwPages: [1] };
+  } catch {
+    throw new DocumentError('This image could not be read. Upload a valid JPG or PNG.');
+  }
 }

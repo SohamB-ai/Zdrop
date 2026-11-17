@@ -11,9 +11,9 @@ export const DEFAULT_PRICING: ShopPricing = {
 /**
  * Parses a page range string (e.g. "1-5, 8, 10-12") against document total pages.
  */
-export function parsePageRangeCount(pageRange: string, documentPages: number): number {
+function selectPages(pageRange: string, documentPages: number): Set<number> | null {
   if (!pageRange || pageRange.trim().toUpperCase() === "ALL") {
-    return Math.max(1, documentPages);
+    return null;
   }
 
   const parts = pageRange.split(",");
@@ -41,7 +41,7 @@ export function parsePageRangeCount(pageRange: string, documentPages: number): n
     }
   }
 
-  return uniquePages.size > 0 ? uniquePages.size : Math.max(1, documentPages);
+  return uniquePages.size ? uniquePages : null;
 }
 
 /**
@@ -63,34 +63,25 @@ export function calculatePrintCost(
   }, 0);
 
   // 2. Adjust for custom page ranges
-  const effectivePagesPerCopy = parsePageRangeCount(
-    preferences.pageRange,
-    rawDocPages > 0 ? rawDocPages : 1
-  );
+  const selectedPages = selectPages(preferences.pageRange, Math.max(1, rawDocPages));
+  const effectivePagesPerCopy = selectedPages?.size ?? Math.max(1, rawDocPages);
 
   // 3. Multiplied by number of copies
   const copies = Math.max(1, preferences.copies || 1);
   const totalPages = effectivePagesPerCopy * copies;
 
   // 4. Rate per page based on Color Mode (BW, COLOR, or AUTO Smart Color Saver)
-  let detectedColorPages = 0;
-  let detectedBwPages = 0;
   const colorPageNumbers: number[] = [];
-
-  for (const f of files) {
-    if (Array.isArray(f.colorPages) && f.colorPages.length > 0) {
-      detectedColorPages += f.colorPages.length;
-      colorPageNumbers.push(...f.colorPages);
-      if (Array.isArray(f.bwPages)) {
-        detectedBwPages += f.bwPages.length;
-      }
-    } else if (f.type?.startsWith("image/")) {
-      detectedColorPages += 1;
-      colorPageNumbers.push(1);
-    } else {
-      detectedBwPages += (f.pageCount || 1);
+  let pageOffset = 0;
+  for (const file of files) {
+    const colorPages = file.colorPages ?? (file.type?.startsWith("image/") ? [1] : []);
+    for (const page of colorPages) {
+      const documentPage = pageOffset + page;
+      if (!selectedPages || selectedPages.has(documentPage)) colorPageNumbers.push(documentPage);
     }
+    pageOffset += file.pageCount || 1;
   }
+  const detectedColorPages = colorPageNumbers.length;
 
   const isAuto = preferences.colorMode === "AUTO";
   const isForcedColor = preferences.colorMode === "COLOR";
