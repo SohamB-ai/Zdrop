@@ -1,22 +1,15 @@
 import 'server-only';
-import { applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { Timestamp, type Transaction } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { metadataRpc } from './supabase';
+import { getFirebaseApp, getProfilesDb } from './user-profiles';
 import { enforceNoStore } from './firebase-storage-policy';
 import { randomInt, randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile, rm, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { SessionData } from '../types';
-import {
-  createSupabaseUploadUrl,
-  getSupabaseSignedUrl,
-  getSupabaseFileBytes,
-  putSupabaseFileBytes,
-  deleteSupabaseFiles,
-} from './supabase-storage';
+
 
 export interface StoredSession extends SessionData {
   ownerToken: string;
@@ -29,17 +22,13 @@ export interface StoredSession extends SessionData {
 
 const root = path.resolve(process.env.ZDROP_DATA_DIR || (process.env.VERCEL ? path.join('/tmp', '.zdrop-data') : '.zdrop-data'));
 const hosted = Boolean(process.env.VERCEL || process.env.NETLIFY || process.env.K_SERVICE);
-const configuredStorage = process.env.ZDROP_STORAGE;
-const storageMode = hosted && (!configuredStorage || configuredStorage === 'local')
-  ? 'supabase'
-  : configuredStorage || 'local';
-const isSupabaseStorage = storageMode === 'supabase';
-const isFirebaseStorage = storageMode === 'firebase';
-const cloud = isSupabaseStorage || isFirebaseStorage;
+const cloud = hosted || process.env.ZDROP_STORAGE === 'firebase';
 export const isCloud = cloud;
 
-if (hosted && !cloud) {
-  throw new Error('Hosted deployments require ZDROP_STORAGE=supabase or ZDROP_STORAGE=firebase.');
+export function firestore() {
+  const db = getProfilesDb();
+  if (!db) throw new Error('Firestore configuration is missing.');
+  return db;
 }
 
 const leases = new AsyncLocalStorage<{ id: string; lease: string }>();
@@ -51,24 +40,34 @@ function currentLease(id: string) {
 }
 
 function firebase() {
-  const app = getApps().find((candidate) => candidate.name === 'zdrop-storage') ||
-    initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      credential: process.env.FIREBASE_PRIVATE_KEY
-        ? cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-          })
-        : applicationDefault(),
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    }, 'zdrop-storage');
-  return { db: getFirestore(app), bucket: getStorage(app).bucket(), auth: getAuth(app) };
+  const app = getFirebaseApp();
+  const bucket = process.env.FIREBASE_STORAGE_BUCKET;
+  if (!app || !bucket) throw new Error('Firebase Storage configuration is missing.');
+  return { bucket: getStorage(app).bucket(bucket), auth: getAuth(app) };
+}
+
+const sessionRef = (id: string) => firestore().collection('sessions').doc(id);
+const codeRef = (code: string) => firestore().collection('codes').doc(code);
+const lockRef = (id: string) => firestore().collection('locks').doc(id);
+const leaseDuration = 300000;
+
+async function requireLease(tx: Transaction, id: string) {
+  const lock = await tx.get(lockRef(id));
+  if (lock.get('lease') !== currentLease(id) || !(lock.get('expiresAt') > Date.now())) {
+    throw new Error('Session lease expired.');
+  }
+}
+
+function sessionData(session: StoredSession) {
+  return JSON.parse(JSON.stringify(session)) as StoredSession;
 }
 
 export async function readSession(id: string): Promise<StoredSession | null> {
   if (!/^ses_[a-f0-9-]{36}$/.test(id)) return null;
-  if (cloud) return metadataRpc<StoredSession | null>('zdrop_read_session', { p_id: id });
+  if (cloud) {
+    const snapshot = await sessionRef(id).get();
+    return snapshot.exists ? snapshot.data() as StoredSession : null;
+  }
   try {
     return JSON.parse(await readFile(path.join(root, id, 'session.json'), 'utf8'));
   } catch {
@@ -78,10 +77,10 @@ export async function readSession(id: string): Promise<StoredSession | null> {
 
 export async function saveSession(s: StoredSession) {
   if (cloud) {
-    if (isFirebaseStorage && (s.uploadSealed || s.purging || s.deletedAt)) {
-      await closeUploadGrant(s.id);
-    }
-    await metadataRpc('zdrop_save_session', { p_session: s, p_lease: currentLease(s.id) });
+    await firestore().runTransaction(async (tx) => {
+      await requireLease(tx, s.id);
+      tx.set(sessionRef(s.id), sessionData(s));
+    });
     return;
   }
   await mkdir(path.join(root, s.id), { recursive: true, mode: 0o700 });
@@ -93,13 +92,22 @@ export async function saveSession(s: StoredSession) {
 export async function allSessions(): Promise<StoredSession[]> {
   if (cloud) {
     const result: StoredSession[] = [];
-    let after = '';
-    while (true) {
-      const page = await metadataRpc<StoredSession[]>('zdrop_candidates', { p_after: after, p_limit: 200 });
-      result.push(...page);
-      if (page.length < 200) return result;
-      after = page[page.length - 1].id;
+    const collection = firestore().collection('sessions');
+    const cutoff = Date.now();
+    for (const filter of [
+      collection.where('expiresAt', '<=', cutoff).orderBy('expiresAt'),
+      collection.where('purging', '==', true),
+      collection.where('deletedAt', '>', 0).orderBy('deletedAt'),
+    ]) {
+      let query = filter.limit(200);
+      while (true) {
+        const page = await query.get();
+        result.push(...page.docs.map((doc) => doc.data() as StoredSession));
+        if (page.size < 200) break;
+        query = filter.startAfter(page.docs[page.size - 1]).limit(200);
+      }
     }
+    return [...new Map(result.map((session) => [session.id, session])).values()];
   }
   await mkdir(root, { recursive: true });
   return (await Promise.all((await readdir(root)).map(readSession))).filter((s): s is StoredSession => !!s);
@@ -109,17 +117,14 @@ export async function reserve(s: StoredSession) {
   for (let attempt = 0; attempt < 20; attempt++) {
     s.accessCode = String(randomInt(100000, 1000000));
     if (cloud) {
-      const reserved = await metadataRpc<StoredSession | null>('zdrop_reserve', { p_session: s });
-      if (reserved) {
-        Object.assign(s, reserved);
-        if (isFirebaseStorage) {
-          await firebase().db.collection('uploadGrants').doc(s.id).create({
-            expiresAt: s.expiresAt,
-            uploadSlots: s.uploadSlots,
-          });
-        }
-        return;
-      }
+      const reserved = await firestore().runTransaction(async (tx) => {
+        const ref = codeRef(s.accessCode);
+        if ((await tx.get(ref)).exists) return false;
+        tx.create(ref, { sessionId: s.id });
+        tx.create(sessionRef(s.id), sessionData(s));
+        return true;
+      });
+      if (reserved) return;
     } else {
       await mkdir(path.join(root, 'codes'), { recursive: true });
       try {
@@ -140,7 +145,10 @@ export async function reserve(s: StoredSession) {
 }
 
 export async function byCode(code: string) {
-  if (cloud) return metadataRpc<StoredSession | null>('zdrop_by_code', { p_code: code });
+  if (cloud) {
+    const id = (await codeRef(code).get()).get('sessionId');
+    return typeof id === 'string' ? readSession(id) : null;
+  }
   try {
     return await readSession(await readFile(path.join(root, 'codes', code), 'utf8'));
   } catch {
@@ -149,9 +157,7 @@ export async function byCode(code: string) {
 }
 
 export async function putFile(id: string, fileId: string, bytes: Buffer, type: string) {
-  if (isSupabaseStorage) {
-    await putSupabaseFileBytes(`sessions/${id}/${fileId}`, bytes, type);
-  } else if (isFirebaseStorage) {
+  if (cloud) {
     await firebase().bucket.file(`sessions/${id}/${fileId}`).save(bytes, {
       resumable: false,
       metadata: { contentType: type, cacheControl: 'no-store' },
@@ -162,16 +168,13 @@ export async function putFile(id: string, fileId: string, bytes: Buffer, type: s
 }
 
 export async function enforceFileNoStore(id: string, fileId: string) {
-  if (isFirebaseStorage) {
+  if (cloud) {
     await enforceNoStore(firebase().bucket.file(`sessions/${id}/${fileId}`));
   }
 }
 
 export async function getFile(id: string, fileId: string): Promise<Buffer> {
-  if (isSupabaseStorage) {
-    return getSupabaseFileBytes(`sessions/${id}/${fileId}`);
-  }
-  if (isFirebaseStorage) {
+  if (cloud) {
     return (await firebase().bucket.file(`sessions/${id}/${fileId}`).download())[0];
   }
   return readFile(path.join(root, id, fileId));
@@ -182,9 +185,7 @@ export async function purge(s: StoredSession, source: StoredSession['deletionSou
   s.purgeSource ||= source;
   await saveSession(s);
 
-  if (isSupabaseStorage) {
-    await deleteSupabaseFiles(s.files.map((file) => `sessions/${s.id}/${file.fileId}`));
-  } else if (isFirebaseStorage) {
+  if (cloud) {
     await firebase().bucket.deleteFiles({ prefix: `sessions/${s.id}/` });
   } else {
     await Promise.all(s.files.map((f) => rm(path.join(root, s.id, f.fileId), { force: true })));
@@ -201,7 +202,7 @@ export async function purge(s: StoredSession, source: StoredSession['deletionSou
   s.purging = false;
   await saveSession(s);
 
-  if (isFirebaseStorage) {
+  if (cloud) {
     await firebase().auth.deleteUser(s.id).catch((error) => {
       if (error.code !== 'auth/user-not-found') throw error;
     });
@@ -242,7 +243,13 @@ export async function withSessionLock<T>(id: string, operation: () => Promise<T>
   if (cloud) {
     let acquired = false;
     for (let attempt = 0; attempt < 6; attempt++) {
-      if (await metadataRpc<boolean>('zdrop_acquire_lock', { p_id: id, p_lease: lease })) {
+      if (await firestore().runTransaction(async (tx) => {
+        const ref = lockRef(id);
+        const now = Date.now();
+        if ((await tx.get(ref)).get('expiresAt') > now) return false;
+        tx.set(ref, { lease, expiresAt: now + leaseDuration, deleteAfter: Timestamp.fromMillis(now + leaseDuration) });
+        return true;
+      })) {
         acquired = true;
         break;
       }
@@ -268,7 +275,14 @@ export async function withSessionLock<T>(id: string, operation: () => Promise<T>
     heartbeat = setInterval(() => {
       renewal = renewal
         .then(async () => {
-          await metadataRpc('zdrop_renew_lock', { p_id: id, p_lease: lease });
+          await firestore().runTransaction(async (tx) => {
+            const ref = lockRef(id);
+            const lock = await tx.get(ref);
+            const now = Date.now();
+            if (lock.get('lease') !== lease || !(lock.get('expiresAt') > now)) return;
+            const expiresAt = now + leaseDuration;
+            tx.update(ref, { expiresAt, deleteAfter: Timestamp.fromMillis(expiresAt) });
+          });
         })
         .catch(() => {});
     }, 30000);
@@ -279,21 +293,16 @@ export async function withSessionLock<T>(id: string, operation: () => Promise<T>
   } finally {
     if (heartbeat) clearInterval(heartbeat);
     await renewal;
-    if (cloud) await metadataRpc('zdrop_release_lock', { p_id: id, p_lease: lease });
+    if (cloud) await firestore().runTransaction(async (tx) => {
+      const ref = lockRef(id);
+      if ((await tx.get(ref)).get('lease') === lease) tx.delete(ref);
+    });
     else await rm(lockPath, { recursive: true, force: true });
   }
 }
 
 export async function cloudUpload(s: StoredSession) {
   if (!cloud) return null;
-  if (isSupabaseStorage) {
-    const slots: Record<string, string> = {};
-    for (const file of s.files) {
-      slots[file.fileId] = await createSupabaseUploadUrl(`sessions/${s.id}/${file.fileId}`);
-    }
-    return { provider: 'supabase' as const, slots };
-  }
-
   const apiKey = process.env.FIREBASE_WEB_API_KEY;
   if (!apiKey || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_STORAGE_BUCKET) {
     throw new Error('Firebase web upload configuration is missing.');
@@ -313,14 +322,16 @@ export async function cloudUpload(s: StoredSession) {
 
 export async function retire(s: StoredSession) {
   if (cloud) {
-    if (isFirebaseStorage) {
-      firebase();
-      await firebase().auth.deleteUser(s.id).catch((error) => {
-        if (error.code !== 'auth/user-not-found') throw error;
-      });
-      await closeUploadGrant(s.id);
-    }
-    await metadataRpc('zdrop_retire', { p_id: s.id, p_lease: currentLease(s.id) });
+    await firebase().auth.deleteUser(s.id).catch((error) => {
+      if (error.code !== 'auth/user-not-found') throw error;
+    });
+    await firestore().runTransaction(async (tx) => {
+      await requireLease(tx, s.id);
+      const ref = codeRef(s.accessCode);
+      const code = await tx.get(ref);
+      if (code.get('sessionId') === s.id) tx.delete(ref);
+      tx.delete(sessionRef(s.id));
+    });
   } else {
     const code = path.join(root, 'codes', s.accessCode);
     try {
@@ -331,7 +342,6 @@ export async function retire(s: StoredSession) {
 }
 
 export async function maintenance() {
-  if (cloud) await metadataRpc('zdrop_housekeeping');
   let purged = 0,
     retired = 0,
     failed = 0;
@@ -357,9 +367,6 @@ export async function maintenance() {
 
 export async function signedFileUrl(s: StoredSession, fileId: string) {
   if (!cloud) return null;
-  if (isSupabaseStorage) {
-    return getSupabaseSignedUrl(`sessions/${s.id}/${fileId}`, s.expiresAt);
-  }
   return (
     await firebase()
       .bucket.file(`sessions/${s.id}/${fileId}`)
@@ -372,16 +379,8 @@ export async function signedFileUrl(s: StoredSession, fileId: string) {
 }
 
 export async function activateSession(s: StoredSession) {
-  if (cloud) {
-    Object.assign(s, await metadataRpc<StoredSession>('zdrop_activate', { p_session: s, p_lease: currentLease(s.id) }));
-  } else {
-    if (s.expiresAt <= Date.now()) throw new Error('Upload expired');
-    s.expiresAt = Date.now() + 900000;
-    s.status = 'ACTIVE';
-    await saveSession(s);
-  }
-}
-
-async function closeUploadGrant(id: string) {
-  await firebase().db.collection('uploadGrants').doc(id).delete();
+  if (s.expiresAt <= Date.now()) throw new Error('Upload expired');
+  s.expiresAt = Date.now() + 900000;
+  s.status = 'ACTIVE';
+  await saveSession(s);
 }

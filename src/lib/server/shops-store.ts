@@ -3,8 +3,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { ShopProfile } from '../types';
-import { metadataRpc } from './supabase';
-import { isCloud } from './store';
+import { firestore, isCloud } from './store';
 
 const localDir = path.resolve(process.env.ZDROP_DATA_DIR || (process.env.VERCEL ? path.join('/tmp', '.zdrop-data') : '.zdrop-data'));
 const localShopsFile = path.join(localDir, 'shops.json');
@@ -58,7 +57,24 @@ export async function createShop(data: {
     },
   };
 
-  if (isCloud) return metadataRpc<ShopProfile>('zdrop_create_shop', { p_shop: shop });
+  if (isCloud) {
+    const db = firestore();
+    const shops = db.collection('shops');
+    return db.runTransaction(async (tx) => {
+      const code = await tx.get(shops.where('shopCode', '==', shop.shopCode).where('isActive', '==', true).limit(1));
+      const owner = await tx.get(shops.where('ownerId', '==', shop.ownerId).where('isActive', '==', true).limit(1));
+      if (!owner.empty) {
+        const existing = owner.docs[0].data() as ShopProfile;
+        if (existing.shopCode === shop.shopCode) return existing;
+        throw new Error('This account already owns a shop.');
+      }
+      if (!code.empty) throw new Error('This shop code is already taken.');
+      tx.create(db.collection('shopCodes').doc(shop.shopCode), { shopId: shop.id });
+      tx.create(db.collection('shopOwners').doc(shop.ownerId), { shopId: shop.id });
+      tx.create(shops.doc(shop.id), shop);
+      return shop;
+    });
+  }
 
   const shops = await readLocalShops();
   // Check code uniqueness
@@ -75,7 +91,10 @@ export async function createShop(data: {
 }
 
 export async function getShopByOwnerId(ownerId: string): Promise<ShopProfile | null> {
-  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_owner', { p_owner_id: ownerId });
+  if (isCloud) {
+    const result = await firestore().collection('shops').where('ownerId', '==', ownerId).where('isActive', '==', true).limit(1).get();
+    return result.empty ? null : result.docs[0].data() as ShopProfile;
+  }
 
   const shops = await readLocalShops();
   return Object.values(shops).find(s => s.isActive && s.ownerId === ownerId) || null;
@@ -83,20 +102,30 @@ export async function getShopByOwnerId(ownerId: string): Promise<ShopProfile | n
 
 export async function getShopByCode(code: string): Promise<ShopProfile | null> {
   const cleanCode = code.trim().toUpperCase();
-  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_code', { p_code: cleanCode });
+  if (isCloud) {
+    const result = await firestore().collection('shops').where('shopCode', '==', cleanCode).where('isActive', '==', true).limit(1).get();
+    return result.empty ? null : result.docs[0].data() as ShopProfile;
+  }
 
   const shops = await readLocalShops();
   return Object.values(shops).find(s => s.isActive && s.shopCode.toUpperCase() === cleanCode) || null;
 }
 
 export async function getShopById(id: string): Promise<ShopProfile | null> {
-  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_id', { p_shop_id: id });
+  if (isCloud) {
+    if (!/^shop_[a-f0-9-]{36}$/.test(id)) return null;
+    const shop = (await firestore().collection('shops').doc(id).get()).data() as ShopProfile | undefined;
+    return shop?.isActive ? shop : null;
+  }
   const shops = await readLocalShops();
   return shops[id] || null;
 }
 
 export async function listShops(): Promise<ShopProfile[]> {
-  if (isCloud) return metadataRpc<ShopProfile[]>('zdrop_list_shops');
+  if (isCloud) {
+    const result = await firestore().collection('shops').where('isActive', '==', true).get();
+    return result.docs.map((doc) => doc.data() as ShopProfile).sort((a, b) => a.shopName.localeCompare(b.shopName));
+  }
 
   const shops = await readLocalShops();
   return Object.values(shops).filter(s => s.isActive);
@@ -116,13 +145,14 @@ export async function updateShopPricing(
   } };
 
   if (isCloud) {
-    const saved = await metadataRpc<ShopProfile | null>('zdrop_update_shop_pricing', {
-      p_shop_id: shop.id,
-      p_owner_id: shop.ownerId,
-      p_pricing: updated.pricing,
+    const db = firestore();
+    return db.runTransaction(async (tx) => {
+      const ref = db.collection('shops').doc(shop.id);
+      const existing = (await tx.get(ref)).data() as ShopProfile | undefined;
+      if (!existing?.isActive || existing.ownerId !== shop.ownerId) throw new Error('Shop not found.');
+      tx.update(ref, { pricing: updated.pricing });
+      return { ...existing, pricing: updated.pricing };
     });
-    if (!saved) throw new Error('Shop not found.');
-    return saved;
   }
 
   const shops = await readLocalShops();

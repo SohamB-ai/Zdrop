@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import type { User } from '@clerk/nextjs/server';
 import type { ShopProfile } from '../types';
 
-export function getProfilesDb() {
+export function getFirebaseApp() {
   const projectId = process.env.FIREBASE_PROJECT_ID;
   if (!projectId && !process.env.GOOGLE_APPLICATION_CREDENTIALS) return null;
 
@@ -18,7 +18,12 @@ export function getProfilesDb() {
         privateKey,
       }) : applicationDefault(),
     }, 'zdrop-profiles');
-  return getFirestore(app);
+  return app;
+}
+
+export function getProfilesDb() {
+  const app = getFirebaseApp();
+  return app ? getFirestore(app) : null;
 }
 
 export function getGoogleAccount(user: User) {
@@ -48,25 +53,5 @@ export async function saveUserProfile(
     lastSignInAt: user.lastSignInAt,
   };
 
-  if (!shop) {
-    await profile.set(data, { merge: true });
-    return;
-  }
-
-  const batch = db.batch();
-  batch.set(profile, data, { merge: true });
-  batch.set(db.collection('shops').doc(shop.id), {
-    id: shop.id,
-    ownerId: user.id,
-    ownerEmail: data.email,
-    ownerName: shop.ownerName,
-    shopName: shop.shopName,
-    phone: shop.phone,
-    campusAddress: shop.campusAddress,
-    shopCode: shop.shopCode,
-    pricing: shop.pricing ?? null,
-    isActive: shop.isActive,
-    createdAt: shop.createdAt,
-  }, { merge: true });
-  await batch.commit();
+  await profile.set(data, { merge: true });
 }
