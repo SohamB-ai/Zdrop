@@ -2,8 +2,9 @@ import 'server-only';
 import { applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { User } from '@clerk/nextjs/server';
+import type { ShopProfile } from '../types';
 
-export function getProfilesDb() {
+export function getFirebaseApp() {
   const projectId = process.env.FIREBASE_PROJECT_ID;
   if (!projectId && !process.env.GOOGLE_APPLICATION_CREDENTIALS) return null;
 
@@ -17,7 +18,12 @@ export function getProfilesDb() {
         privateKey,
       }) : applicationDefault(),
     }, 'zdrop-profiles');
-  return getFirestore(app);
+  return app;
+}
+
+export function getProfilesDb() {
+  const app = getFirebaseApp();
+  return app ? getFirestore(app) : null;
 }
 
 export function getGoogleAccount(user: User) {
@@ -26,17 +32,26 @@ export function getGoogleAccount(user: User) {
   );
 }
 
-export async function saveUserProfile(db: NonNullable<ReturnType<typeof getProfilesDb>>, user: User, shopId?: string) {
+export async function saveUserProfile(
+  db: NonNullable<ReturnType<typeof getProfilesDb>>,
+  user: User,
+  shop?: ShopProfile | null,
+) {
+  if (shop && shop.ownerId !== user.id) throw new Error('Shop owner does not match the signed-in user.');
+
   const google = getGoogleAccount(user);
-  await db.collection('users').doc(user.id).set({
+  const profile = db.collection('users').doc(user.id);
+  const data = {
     id: user.id,
     email: user.primaryEmailAddress?.emailAddress || '',
     name: user.fullName || user.firstName || 'User',
     avatarUrl: user.imageUrl,
     provider: google ? 'google.com' : null,
-    role: shopId ? 'shop_owner' : 'user',
-    shopId: shopId ?? null,
+    role: shop ? 'shop_owner' : 'user',
+    shopId: shop?.id ?? null,
     createdAt: user.createdAt,
     lastSignInAt: user.lastSignInAt,
-  }, { merge: true });
+  };
+
+  await profile.set(data, { merge: true });
 }
