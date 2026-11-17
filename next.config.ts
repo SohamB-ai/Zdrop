@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: [
     "firebase-admin",
+    "pdfjs-dist",
+    "@napi-rs/canvas",
     "@google-cloud/firestore",
     "@google-cloud/storage",
     "@opentelemetry/api",
@@ -12,6 +14,12 @@ const nextConfig: NextConfig = {
     "pdf-lib",
     "jszip",
   ],
+  outputFileTracingIncludes: {
+    "/api/sessions/*": [
+      "./node_modules/pdfjs-dist/package.json",
+      "./node_modules/pdfjs-dist/{legacy,cmaps,standard_fonts,wasm}/**/*",
+    ],
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "motion"],
   },
