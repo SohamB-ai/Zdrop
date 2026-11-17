@@ -60,5 +60,8 @@
   "overrides": {
     "postcss": "$postcss",
     "@grpc/grpc-js": "^1.13.6"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

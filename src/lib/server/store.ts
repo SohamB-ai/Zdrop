@@ -28,13 +28,14 @@ export interface StoredSession extends SessionData {
 }
 
 const root = path.resolve(process.env.ZDROP_DATA_DIR || (process.env.VERCEL ? path.join('/tmp', '.zdrop-data') : '.zdrop-data'));
-const storageMode = process.env.ZDROP_STORAGE || (process.env.VERCEL || process.env.K_SERVICE ? 'supabase' : 'local');
+const hosted = Boolean(process.env.VERCEL || process.env.NETLIFY || process.env.K_SERVICE);
+const storageMode = process.env.ZDROP_STORAGE || (hosted ? 'supabase' : 'local');
 const isSupabaseStorage = storageMode === 'supabase';
 const isFirebaseStorage = storageMode === 'firebase';
 const cloud = isSupabaseStorage || isFirebaseStorage;
 export const isCloud = cloud;
 
-if ((process.env.VERCEL || process.env.K_SERVICE) && !cloud) {
+if (hosted && !cloud) {
   throw new Error('Hosted deployments require ZDROP_STORAGE=supabase or ZDROP_STORAGE=firebase.');
 }
 

@@ -4,7 +4,7 @@ Anonymous document handoff for print shops. Students upload up to three PDF, DOC
 
 ## Run locally
 
-Node.js 20 or later:
+Node.js 22:
 
 ```sh
 npm ci
@@ -26,6 +26,8 @@ ZDROP_TEST_URL=http://localhost:3000 node scripts/smoke-test.mjs
 Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` for the target Clerk instance and enable its Google connection. Configure the Firestore service account variables in `.env.example` to save signed-in profiles and daily shop visitors. Profiles are keyed by Clerk user ID. Existing Firebase Auth records keep their original IDs.
 
 A signed-in customer with a verified Google connection appears in the shop owner's visitor list when they open that shop's counter QR link. Each account is counted once per shop per India Standard Time day. The visitor API returns display names to the shop owner.
+
+For Vercel and Netlify, leave `ZDROP_STORAGE` unset to use Supabase or set an explicit cloud mode. Set the provider credentials in the deployment environment. The `local` setting in `.env.example` is for local development.
 
 Apply the files in `supabase/migrations` in order before deploying the hosted shop API. The pricing migration adds the persistent rates and UPI fields and restricts shop RPC execution to the backend service role.
 
