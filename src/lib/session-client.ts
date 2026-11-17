@@ -36,7 +36,7 @@ export async function createSession(
   files: FileMetadata[],
   preferences: PrintPreferences,
   progress?: (percent: number) => void,
-  shop?: { id: string; name: string }
+  shop?: { id: string; name?: string }
 ): Promise<SessionData> {
   const result = await request('/api/sessions/create', {
     method: 'POST',

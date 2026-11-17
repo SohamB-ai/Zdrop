@@ -21,11 +21,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [shop, setShop] = useState<ShopProfile | null>(null);
   const [isShopLoading, setIsShopLoading] = useState(false);
 
-  const fetchShop = useCallback(async (ownerId: string) => {
+  const fetchShop = useCallback(async () => {
     setIsShopLoading(true);
     try {
-      const res = await fetch(`/api/shops?ownerId=${encodeURIComponent(ownerId)}`, { cache: 'no-store' });
-      if (res.ok) {
+      const res = await fetch('/api/auth/me', { cache: 'no-store' });
+      if (res.ok || res.status === 503) {
         const data = await res.json();
         setShop(data.shop || null);
       } else {
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isSignedIn && clerkUser) {
-      fetchShop(clerkUser.id);
+      fetchShop();
     } else {
       setShop(null);
     }
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshShop = async () => {
     if (clerkUser) {
-      await fetchShop(clerkUser.id);
+      await fetchShop();
     }
   };
 

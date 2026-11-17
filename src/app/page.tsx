@@ -9,6 +9,7 @@ import {
   deleteSession,
   subscribeToSession,
 } from "@/lib/session-client";
+import { useAuth } from "@/lib/auth-context";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ProblemSection } from "@/components/landing/ProblemSection";
@@ -24,6 +25,31 @@ import { SuccessView } from "@/views/SuccessView";
 type StudentStep = "UPLOAD" | "CODE" | "SUCCESS";
 
 export default function StudentPage() {
+  const { user } = useAuth();
+  const [shopCode, setShopCode] = useState<string | null>(null);
+  const [visitError, setVisitError] = useState(false);
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get('shop');
+    if (code && /^[a-z0-9_-]{1,30}$/i.test(code)) setShopCode(code);
+  }, []);
+
+  useEffect(() => {
+    if (!shopCode || !user) return;
+    const controller = new AbortController();
+    fetch('/api/shops/visitors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: shopCode }),
+      signal: controller.signal,
+    }).then((response) => {
+      if (!controller.signal.aborted) setVisitError(!response.ok);
+    }).catch(() => {
+      if (!controller.signal.aborted) setVisitError(true);
+    });
+    return () => controller.abort();
+  }, [shopCode, user]);
+
   const [step, setStep] = useState<StudentStep>("UPLOAD");
   const [session, setSession] = useState<SessionData | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -72,7 +98,7 @@ export default function StudentPage() {
     setUploadProgress(0);
     setError(null);
     try {
-      const s = await createSession(files, preferences, setUploadProgress, shop);
+      const s = await createSession(files, preferences, setUploadProgress, shop ?? (shopCode ? { id: shopCode } : undefined));
       setSession(s);
       setStep("CODE");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -109,6 +135,17 @@ export default function StudentPage() {
   return (
     <div className="zd-app">
       <Navbar currentRole="student" showSections={step === "UPLOAD"} />
+      {shopCode && (
+        <aside className="mx-auto max-w-3xl px-6 py-3 text-center text-sm">
+          <p>When you open this shop link while signed in with Google, the shop owner can see your name in today’s visitor list.</p>
+          {!user && (
+            <a className="mt-2 inline-block underline" href={`/sign-in?redirect_url=${encodeURIComponent(`/?shop=${shopCode}`)}`}>
+              Sign in with Google
+            </a>
+          )}
+          {visitError && user && <p role="status">Your visit could not be recorded. Reload to try again.</p>}
+        </aside>
+      )}
 
       <main id="main-content" className="zd-main">
         {error && (

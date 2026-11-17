@@ -58,16 +58,8 @@ export async function createShop(data: {
     },
   };
 
-  if (isCloud) {
-    try {
-      const res = await metadataRpc<ShopProfile>('zdrop_create_shop', { p_shop: shop });
-      if (res && res.id) return res;
-    } catch (err) {
-      console.warn('Supabase zdrop_create_shop failed or unmigrated, falling back to local:', err);
-    }
-  }
+  if (isCloud) return metadataRpc<ShopProfile>('zdrop_create_shop', { p_shop: shop });
 
-  // Local storage fallback
   const shops = await readLocalShops();
   // Check code uniqueness
   const codeExists = Object.values(shops).some(
@@ -83,14 +75,7 @@ export async function createShop(data: {
 }
 
 export async function getShopByOwnerId(ownerId: string): Promise<ShopProfile | null> {
-  if (isCloud) {
-    try {
-      const res = await metadataRpc<ShopProfile | null>('zdrop_get_shop_by_owner', { p_owner_id: ownerId });
-      if (res) return res;
-    } catch {
-      // Fallback to local
-    }
-  }
+  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_owner', { p_owner_id: ownerId });
 
   const shops = await readLocalShops();
   return Object.values(shops).find(s => s.isActive && s.ownerId === ownerId) || null;
@@ -98,65 +83,51 @@ export async function getShopByOwnerId(ownerId: string): Promise<ShopProfile | n
 
 export async function getShopByCode(code: string): Promise<ShopProfile | null> {
   const cleanCode = code.trim().toUpperCase();
-  if (isCloud) {
-    try {
-      const res = await metadataRpc<ShopProfile | null>('zdrop_get_shop_by_code', { p_code: cleanCode });
-      if (res) return res;
-    } catch {
-      // Fallback to local
-    }
-  }
+  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_code', { p_code: cleanCode });
 
   const shops = await readLocalShops();
   return Object.values(shops).find(s => s.isActive && s.shopCode.toUpperCase() === cleanCode) || null;
 }
 
 export async function getShopById(id: string): Promise<ShopProfile | null> {
+  if (isCloud) return metadataRpc<ShopProfile | null>('zdrop_get_shop_by_id', { p_shop_id: id });
   const shops = await readLocalShops();
   return shops[id] || null;
 }
 
 export async function listShops(): Promise<ShopProfile[]> {
-  if (isCloud) {
-    try {
-      const res = await metadataRpc<ShopProfile[]>('zdrop_list_shops', {});
-      if (Array.isArray(res) && res.length > 0) return res;
-    } catch {
-      // Fallback to local
-    }
-  }
+  if (isCloud) return metadataRpc<ShopProfile[]>('zdrop_list_shops');
 
   const shops = await readLocalShops();
   return Object.values(shops).filter(s => s.isActive);
 }
 
 export async function updateShopPricing(
-  shopId: string,
+  shop: ShopProfile,
   pricing: Partial<import('../types').ShopPricing>
 ): Promise<ShopProfile> {
-  const shops = await readLocalShops();
-  const shop = shops[shopId];
-  if (!shop) throw new Error('Shop not found.');
-
-  shop.pricing = {
+  const updated = { ...shop, pricing: {
     bwRate: Math.max(0.1, Number(pricing.bwRate) || 2),
     colorRate: Math.max(0.1, Number(pricing.colorRate) || 10),
     duplexDiscount: Math.max(0, Number(pricing.duplexDiscount) || 0),
     currencySymbol: pricing.currencySymbol?.trim() || '₹',
     upiId: pricing.upiId?.trim() || '',
     payeeName: pricing.payeeName?.trim() || shop.shopName,
-  };
-
-  shops[shopId] = shop;
-  await writeLocalShops(shops);
+  } };
 
   if (isCloud) {
-    try {
-      await metadataRpc('zdrop_update_shop_pricing', { p_shop_id: shopId, p_pricing: shop.pricing });
-    } catch (err) {
-      console.warn('Supabase zdrop_update_shop_pricing fallback to local:', err);
-    }
+    const saved = await metadataRpc<ShopProfile | null>('zdrop_update_shop_pricing', {
+      p_shop_id: shop.id,
+      p_owner_id: shop.ownerId,
+      p_pricing: updated.pricing,
+    });
+    if (!saved) throw new Error('Shop not found.');
+    return saved;
   }
 
-  return shop;
+  const shops = await readLocalShops();
+  if (!shops[shop.id]) throw new Error('Shop not found.');
+  shops[shop.id] = updated;
+  await writeLocalShops(shops);
+  return updated;
 }

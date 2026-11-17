@@ -22,11 +22,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify user owns the shop
-    if (shop.ownerId && shop.ownerId !== userId) {
+    if (shop.ownerId !== userId) {
       return NextResponse.json({ error: 'Access denied for this shop.' }, { status: 403 });
     }
 
-    const updatedShop = await updateShopPricing(shopId, pricing);
+    const updatedShop = await updateShopPricing(shop, pricing);
     return NextResponse.json({ shop: updatedShop });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });

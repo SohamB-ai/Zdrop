@@ -57,9 +57,9 @@ const resolveData = await resolveRes.json();
 assert.equal(resolveData.session.status, 'ACCESSED');
 assert.ok(resolveData.session.costEstimate, 'Resolved session must have cost estimate');
 assert.ok(resolveData.session.costEstimate.totalAmount > 0, 'Cost estimate amount must be > 0');
-assert.ok(resolveData.session.costEstimate.upiId, 'Resolved session must have shop UPI ID stamped');
-assert.ok(resolveData.session.shopName, 'Resolved session must have shopName stamped');
-console.log(`✔ Test 3 passed: Shopkeeper accepted OTP! Shop: "${resolveData.session.shopName}", UPI: "${resolveData.session.costEstimate.upiId}", Total: ₹${resolveData.session.costEstimate.totalAmount}.`);
+assert.equal(resolveData.session.costEstimate.upiId, '', 'An anonymous job has no shop UPI recipient');
+assert.equal(resolveData.session.shopName, undefined);
+console.log('✔ Test 3 passed: Anonymous OTP resolution preserves pricing without assigning an unrelated shop.');
 
 // 4. Test Payment status update via API (Customer pays via UPI QR)
 const payRes = await fetch(`${base}/api/sessions/payment`, {
