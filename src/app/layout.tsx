@@ -90,7 +90,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-[100dvh] font-sans antialiased">
-        <ClerkProvider>
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" signInFallbackRedirectUrl="/">
           <ThemeProvider>
           <AuthProvider>
           <MotionConfig reducedMotion="user">{children}</MotionConfig>
