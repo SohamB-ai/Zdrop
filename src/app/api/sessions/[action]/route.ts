@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { PrintPreferencesSchema, AllowedMimeTypesEnum } from '@/lib/types';
-import { active, byCode, newId, newToken, publicSession, purge, putFile, readSession, reserve, saveSession, withSessionLock, StoredSession, cloudUpload, isCloud, enforceFileNoStore, activateSession } from '@/lib/server/store';
+import { active, byCode, newId, newToken, publicSession, purge, putFile, readSession, reserve, saveSession, withSessionLock, StoredSession, cloudUpload, isCloud, useFirestoreFiles, firestoreFileLimit, enforceFileNoStore, activateSession } from '@/lib/server/store';
 import { inspectDocument, DocumentError } from '@/lib/server/documents';
 import { rateLimit } from '@/lib/server/rate-limit';
 import { auth, currentUser } from '@clerk/nextjs/server';
@@ -41,7 +41,11 @@ async function handle(req: NextRequest, action: string) {
 
     if (action === 'create' && req.method === 'POST') {
       const input = createSchema.parse(await req.json());
+      if (useFirestoreFiles && input.files.some((file) => file.fileSize > firestoreFileLimit)) {
+        return reply({ error: 'Uploads are limited to 768 KiB per file on this deployment.' }, 413);
+      }
       const s: StoredSession = {
+        ...(useFirestoreFiles ? { fileStorage: 'firestore' } : {}),
         id: newId(),
         accessCode: '',
         ownerToken: newToken(),
@@ -124,7 +128,7 @@ async function handle(req: NextRequest, action: string) {
     if (action === 'status' && req.method === 'GET') return reply({ session: publicSession(s, token === s.operatorToken ? token : undefined) });
     if (!live) return reply({ error: 'Session expired or deleted.' }, 410);
     if (action === 'upload' && req.method === 'POST') {
-      if (isCloud) return reply({ error: 'Use direct cloud upload.' }, 409);
+      if (isCloud && s.fileStorage !== 'firestore') return reply({ error: 'Use direct cloud upload.' }, 409);
       if (token !== s.ownerToken || s.status !== 'PENDING_UPLOAD' || s.uploadSealed) return reply({ error: 'Upload not permitted.' }, 409);
       const f = s.files.find(f => f.fileId === input.fileId);
       if (!f) return reply({ error: 'Unknown file.' }, 400);
@@ -137,7 +141,7 @@ async function handle(req: NextRequest, action: string) {
       const bytes = Buffer.concat(chunks);
       if (bytes.length !== f.size) return reply({ error: 'File size does not match.' }, 400);
       await inspectDocument(bytes, f.type, false);
-      await putFile(s.id, f.fileId, bytes, f.type);
+      await putFile(s, f.fileId, bytes, f.type);
       return reply({ success: true });
     }
     if (action === 'confirm' && req.method === 'POST') {
@@ -146,8 +150,8 @@ async function handle(req: NextRequest, action: string) {
       s.uploadSealed = true; await saveSession(s); // Seal direct uploads before inspecting immutable contents.
       try {
         for (const f of s.files) {
-          if (isCloud) await enforceFileNoStore(s.id, f.fileId);
-          const bytes = await getFile(s.id, f.fileId);
+          if (isCloud) await enforceFileNoStore(s, f.fileId);
+          const bytes = await getFile(s, f.fileId);
           if (bytes.length !== f.size) throw new DocumentError('Upload incomplete or file size mismatch.');
           const inspected = await inspectDocument(bytes, f.type);
           if (inspected) {

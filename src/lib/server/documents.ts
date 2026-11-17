@@ -1,6 +1,7 @@
 import { PDFDocument } from 'pdf-lib';
 import JSZip from 'jszip';
-import { dirname, join, sep } from 'node:path';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 export class DocumentError extends Error {}
 
@@ -29,9 +30,9 @@ async function inspectPdfColour(bytes: Uint8Array): Promise<DocumentInspection> 
   const assets = dirname(resolve('pdfjs-dist/package.json'));
   const task = getDocument({
     data: Uint8Array.from(bytes),
-    cMapUrl: join(assets, 'cmaps') + sep,
-    standardFontDataUrl: join(assets, 'standard_fonts') + sep,
-    wasmUrl: join(assets, 'wasm') + sep,
+    cMapUrl: pathToFileURL(join(assets, 'cmaps')).href + '/',
+    standardFontDataUrl: pathToFileURL(join(assets, 'standard_fonts')).href + '/',
+    wasmUrl: pathToFileURL(join(assets, 'wasm')).href + '/',
     verbosity: VerbosityLevel.ERRORS,
   });
 
