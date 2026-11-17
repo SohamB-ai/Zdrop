@@ -92,28 +92,11 @@ async function handle(req: NextRequest, action: string) {
       if (!await active(s)) return reply({ error: 'Code expired or files deleted.' }, 410);
       if (s.status === 'PENDING_UPLOAD') return reply({ error: 'Upload is still in progress.' }, 409);
 
-      // Determine accepting shop:
-      // 1. Authenticated Clerk operator
-      // 2. Query param shopId
-      // 3. Pre-existing s.shopId
-      // 4. Default active shop from database
-      const { getShopByOwnerId, getShopById, getShopByCode, listShops } = await import('@/lib/server/shops-store');
-      let shop = null;
-      if (authUser?.id) {
-        shop = await getShopByOwnerId(authUser.id);
-      }
-      const shopIdParam = req.nextUrl.searchParams.get('shopId');
-      if (!shop && shopIdParam) {
-        shop = (await getShopById(shopIdParam)) || (await getShopByCode(shopIdParam));
-      }
-      if (!shop && s.shopId) {
-        shop = (await getShopById(s.shopId)) || (await getShopByCode(s.shopId));
-      }
-      if (!shop) {
-        const allShops = await listShops();
-        if (allShops.length > 0) {
-          shop = allShops[0];
-        }
+      const { getShopByOwnerId, getShopById, getShopByCode } = await import('@/lib/server/shops-store');
+      let shop = authUser ? await getShopByOwnerId(authUser.id) : null;
+      const requestedShopId = s.shopId || req.nextUrl.searchParams.get('shopId');
+      if (!shop && requestedShopId) {
+        shop = (await getShopById(requestedShopId)) || (await getShopByCode(requestedShopId));
       }
 
       s.status = 'ACCESSED';

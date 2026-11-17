@@ -18,6 +18,7 @@ import { Footer } from "@/components/landing/Footer";
 import { useAuth } from "@/lib/auth-context";
 import { useUser } from "@clerk/nextjs";
 import { ShopQrModal } from "@/components/ShopQrModal";
+import { ShopVisitors } from "@/components/ShopVisitors";
 import { ShopPricingModal } from "@/components/ShopPricingModal";
 
 function KioskContent() {
@@ -247,6 +248,8 @@ function KioskContent() {
               </button>
             </div>
           </div>
+
+          <ShopVisitors key={shop.id} shopId={shop.id} />
 
           {/* Success Toast */}
           {successToast && (

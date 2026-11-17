@@ -1,4 +1,8 @@
 import 'server-only';
+import { applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { metadataRpc } from './supabase';
 import { enforceNoStore } from './firebase-storage-policy';
@@ -43,16 +47,9 @@ function currentLease(id: string) {
 }
 
 function firebase() {
-  const adminApp = 'firebase-admin/app';
-  const adminFirestore = 'firebase-admin/firestore';
-  const adminAuth = 'firebase-admin/auth';
-  const adminStorage = 'firebase-admin/storage';
-  const { initializeApp, getApps, cert, applicationDefault } = require(adminApp) as typeof import('firebase-admin/app');
-  const { getFirestore } = require(adminFirestore) as typeof import('firebase-admin/firestore');
-  const { getAuth } = require(adminAuth) as typeof import('firebase-admin/auth');
-  const { getStorage } = require(adminStorage) as typeof import('firebase-admin/storage');
-  if (!getApps().length) {
+  const app = getApps().find((candidate) => candidate.name === 'zdrop-storage') ||
     initializeApp({
+      projectId: process.env.FIREBASE_PROJECT_ID,
       credential: process.env.FIREBASE_PRIVATE_KEY
         ? cert({
             projectId: process.env.FIREBASE_PROJECT_ID,
@@ -61,9 +58,8 @@ function firebase() {
           })
         : applicationDefault(),
       storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    });
-  }
-  return { db: getFirestore(), bucket: getStorage().bucket(), auth: getAuth() };
+    }, 'zdrop-storage');
+  return { db: getFirestore(app), bucket: getStorage(app).bucket(), auth: getAuth(app) };
 }
 
 export async function readSession(id: string): Promise<StoredSession | null> {
