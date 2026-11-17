@@ -12,6 +12,7 @@ import { SessionData } from '../types';
 
 
 export interface StoredSession extends SessionData {
+  fileStorage?: 'firestore';
   ownerToken: string;
   operatorToken?: string;
   purging?: boolean;
@@ -24,6 +25,12 @@ const root = path.resolve(process.env.ZDROP_DATA_DIR || (process.env.VERCEL ? pa
 const hosted = Boolean(process.env.VERCEL || process.env.NETLIFY || process.env.K_SERVICE);
 const cloud = hosted || process.env.ZDROP_STORAGE === 'firebase';
 export const isCloud = cloud;
+export const useFirestoreFiles = cloud && process.env.ZDROP_FILE_STORAGE === 'firestore';
+export const firestoreFileLimit = 768 * 1024;
+
+function fileRef(sessionId: string, fileId: string) {
+  return sessionRef(sessionId).collection('files').doc(fileId);
+}
 
 export function firestore() {
   const db = getProfilesDb();
@@ -156,8 +163,15 @@ export async function byCode(code: string) {
   }
 }
 
-export async function putFile(id: string, fileId: string, bytes: Buffer, type: string) {
-  if (cloud) {
+export async function putFile(session: StoredSession, fileId: string, bytes: Buffer, type: string) {
+  const { id } = session;
+  if (session.fileStorage === 'firestore') {
+    if (bytes.length > firestoreFileLimit) throw new Error('File exceeds the Firestore upload limit.');
+    await firestore().runTransaction(async (tx) => {
+      await requireLease(tx, id);
+      tx.set(fileRef(id, fileId), { bytes });
+    });
+  } else if (cloud) {
     await firebase().bucket.file(`sessions/${id}/${fileId}`).save(bytes, {
       resumable: false,
       metadata: { contentType: type, cacheControl: 'no-store' },
@@ -167,13 +181,19 @@ export async function putFile(id: string, fileId: string, bytes: Buffer, type: s
   }
 }
 
-export async function enforceFileNoStore(id: string, fileId: string) {
-  if (cloud) {
-    await enforceNoStore(firebase().bucket.file(`sessions/${id}/${fileId}`));
+export async function enforceFileNoStore(session: StoredSession, fileId: string) {
+  if (cloud && session.fileStorage !== 'firestore') {
+    await enforceNoStore(firebase().bucket.file(`sessions/${session.id}/${fileId}`));
   }
 }
 
-export async function getFile(id: string, fileId: string): Promise<Buffer> {
+export async function getFile(session: StoredSession, fileId: string): Promise<Buffer> {
+  const { id } = session;
+  if (session.fileStorage === 'firestore') {
+    const bytes = (await fileRef(id, fileId).get()).get('bytes');
+    if (!Buffer.isBuffer(bytes)) throw new Error('File unavailable.');
+    return bytes;
+  }
   if (cloud) {
     return (await firebase().bucket.file(`sessions/${id}/${fileId}`).download())[0];
   }
@@ -185,7 +205,11 @@ export async function purge(s: StoredSession, source: StoredSession['deletionSou
   s.purgeSource ||= source;
   await saveSession(s);
 
-  if (cloud) {
+  if (s.fileStorage === 'firestore') {
+    const batch = firestore().batch();
+    for (const file of s.files) batch.delete(fileRef(s.id, file.fileId));
+    if (s.files.length) await batch.commit();
+  } else if (cloud) {
     await firebase().bucket.deleteFiles({ prefix: `sessions/${s.id}/` });
   } else {
     await Promise.all(s.files.map((f) => rm(path.join(root, s.id, f.fileId), { force: true })));
@@ -202,7 +226,7 @@ export async function purge(s: StoredSession, source: StoredSession['deletionSou
   s.purging = false;
   await saveSession(s);
 
-  if (cloud) {
+  if (cloud && s.fileStorage !== 'firestore') {
     await firebase().auth.deleteUser(s.id).catch((error) => {
       if (error.code !== 'auth/user-not-found') throw error;
     });
@@ -222,7 +246,7 @@ export async function active(s: StoredSession) {
 }
 
 export function publicSession(s: StoredSession, token?: string): SessionData {
-  const { ownerToken, operatorToken, purging, purgeSource, uploadSlots, uploadSealed,
+  const { fileStorage, ownerToken, operatorToken, purging, purgeSource, uploadSlots, uploadSealed,
     userId, userEmail, userName, userAvatar, ...result } = s;
   return {
     ...result,
@@ -302,7 +326,7 @@ export async function withSessionLock<T>(id: string, operation: () => Promise<T>
 }
 
 export async function cloudUpload(s: StoredSession) {
-  if (!cloud) return null;
+  if (!cloud || s.fileStorage === 'firestore') return null;
   const apiKey = process.env.FIREBASE_WEB_API_KEY;
   if (!apiKey || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_STORAGE_BUCKET) {
     throw new Error('Firebase web upload configuration is missing.');
@@ -322,9 +346,11 @@ export async function cloudUpload(s: StoredSession) {
 
 export async function retire(s: StoredSession) {
   if (cloud) {
-    await firebase().auth.deleteUser(s.id).catch((error) => {
-      if (error.code !== 'auth/user-not-found') throw error;
-    });
+    if (s.fileStorage !== 'firestore') {
+      await firebase().auth.deleteUser(s.id).catch((error) => {
+        if (error.code !== 'auth/user-not-found') throw error;
+      });
+    }
     await firestore().runTransaction(async (tx) => {
       await requireLease(tx, s.id);
       const ref = codeRef(s.accessCode);
@@ -366,7 +392,7 @@ export async function maintenance() {
 }
 
 export async function signedFileUrl(s: StoredSession, fileId: string) {
-  if (!cloud) return null;
+  if (!cloud || s.fileStorage === 'firestore') return null;
   return (
     await firebase()
       .bucket.file(`sessions/${s.id}/${fileId}`)

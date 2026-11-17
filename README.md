@@ -29,6 +29,8 @@ A signed-in customer with a verified Google connection appears in the shop owner
 
 Hosted deployments use Firestore for shops, print sessions, OTP reservations, visitor lists, and rate limits. Private print files are stored in Firebase Storage. Set the Firebase variables in `.env.example` and deploy the checked-in rules and indexes before promoting. Existing shop profiles must use the owner's Clerk user ID to appear in the portal.
 
+For small hosted uploads on Spark, set `ZDROP_FILE_STORAGE=firestore`. Each file is limited to 768 KiB. The server stores files as private Firestore bytes and deletes them during session cleanup. This mode needs no Storage bucket or TTL policies. The scheduled cleanup endpoint remains necessary.
+
 ## Firebase and Vercel setup
 
 1. Create a Firebase project with the **default** Firestore database, Firebase Authentication, and a Cloud Storage bucket. Enable the required billing plan for Storage and scheduled deployment.

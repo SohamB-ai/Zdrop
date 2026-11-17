@@ -10,7 +10,7 @@ async function serve(req: NextRequest) {
   const signed = await signedFileUrl(s, f.fileId);
   if (signed) return new Response(null, { status: 302, headers: { Location: signed, 'Cache-Control': 'no-store, no-cache, must-revalidate, private, max-age=0', 'Referrer-Policy': 'no-referrer', 'X-Download-Options': 'noopen' } });
   try {
-    const fileBytes = await getFile(s.id, f.fileId);
+    const fileBytes = await getFile(s, f.fileId);
     return new Response(new Uint8Array(fileBytes), {
       headers: {
         'Content-Type': f.type,
