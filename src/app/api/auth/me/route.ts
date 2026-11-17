@@ -17,7 +17,7 @@ export async function GET() {
 
     try {
       const db = getProfilesDb();
-      if (db) await saveUserProfile(db, clerkUser, shop?.id);
+      if (db) await saveUserProfile(db, clerkUser, shop);
     } catch (error) {
       console.error('Failed to persist authenticated profile:', error);
       return NextResponse.json({ error: 'Could not save user profile', shop }, { status: 503 });

@@ -2,6 +2,7 @@ import 'server-only';
 import { applicationDefault, cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { User } from '@clerk/nextjs/server';
+import type { ShopProfile } from '../types';
 
 export function getProfilesDb() {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -26,17 +27,46 @@ export function getGoogleAccount(user: User) {
   );
 }
 
-export async function saveUserProfile(db: NonNullable<ReturnType<typeof getProfilesDb>>, user: User, shopId?: string) {
+export async function saveUserProfile(
+  db: NonNullable<ReturnType<typeof getProfilesDb>>,
+  user: User,
+  shop?: ShopProfile | null,
+) {
+  if (shop && shop.ownerId !== user.id) throw new Error('Shop owner does not match the signed-in user.');
+
   const google = getGoogleAccount(user);
-  await db.collection('users').doc(user.id).set({
+  const profile = db.collection('users').doc(user.id);
+  const data = {
     id: user.id,
     email: user.primaryEmailAddress?.emailAddress || '',
     name: user.fullName || user.firstName || 'User',
     avatarUrl: user.imageUrl,
     provider: google ? 'google.com' : null,
-    role: shopId ? 'shop_owner' : 'user',
-    shopId: shopId ?? null,
+    role: shop ? 'shop_owner' : 'user',
+    shopId: shop?.id ?? null,
     createdAt: user.createdAt,
     lastSignInAt: user.lastSignInAt,
+  };
+
+  if (!shop) {
+    await profile.set(data, { merge: true });
+    return;
+  }
+
+  const batch = db.batch();
+  batch.set(profile, data, { merge: true });
+  batch.set(db.collection('shops').doc(shop.id), {
+    id: shop.id,
+    ownerId: user.id,
+    ownerEmail: data.email,
+    ownerName: shop.ownerName,
+    shopName: shop.shopName,
+    phone: shop.phone,
+    campusAddress: shop.campusAddress,
+    shopCode: shop.shopCode,
+    pricing: shop.pricing ?? null,
+    isActive: shop.isActive,
+    createdAt: shop.createdAt,
   }, { merge: true });
+  await batch.commit();
 }
